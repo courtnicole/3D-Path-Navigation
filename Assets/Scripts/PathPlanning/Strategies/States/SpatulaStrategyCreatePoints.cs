@@ -23,7 +23,7 @@ namespace PathNav.PathPlanning
         {
             float segmentLength = Vector3.Distance(entity.lastHandPosition, entity.interactingController.PointerPosition);
 
-            if (segmentLength < entity.minimumDelta) return;
+            if (segmentLength < SpatulaStrategy.minimumDelta) return;
             
             entity.ActiveSegment.AddPoint(entity.interactingController.PointerPosition);
             entity.lastHandPosition = entity.interactingController.PointerPosition;

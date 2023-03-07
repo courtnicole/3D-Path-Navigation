@@ -5,8 +5,6 @@ namespace PathNav.PathPlanning
     using Input;
     using Interaction;
     using Patterns.Factory;
-    using System;
-    using System.Collections;
     using System.Threading;
     using System.Threading.Tasks;
     using UnityEngine;
@@ -15,6 +13,8 @@ namespace PathNav.PathPlanning
     public class PathStrategyEvaluator : MonoBehaviour
     {
         [SerializeField] private AssetReferenceGameObject segmentKey;
+        [SerializeField] private GameObject startPointPrefab;
+        [SerializeField] private PlacementPlaneElement placementPlane;
 
         #region Factory Variables
         private Factory _factory = new();
@@ -23,9 +23,8 @@ namespace PathNav.PathPlanning
 
         #region Start Point Variables
         private GameObject _startObject;
-        private IAttachable _attachable;
-        private IPlaceable _placeable;
-
+        private SegmentStartPoint _startObjectController;
+        private bool _startPointActive;
         private bool _startPointPlaced; 
         #endregion
 
@@ -38,8 +37,8 @@ namespace PathNav.PathPlanning
         #region Strategy Variables
         private PathStrategy _strategy;
         private IPathStrategy _activeStrategy;
-        private IPathStrategy _bulldozerStrategy = new BulldozerStrategy();
-        private IPathStrategy _spatulaStrategy = new SpatulaStrategy();
+        private IPathStrategy _bulldozerStrategy;
+        private IPathStrategy _spatulaStrategy; 
         #endregion
 
         #region Unity Events
@@ -105,16 +104,17 @@ namespace PathNav.PathPlanning
             switch (_strategy)
             {
                 case PathStrategy.Bulldozer:
+                    _bulldozerStrategy = new BulldozerStrategy();
                     SetStrategy(_bulldozerStrategy);
                     break;
                 case PathStrategy.Spatula:
-                    SetStrategy(_spatulaStrategy);
-                    break;
-                case PathStrategy.TwoRays:
+                    _spatulaStrategy = new SpatulaStrategy(placementPlane);
                     SetStrategy(_spatulaStrategy);
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException();
+                    _bulldozerStrategy = new BulldozerStrategy();
+                    SetStrategy(_bulldozerStrategy);
+                    break;
             }
         }
         #endregion
@@ -143,33 +143,38 @@ namespace PathNav.PathPlanning
         {
             if (_startPointPlaced) return;
             SetController(args.Controller);
-            CreateStartPoint();
+            AttachStartPoint();
         }
 
         private void FinishPlacingStartPoint(object obj, ControllerEvaluatorEventArgs args)
         {
-            if (!_attachable.Configured) return;
-
-            _placeable.Place(EventId.StartPointPlaced, _startObject.transform);
-            _attachable.Detach();
+            if (!_startPointActive) return;
+            if (_startPointPlaced) return;
+            
+            (_startObjectController as IPlaceable).Place(EventId.StartPointPlaced, _startObject.transform);
+            _startObjectController.Detach();
             _startPointPlaced = true;
             ClearController();
         }
 
-        private void CreateStartPoint()
+        private void AttachStartPoint()
         {
-            _startObject = new GameObject("Start Point", typeof(SegmentStartPoint));
-            _attachable  = _startObject.GetComponent<SegmentStartPoint>();
-            _placeable   = _startObject.GetComponent<SegmentStartPoint>();
-            StartCoroutine(AttachStartPoint());
+            if (_startPointActive) return;
+            if (_startPointPlaced) return;
+            
+            _startObject = Instantiate(startPointPrefab);
+
+            if (_startObject.TryGetComponent(out SegmentStartPoint startObjectController))
+            {
+                _startObjectController = startObjectController;
+                _startObjectController.Attach(_interactingController.AttachmentPoint);
+                _startPointActive = true;
+            }
+            else
+            {
+                Destroy(_startObject);
+            }
         }
-
-        private IEnumerator AttachStartPoint()
-        {
-            yield return new WaitWhile(() => _attachable.Configured != true);
-
-            _attachable?.Attach(_interactingController.AttachmentPoint);
-        } 
         #endregion
 
         #region Segment Creation

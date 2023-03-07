@@ -2,16 +2,15 @@ namespace PathNav.Input
 {
     using System;
     using Interaction;
+    using PathPlanning;
     using UnityEngine;
 
-    public interface IController 
+    public interface IController
     {
         public Transform Transform { get; }
 
         public ControllerInfo ControllerInfo { get; }
-
-        public Transform PointerTransform { get; }
-        public Vector3 PointerPosition{ get; }
+        public Vector3 PointerPosition { get; }
 
         public Vector3 Position { get; }
         public Quaternion Rotation { get; }
@@ -28,6 +27,7 @@ namespace PathNav.Input
         public Transform AttachmentPoint { get; }
 
         public void HapticFeedback();
+        
     }
 
     public class ControllerEventArgs : EventArgs

@@ -8,6 +8,8 @@ namespace PathNav.PathPlanning
 
     public class SpatulaStrategy : IPathStrategy
     {
+        public SpatulaStrategy(IPlacementPlane placementPlane) => _placementPlane = placementPlane;
+
         #region State Variables
         private StateMachine<SpatulaStrategy> _state = new();
 
@@ -18,8 +20,8 @@ namespace PathNav.PathPlanning
         private SpatulaStrategyCreatePoints<SpatulaStrategy> _createPointState = new();
         private SpatulaStrategyMovePoints<SpatulaStrategy> _movePointState = new();
 
-        public bool CanMovePoint => HasSegment && HasMultipleSegmentPoints;
-        public bool CanPlacePoint => HasSegment   && HasFirstSegmentPoint;
+        private bool CanMovePoint => HasSegment  && HasMultipleSegmentPoints;
+        private bool CanPlacePoint => HasSegment && HasFirstSegmentPoint && HasValidPlane;
         #endregion
 
         #region Controller Variables
@@ -31,18 +33,19 @@ namespace PathNav.PathPlanning
 
         #region Segment and Path Variables
         internal Vector3 lastHandPosition;
-        internal float minimumDelta = 0.025f;
+        internal const float minimumDelta = 0.025f;
 
-        private const float _maxDistance = 0.08f;
         internal int pointIndexToMove;
+        private IPlacementPlane _placementPlane;
 
         private bool HasController => interactingController                      != null;
         private bool HasSegment => ActiveSegment                                 != null;
+        private bool HasValidPlane => _placementPlane?.HasCollidingController     == true;
         private bool HasStartPosition => StartPosition                           != Vector3.zero;
         private bool HasFirstSegmentPoint => ActiveSegment.CurrentPointCount     > 0;
         private bool HasMultipleSegmentPoints => ActiveSegment.CurrentPointCount > 1;
         #endregion
-       
+
         #region Implementation of IPathStrategy
         public ISegment ActiveSegment { get; set; }
         public Vector3 StartPosition { get; set; }
@@ -57,7 +60,7 @@ namespace PathNav.PathPlanning
         public void Run()
         {
             if (_state.CurrentState == _disabledState) return;
-            
+
             _state.UpdateLogic();
         }
 
@@ -99,11 +102,13 @@ namespace PathNav.PathPlanning
             if (ActiveSegment.IsCloseToPoint(out pointIndexToMove))
             {
                 if (!CanMovePoint) return;
+
                 StartMovePoint();
             }
             else
             {
                 if (!CanPlacePoint) return;
+
                 StartCreatePoint();
             }
         }
@@ -113,13 +118,13 @@ namespace PathNav.PathPlanning
             SetController(args.Controller);
 
             if (_state.CurrentState != _movePointState) return;
-            
+
             StopMovePoint();
         }
         #endregion
 
         #region Logic
-        internal void StartCreatePoint()
+        private void StartCreatePoint()
         {
             if (_state.CurrentState == _disabledState) return;
 
@@ -133,10 +138,10 @@ namespace PathNav.PathPlanning
             _state.ChangeState(_idleState);
         }
 
-        internal void StartMovePoint()
+        private void StartMovePoint()
         {
             if (_state.CurrentState != _idleState) return;
-            
+
             _state.ChangeState(_movePointState);
         }
 

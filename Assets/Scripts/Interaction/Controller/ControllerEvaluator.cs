@@ -9,7 +9,6 @@ namespace PathNav.Interaction
     {
         Bulldozer,
         Spatula,
-        TwoRays,
     }
 
     public class ControllerEvaluator : MonoBehaviour
@@ -97,8 +96,6 @@ namespace PathNav.Interaction
                     case PathStrategy.Spatula:
                         EvaluateStartPlaceOrMovePoint(obj, args);
                         break;
-                    case PathStrategy.TwoRays:
-                        break;
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
@@ -120,8 +117,6 @@ namespace PathNav.Interaction
                         break;
                     case PathStrategy.Spatula:
                         EvaluateStopPlaceOrMovePoint(obj, args);
-                        break;
-                    case PathStrategy.TwoRays:
                         break;
                     default:
                         throw new ArgumentOutOfRangeException();

@@ -228,6 +228,13 @@ namespace PathNav.Events
         PointVisualUntriggered,
         #endregion
         
+        #region PlacementPlaneArgs
+        [EventId(typeof(PlacementPlaneEventArgs))]
+        PlacementPlaneTriggered,
+        [EventId(typeof(PlacementPlaneEventArgs))]
+        PlacementPlaneUntriggered,
+        #endregion
+        
     }
 
     [AttributeUsage(AttributeTargets.Field)]

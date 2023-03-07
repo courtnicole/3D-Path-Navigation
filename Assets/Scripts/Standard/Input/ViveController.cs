@@ -10,7 +10,6 @@ namespace PathNav.Input
         [SerializeField] private SteamVR_Behaviour_Pose controllerPose;
         [SerializeField] private ControllerInfo controllerInfo;
         [SerializeField] private AttachmentPoint attachmentPoint;
-        [SerializeField] private Transform pointerTransform;
 
         public Transform AttachmentPoint => attachmentPoint.transform;
         private SteamVR_Input_Sources InputSource => controllerPose.inputSource;
@@ -18,8 +17,7 @@ namespace PathNav.Input
         public Transform Transform => controllerPose.transform;
         public ControllerInfo ControllerInfo => controllerInfo;
 
-        public Transform PointerTransform => pointerTransform != null ? pointerTransform : controllerPose.transform;
-        public Vector3 PointerPosition => PointerTransform.position;
+        public Vector3 PointerPosition => controllerPose.transform.position;
 
         public Vector3 Position => controllerPose.transform.position;
         public Quaternion Rotation => controllerPose.transform.rotation;
@@ -32,7 +30,6 @@ namespace PathNav.Input
         public Vector2 JoystickPose { get; private set; }
         public Vector2 JoystickPoseDelta { get; private set; }
 
-        
         private SteamVR_Action_Boolean _triggerClick = SteamVR_Input.GetAction<SteamVR_Action_Boolean>("TriggerClick");
         private SteamVR_Action_Boolean _longHold = SteamVR_Input.GetAction<SteamVR_Action_Boolean>("TriggerHold");
 
@@ -76,7 +73,7 @@ namespace PathNav.Input
             _trackpadTouch.AddOnStateUpListener(TouchpadTouchEnd, InputSource);
 
             _trackpadPose.AddOnChangeListener(TouchpadTouchUpdate, InputSource);
-            
+
             _gripClick.AddOnStateDownListener(GripStart, InputSource);
             _gripClick.AddOnStateUpListener(GripEnd, InputSource);
 
@@ -109,12 +106,12 @@ namespace PathNav.Input
             _systemClick.RemoveOnStateDownListener(SystemClick, InputSource);
 
             _trackpadTouch.RemoveOnStateDownListener(TouchpadTouchStart, InputSource);
-            _trackpadTouch.RemoveOnStateUpListener(TouchpadTouchEnd,   InputSource);
+            _trackpadTouch.RemoveOnStateUpListener(TouchpadTouchEnd, InputSource);
 
             _trackpadPose.RemoveOnChangeListener(TouchpadTouchUpdate, InputSource);
 
             _gripClick.RemoveOnStateDownListener(GripStart, InputSource);
-            _gripClick.RemoveOnStateUpListener(GripEnd,   InputSource);
+            _gripClick.RemoveOnStateUpListener(GripEnd, InputSource);
 
             _pinchClick.RemoveOnStateDownListener(PinchStart, InputSource);
             _pinchClick.RemoveOnStateUpListener(PinchEnd, InputSource);
@@ -163,7 +160,7 @@ namespace PathNav.Input
 
         private void TouchpadTouchUpdate(SteamVR_Action_Vector2 fromAction, SteamVR_Input_Sources fromSource, Vector2 axis, Vector2 delta)
         {
-            TouchPose = axis;
+            TouchPose      = axis;
             TouchPoseDelta = delta;
             EventManager.Publish(EventId.TouchpadTouchUpdate, this, ControllerEventArgs);
         }
@@ -214,7 +211,7 @@ namespace PathNav.Input
         {
             EventManager.Publish(EventId.ButtonAClickEnd, this, ControllerEventArgs);
         }
-        
+
         private void ButtonBStart(SteamVR_Action_Boolean fromAction, SteamVR_Input_Sources fromSource)
         {
             EventManager.Publish(EventId.ButtonBClickStart, this, ControllerEventArgs);
@@ -253,6 +250,5 @@ namespace PathNav.Input
         {
             EventManager.Publish(EventId.JoystickClickEnd, this, ControllerEventArgs);
         }
-
     }
 }
