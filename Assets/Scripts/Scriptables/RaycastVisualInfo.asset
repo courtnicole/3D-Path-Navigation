@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 854d95223e01e4c4ea5628ce2f44af85, type: 3}
+  m_Name: RaycastVisualInfo
+  m_EditorClassIdentifier: 
+  defaultRayLength: 0.01
+  maxRayLength: 12
+  laserMaterial: {fileID: 2100000, guid: b24aa13a1d35ee641a8caf36f6a674a3, type: 2}
+  idleColor0: {r: 1, g: 1, b: 1, a: 0.6117647}
+  idleColor1: {r: 1, g: 1, b: 1, a: 0.21960784}
+  hoverColor0: {r: 0.098039225, g: 0.50980395, b: 0.7686275, a: 0.6117647}
+  hoverColor1: {r: 0.098039225, g: 0.50980395, b: 0.7686275, a: 0.21960784}
+  spawnColor0: {r: 0.5411765, g: 0.78823537, b: 0.14901957, a: 0.6117647}
+  spawnColor1: {r: 0.5411765, g: 0.78823537, b: 0.14901957, a: 0.21960784}
+  selectColor0: {r: 0.4156863, g: 0.29803923, b: 0.5764706, a: 0.6117647}
+  selectColor1: {r: 0.4156863, g: 0.29803923, b: 0.5764706, a: 0.21960784}

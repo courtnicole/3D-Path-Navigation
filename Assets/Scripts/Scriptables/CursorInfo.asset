@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 52aabb965a9105c4a8d371c9e76336c7, type: 3}
+  m_Name: CursorInfo
+  m_EditorClassIdentifier: 
+  defaultCursorMaterial: {fileID: 2100000, guid: aaa801e5e407a3d47b091ae2385f7bbd, type: 2}
+  spawnPointCursorMaterial: {fileID: 2100000, guid: 354829364d7279c438f328afc20e9fb8, type: 2}
+  hoverColor: {r: 0.098039225, g: 0.50980395, b: 0.7686275, a: 1}
+  spawnColor: {r: 0.5411765, g: 0.78823537, b: 0.14901957, a: 1}
+  selectColor: {r: 0.4156863, g: 0.29803923, b: 0.5764706, a: 1}
+  outlineColor: {r: 0, g: 0, b: 0, a: 1}
+  offsetAlongNormal: 0.005
