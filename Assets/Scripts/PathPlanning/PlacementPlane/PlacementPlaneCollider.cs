@@ -1,45 +1,90 @@
 namespace PathNav.PathPlanning
 {
+    using Events;
     using Interaction;
     using System.Threading.Tasks;
     using UnityEngine;
+
     public class PlacementPlaneCollider : MonoBehaviour
     {
         [SerializeField] private InteractableElement interactable;
         [SerializeField] private PlacementPlaneElement placementPlaneElement;
         [SerializeField] private GameObject ghostPointVisualPrefab;
-        
+
         private IInteractable Interactable => interactable;
         private IPlacementPlane PlacementPlane => placementPlaneElement;
 
         private bool _hasValidCollision;
         private bool _hidePointVisual;
+        private bool _hasValidStartPoint;
 
         private const float _hideAfterPlacement = 1.25f;
-        
+
         private Transform _collidingTransform;
         private GameObject _ghostPointVisual;
 
+        #region Unity Methods
         private void OnEnable()
         {
             _ghostPointVisual = Instantiate(ghostPointVisualPrefab);
             _ghostPointVisual.SetActive(false);
         }
 
-        private void Update()
+        private void Start()
         {
-            if (!_hasValidCollision) return;
-            if (_hidePointVisual) return;
-            
-            _ghostPointVisual.SetActive(true);
-            _ghostPointVisual.transform.position = _collidingTransform.position;
-            
+            SubscribeToEvents();
         }
 
-        public void SubscribeToEvents() { }
-        public void UnsubscribeToEvents() { }
-        
+        private void OnDisable()
+        {
+            SubscribeToEvents();
+        }
 
+        private void Update()
+        {
+            if (!_hasValidStartPoint) return;
+            if (!_hasValidCollision) return;
+            if (_hidePointVisual) return;
+
+            _ghostPointVisual.SetActive(true);
+            _ghostPointVisual.transform.position = _collidingTransform.position;
+        }
+        
+        private void OnTriggerEnter(Collider other)
+        {
+            if (!other.gameObject.CompareTag($"Hand")) return;
+
+            _collidingTransform = other.transform;
+            _hasValidCollision  = true;
+            PlacementPlane.OnTriggerEntered();
+            Interactable.OnHover();
+        }
+
+        private void OnTriggerExit(Collider other)
+        {
+            if (!_hasValidCollision) return;
+
+            _hasValidCollision  = false;
+            _collidingTransform = null;
+            PlacementPlane.OnTriggerExited();
+            Interactable.OnUnhover();
+            _ghostPointVisual.SetActive(false);
+        }
+        #endregion
+
+        #region Event Subscriptions
+        public void SubscribeToEvents()
+        {
+            EventManager.Subscribe<PlacementEventArgs>(EventId.StartPointPlaced, StartPointPlaced);
+        }
+
+        public void UnsubscribeToEvents()
+        {
+            EventManager.Unsubscribe<PlacementEventArgs>(EventId.StartPointPlaced, StartPointPlaced);
+        }
+        #endregion
+
+        #region Logic
         public async void DelayVisibility()
         {
             _hidePointVisual = true;
@@ -47,23 +92,10 @@ namespace PathNav.PathPlanning
             _hidePointVisual = false;
         }
         
-        private void OnTriggerEnter(Collider other)
+        private void StartPointPlaced(object args, PlacementEventArgs placementEventArgs)
         {
-            if (!other.gameObject.CompareTag($"Hand")) return;
-
-            _hasValidCollision = true;
-            PlacementPlane.OnTriggerEntered();
-            Interactable.OnHover();
+            _hasValidStartPoint = true;
         }
-        
-        private void OnTriggerExit(Collider other)
-        {
-            if (!_hasValidCollision) return;
-            
-            _hasValidCollision = false;
-            PlacementPlane.OnTriggerExited();
-            Interactable.OnUnhover();
-            _ghostPointVisual.SetActive(false);
-        }
+        #endregion
     }
 }

@@ -53,15 +53,15 @@ namespace PathNav.Interaction
         private void SubscribeToEvaluatorEvents()
         {
             EventManager.Subscribe<PlacementEventArgs>(EventId.StartPointPlaced, StartPointPlaced);
-            EventManager.Subscribe<ControllerEventArgs>(EventId.TriggerDown, EvaluateControllerInputDown);
-            EventManager.Subscribe<ControllerEventArgs>(EventId.TriggerUp,   EvaluateControllerInputUp);
+            EventManager.Subscribe<ControllerEventArgs>(EventId.TriggerDown, EvaluateTriggerInputDown);
+            EventManager.Subscribe<ControllerEventArgs>(EventId.TriggerUp,   EvaluateTriggerInputUp);
         }
 
         private void UnsubscribeToEvaluatorEvents()
         {
             EventManager.Unsubscribe<PlacementEventArgs>(EventId.StartPointPlaced, StartPointPlaced);
-            EventManager.Unsubscribe<ControllerEventArgs>(EventId.TriggerDown, EvaluateStartDrawingPath);
-            EventManager.Unsubscribe<ControllerEventArgs>(EventId.TriggerUp, EvaluateStopDrawingPath);
+            EventManager.Unsubscribe<ControllerEventArgs>(EventId.TriggerDown, EvaluateTriggerInputDown);
+            EventManager.Unsubscribe<ControllerEventArgs>(EventId.TriggerUp,   EvaluateTriggerInputUp);
         }
         #endregion
 
@@ -80,7 +80,7 @@ namespace PathNav.Interaction
             _startPointPlaced = true;
         }
 
-        private void EvaluateControllerInputDown(object obj, ControllerEventArgs args)
+        private void EvaluateTriggerInputDown(object obj, ControllerEventArgs args)
         {
             if (!_startPointPlaced)
             {
@@ -102,7 +102,7 @@ namespace PathNav.Interaction
             }
         }
 
-        private void EvaluateControllerInputUp(object obj, ControllerEventArgs args)
+        private void EvaluateTriggerInputUp(object obj, ControllerEventArgs args)
         {
             if (!_startPointPlaced)
             {
