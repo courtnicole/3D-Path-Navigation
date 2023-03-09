@@ -53,15 +53,17 @@ namespace PathNav.Interaction
         private void SubscribeToEvaluatorEvents()
         {
             EventManager.Subscribe<PlacementEventArgs>(EventId.StartPointPlaced, StartPointPlaced);
-            EventManager.Subscribe<ControllerEventArgs>(EventId.TriggerDown, EvaluateTriggerInputDown);
-            EventManager.Subscribe<ControllerEventArgs>(EventId.TriggerUp,   EvaluateTriggerInputUp);
+            EventManager.Subscribe<ControllerEventArgs>(EventId.TriggerDown,       EvaluateTriggerInputDown);
+            EventManager.Subscribe<ControllerEventArgs>(EventId.TriggerUp,         EvaluateTriggerInputUp);
+            EventManager.Subscribe<ControllerEventArgs>(EventId.ButtonAClickStart, EvaluateButtonAInput);
         }
 
         private void UnsubscribeToEvaluatorEvents()
         {
             EventManager.Unsubscribe<PlacementEventArgs>(EventId.StartPointPlaced, StartPointPlaced);
-            EventManager.Unsubscribe<ControllerEventArgs>(EventId.TriggerDown, EvaluateTriggerInputDown);
-            EventManager.Unsubscribe<ControllerEventArgs>(EventId.TriggerUp,   EvaluateTriggerInputUp);
+            EventManager.Unsubscribe<ControllerEventArgs>(EventId.TriggerDown,       EvaluateTriggerInputDown);
+            EventManager.Unsubscribe<ControllerEventArgs>(EventId.TriggerUp,         EvaluateTriggerInputUp);
+            EventManager.Unsubscribe<ControllerEventArgs>(EventId.ButtonAClickStart, EvaluateButtonAInput);
         }
         #endregion
 
@@ -122,6 +124,12 @@ namespace PathNav.Interaction
                         throw new ArgumentOutOfRangeException();
                 }
             }
+        }
+
+        private void EvaluateButtonAInput(object obj, ControllerEventArgs args)
+        {
+            //check if there's a node in our collider. If yes, remove it. otherwise, ignore input. 
+            
         }
 
         private void EvaluateStartDrawingPath(object obj, ControllerEventArgs args)
