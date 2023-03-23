@@ -3,7 +3,6 @@ namespace PathNav.Interaction
     using Extensions;
     using System.Collections;
     using UnityEngine;
-    using Valve.VR;
 
     public class Teleporter : MonoBehaviour
     {
@@ -67,10 +66,10 @@ namespace PathNav.Interaction
                 }
             }
 
-            if (!cameraTransform.gameObject.GetComponent<SteamVR_Fade>())
-            {
-                cameraTransform.gameObject.AddComponent<SteamVR_Fade>();
-            }
+            // if (!cameraTransform.gameObject.GetComponent<SteamVR_Fade>())
+            // {
+            //     cameraTransform.gameObject.AddComponent<SteamVR_Fade>();
+            // }
 
             _enabled = true;
         }
@@ -104,12 +103,12 @@ namespace PathNav.Interaction
 
         private static void FadeOut()
         {
-            SteamVR_Fade.View(Color.black, _currentFadeTime);
+            //SteamVR_Fade.View(Color.black, _currentFadeTime);
         }
 
         private static void FadeIn()
         {
-            SteamVR_Fade.View(Color.clear, _currentFadeTime);
+            //SteamVR_Fade.View(Color.clear, _currentFadeTime);
         }
 
         public void MoveAndRotate(Vector3 move, Vector3 look)
