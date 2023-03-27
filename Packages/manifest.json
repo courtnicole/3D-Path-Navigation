@@ -1,14 +1,14 @@
 {
   "dependencies": {
     "com.unity.addressables": "1.19.19",
+    "com.unity.cinemachine": "2.8.9",
     "com.unity.ide.rider": "3.0.18",
-    "com.unity.inputsystem": "1.5.0",
+    "com.unity.inputsystem": "1.5.1",
     "com.unity.postprocessing": "3.2.2",
     "com.unity.render-pipelines.universal": "12.1.10",
     "com.unity.shadergraph": "12.1.10",
     "com.unity.textmeshpro": "3.0.6",
     "com.unity.ugui": "1.0.0",
-    "com.unity.xr.interaction.toolkit": "2.3.0",
     "com.unity.xr.management": "4.2.1",
     "com.unity.xr.openxr": "1.6.0",
     "net.wraithavengames.unityinterfacesupport": "1.0.0",

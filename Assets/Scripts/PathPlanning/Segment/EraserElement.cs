@@ -4,8 +4,8 @@ namespace PathNav.PathPlanning
 
     public class EraserElement : MonoBehaviour, IEraser
     {
-        [SerializeField] private Collider collider;
-        private Bounds Bounds => collider.bounds;
+        [SerializeField] private Collider controllerCollider;
+        private Bounds Bounds => controllerCollider.bounds;
 
         #region Implementation of IEraser
         public bool IsPointInside(Vector3 point) => Bounds.Contains(point);

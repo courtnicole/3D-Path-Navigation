@@ -4,7 +4,7 @@ namespace PathNav.Input
     using Interaction;
     using UnityEngine;
     using UnityEngine.InputSystem;
-    using UnityEngine.XR.Interaction.Toolkit;
+    using UnityEngine.InputSystem.XR;
     using InputDevice = UnityEngine.XR.InputDevice;
 
     public class ViveController : MonoBehaviour, IController
@@ -14,15 +14,20 @@ namespace PathNav.Input
         [SerializeField] private AttachmentPoint attachmentPoint;
 
         public Transform AttachmentPoint => attachmentPoint.transform;
-        private InputDevice InputSource => controllerPose.inputDevice;
+        //private InputDevice InputSource => controllerPose;
         
-        public Transform Transform => controllerPose.transform;
-        public ControllerInfo ControllerInfo => controllerInfo;
-
-        public Vector3 PointerPosition => controllerPose.transform.position;
-
-        public Vector3 Position => controllerPose.transform.position;
-        public Quaternion Rotation => controllerPose.transform.rotation;
+        // public Transform Transform => controllerPose.transform;
+        // public ControllerInfo ControllerInfo => controllerInfo;
+        //
+        // public Vector3 PointerPosition => controllerPose.transform.position;
+        //
+        // public Vector3 Position => controllerPose.transform.position;
+        // public Quaternion Rotation => controllerPose.transform.rotation;
+        public Transform Transform { get; }
+        public ControllerInfo ControllerInfo { get; }
+        public Vector3 PointerPosition { get; }
+        public Vector3 Position { get; }
+        public Quaternion Rotation { get; }
         public Vector3 Forward => Rotation * Vector3.forward;
         public Vector3 Up => Rotation      * Vector3.up;
 

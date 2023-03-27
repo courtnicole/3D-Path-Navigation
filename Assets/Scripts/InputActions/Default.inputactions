@@ -874,6 +874,54 @@
             ]
         },
         {
+            "name": "RightHand Edit",
+            "id": "4355af8f-be76-4249-a435-0be868e0caa4",
+            "actions": [
+                {
+                    "name": "Move Activate",
+                    "type": "Button",
+                    "id": "fe793205-dbb3-4ac6-9acb-5cfc23e32f81",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Erase Activate",
+                    "type": "Button",
+                    "id": "e611aac5-a3ba-44e0-b4ac-ae1a6e3c2fda",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "b67963e1-3994-4caa-ba02-3b6eebb28195",
+                    "path": "<XRController>{RightHand}/triggerPressed",
+                    "interactions": "Hold",
+                    "processors": "",
+                    "groups": "Spatula",
+                    "action": "Move Activate",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "920928e2-c029-495a-a6c3-eb860f24fb7c",
+                    "path": "<XRController>{LeftHand}/gripPressed",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Bulldozer",
+                    "action": "Erase Activate",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        },
+        {
             "name": "RightHand Locomotion",
             "id": "221c2183-9267-4064-8df0-576b0f095b0f",
             "actions": [
