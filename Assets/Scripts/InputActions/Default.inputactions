@@ -46,7 +46,7 @@
                 {
                     "name": "",
                     "id": "2b6202f6-a023-4c8f-8306-3b8a80def016",
-                    "path": "<XRHMD>/centerEyePosition",
+                    "path": "<OpenXRHmd>/centerEyePosition",
                     "interactions": "",
                     "processors": "",
                     "groups": "Generic XR Controller;Basic",
@@ -57,7 +57,7 @@
                 {
                     "name": "",
                     "id": "8e12e191-c558-4e66-b17f-8bfa0607bc9d",
-                    "path": "<XRHMD>/centerEyeRotation",
+                    "path": "<OpenXRHmd>/centerEyeRotation",
                     "interactions": "",
                     "processors": "",
                     "groups": "Generic XR Controller",
@@ -159,97 +159,20 @@
             ],
             "bindings": [
                 {
-                    "name": "Quaternion Fallback",
-                    "id": "d0ec7fef-3161-40db-b924-645baf2d9c7f",
-                    "path": "QuaternionFallback",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Rotation",
-                    "isComposite": true,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "first",
-                    "id": "f51b212f-7d6e-41d5-b540-00a511c07293",
-                    "path": "<XRController>{LeftHand}/pointerRotation",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Generic XR Controller",
-                    "action": "Rotation",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "second",
-                    "id": "6c2027a8-32d4-43b7-bb04-a4ab9c6f1034",
-                    "path": "<XRController>{LeftHand}/deviceRotation",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Generic XR Controller",
-                    "action": "Rotation",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "third",
-                    "id": "0a569996-1808-4386-a5ab-de06d6de98e8",
-                    "path": "<XRHandDevice>{LeftHand}/deviceRotation",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Generic XR Controller",
-                    "action": "Rotation",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "Vector 3 Fallback",
-                    "id": "6ddd5a00-7b35-4f27-a674-c9b2259d0c50",
-                    "path": "Vector3Fallback",
+                    "name": "",
+                    "id": "972a5db2-9956-44f9-91be-b5d33c65c133",
+                    "path": "<ValveIndexController>{LeftHand}/devicePosition",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
                     "action": "Position",
-                    "isComposite": true,
+                    "isComposite": false,
                     "isPartOfComposite": false
-                },
-                {
-                    "name": "first",
-                    "id": "f01ee2ef-da3e-4519-b73b-6059c0b96ccd",
-                    "path": "<XRController>{LeftHand}/pointerPosition",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Generic XR Controller",
-                    "action": "Position",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "second",
-                    "id": "0629a5a4-bc88-410c-a6b9-0917f2237821",
-                    "path": "<XRController>{LeftHand}/devicePosition",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Generic XR Controller",
-                    "action": "Position",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "third",
-                    "id": "49f70a55-f4cc-44a2-8b05-9ff9b4899c27",
-                    "path": "<XRHandDevice>{LeftHand}/devicePosition",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Generic XR Controller",
-                    "action": "Position",
-                    "isComposite": false,
-                    "isPartOfComposite": true
                 },
                 {
                     "name": "",
                     "id": "94f82e37-b896-4278-8a23-d41db52d317c",
-                    "path": "<XRController>{LeftHand}/*",
+                    "path": "<ValveIndexController>{LeftHand}/haptic",
                     "interactions": "",
                     "processors": "",
                     "groups": "Generic XR Controller",
@@ -260,18 +183,7 @@
                 {
                     "name": "",
                     "id": "010491cf-ae77-43fd-8998-67f718ce7d86",
-                    "path": "<XRController>{LeftHand}/trackingState",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Generic XR Controller",
-                    "action": "Tracking State",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "2fece2e5-64c4-4af2-ae94-03da979ed57a",
-                    "path": "<XRHandDevice>{LeftHand}/trackingState",
+                    "path": "<ValveIndexController>{LeftHand}/trackingState",
                     "interactions": "",
                     "processors": "",
                     "groups": "Generic XR Controller",
@@ -282,7 +194,7 @@
                 {
                     "name": "",
                     "id": "668c3a0c-f95f-49bf-b7e7-07d0089be1da",
-                    "path": "<MetaAimHand>{LeftHand}/devicePosition",
+                    "path": "<ValveIndexController>/pointerPosition",
                     "interactions": "",
                     "processors": "",
                     "groups": "Generic XR Controller",
@@ -293,7 +205,7 @@
                 {
                     "name": "",
                     "id": "42ed869e-5a35-4199-bd88-6c9cf5eef478",
-                    "path": "<MetaAimHand>{LeftHand}/deviceRotation",
+                    "path": "<ValveIndexController>{LeftHand}/pointerRotation",
                     "interactions": "",
                     "processors": "",
                     "groups": "Generic XR Controller",
@@ -304,7 +216,7 @@
                 {
                     "name": "",
                     "id": "c07c3ebc-c349-4220-a751-4174042d1a98",
-                    "path": "<XRController>{LeftHand}/isTracked",
+                    "path": "<ValveIndexController>{LeftHand}/isTracked",
                     "interactions": "",
                     "processors": "",
                     "groups": "Generic XR Controller",
@@ -314,12 +226,260 @@
                 },
                 {
                     "name": "",
-                    "id": "c7e8820c-b2bc-4b03-b9e2-e0104af82739",
-                    "path": "<XRHandDevice>{LeftHand}/isTracked",
+                    "id": "8d3d0b56-0457-46c2-a6e7-0857490050f9",
+                    "path": "<ValveIndexController>{LeftHand}/deviceRotation",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Generic XR Controller",
-                    "action": "Is Tracked",
+                    "groups": "",
+                    "action": "Rotation",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        },
+        {
+            "name": "Left Basic Input",
+            "id": "4e37f7fb-a254-4470-a4a1-82110b02221d",
+            "actions": [
+                {
+                    "name": "TriggerPress",
+                    "type": "Button",
+                    "id": "3f5e21e7-ad83-4171-84b9-dd605772f77c",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "Press(behavior=2)",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "ButtonBTouch",
+                    "type": "Button",
+                    "id": "b0d733d2-c38f-4095-9dfc-d88e23e51e97",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "ButtonBClick",
+                    "type": "Button",
+                    "id": "29832ce3-56a8-462d-bba8-ec8990bbffa2",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "Press(behavior=2)",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "GripPress",
+                    "type": "Button",
+                    "id": "82b99df0-3b9c-4d17-9294-8ee60d99ef5c",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "TouchpadTouch",
+                    "type": "Button",
+                    "id": "35b1e697-4a8e-41c0-9ef7-6e25aacbe9f9",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "Press(behavior=2)",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "TouchpadAxis",
+                    "type": "Value",
+                    "id": "327c84e3-3242-469b-8c4c-3b6a2f4e3add",
+                    "expectedControlType": "Vector2",
+                    "processors": "NormalizeVector2",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
+                    "name": "ThumbstickTouch",
+                    "type": "Button",
+                    "id": "f56fcc95-846f-49b9-ad00-165c4073fbcc",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "Press(behavior=2)",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "ThumbstickClick",
+                    "type": "Button",
+                    "id": "6efc3901-cf7e-4a6b-81d5-1ea5c341b11c",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "ThumbstickAxis",
+                    "type": "Value",
+                    "id": "00ff6e63-5a13-42f1-b35a-72522149ba61",
+                    "expectedControlType": "Vector2",
+                    "processors": "NormalizeVector2",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
+                    "name": "Menu",
+                    "type": "Button",
+                    "id": "53b24b17-4de3-4a1c-8406-06cb78d543f7",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "ButtonATouch",
+                    "type": "Value",
+                    "id": "0ceaecc0-4732-4c39-88ab-c9aecd3d8dc6",
+                    "expectedControlType": "Axis",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
+                    "name": "ButtonAClick",
+                    "type": "Button",
+                    "id": "011b5f45-4242-4853-a688-349adf8a5cb8",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "Press(behavior=2)",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "b2c41f6c-9b57-4c25-b2b1-ec973d654582",
+                    "path": "<ValveIndexController>{LeftHand}/triggerPressed",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "TriggerPress",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "4254e624-a639-486d-aad3-2c6ea2088cbd",
+                    "path": "<ValveIndexController>{LeftHand}/primaryButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ButtonAClick",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "4eef79fe-d6a6-4471-858d-35479d509859",
+                    "path": "<ValveIndexController>{LeftHand}/primaryTouched",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ButtonATouch",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "02d01d24-5234-413c-9901-a436a63fb8b3",
+                    "path": "<ValveIndexController>{LeftHand}/system",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Menu",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "afe2372e-1aea-4115-9db2-eaea6f7e1c29",
+                    "path": "<ValveIndexController>{LeftHand}/thumbstick",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ThumbstickAxis",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "b68d4085-c7cf-4475-9b56-5695ff8e59b9",
+                    "path": "<ValveIndexController>{LeftHand}/thumbstickClicked",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ThumbstickClick",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "9c8af9ef-0516-4a4c-90df-1e87d349dabb",
+                    "path": "<ValveIndexController>{LeftHand}/thumbstickTouched",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ThumbstickTouch",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "b96a93c0-c83b-4cb1-ad21-960ab16d4844",
+                    "path": "<ValveIndexController>{LeftHand}/trackpad",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "TouchpadAxis",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "0afa79d8-78a5-4984-b2bf-37ccee4a54e4",
+                    "path": "<ValveIndexController>{LeftHand}/trackpadTouched",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "TouchpadTouch",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "21322958-316f-42a2-a73a-9a633d3d215c",
+                    "path": "<ValveIndexController>{LeftHand}/gripPressed",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "GripPress",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "449afc5b-9a2d-4dcb-9ddc-e319315735bd",
+                    "path": "<ValveIndexController>{LeftHand}/secondaryButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ButtonBClick",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "2da4c9d4-1e12-4e69-9360-4cbb46d2a858",
+                    "path": "<ValveIndexController>{LeftHand}/secondaryTouched",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ButtonBTouch",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
@@ -473,37 +633,17 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": true
-                },
-                {
-                    "name": "Turn",
-                    "type": "Button",
-                    "id": "43d5575e-016c-4524-8d34-36f3fa8a5668",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
                 }
             ],
             "bindings": [
                 {
                     "name": "",
                     "id": "f54201f6-391d-41bf-87d1-71e9a7a4aa87",
-                    "path": "<XRController>{LeftHand}/Primary2DAxis",
+                    "path": "<ValveIndexController>{LeftHand}/thumbstick",
                     "interactions": "",
                     "processors": "StickDeadzone",
                     "groups": "Continuous Move",
                     "action": "Move",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "c88e001a-3003-438f-8781-a66230cfb002",
-                    "path": "<XRController>{LeftHand}/Primary2DAxis",
-                    "interactions": "",
-                    "processors": "StickDeadzone",
-                    "groups": "",
-                    "action": "Turn",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
@@ -579,97 +719,9 @@
             ],
             "bindings": [
                 {
-                    "name": "Quaternion Fallback",
-                    "id": "cdf24d66-695d-4830-9da7-c4d4183e867f",
-                    "path": "QuaternionFallback",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Rotation",
-                    "isComposite": true,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "first",
-                    "id": "eed7ba23-a0fa-48d8-a7bf-0f7d939a6f74",
-                    "path": "<XRController>{RightHand}/pointerRotation",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Generic XR Controller",
-                    "action": "Rotation",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "second",
-                    "id": "e60504bd-1ae6-4877-98ad-25a4d66f961b",
-                    "path": "<XRController>{RightHand}/deviceRotation",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Generic XR Controller",
-                    "action": "Rotation",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "third",
-                    "id": "7a373636-8279-4af3-9067-be8f5e33c775",
-                    "path": "<XRHandDevice>{RightHand}/deviceRotation",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Generic XR Controller",
-                    "action": "Rotation",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "Vector 3 Fallback",
-                    "id": "88128b19-e4bd-4aac-9154-4cc4721e6127",
-                    "path": "Vector3Fallback",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Position",
-                    "isComposite": true,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "first",
-                    "id": "fb4f7e68-d7f2-43e7-b10b-e8e3e144af96",
-                    "path": "<XRController>{RightHand}/pointerPosition",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Generic XR Controller",
-                    "action": "Position",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "second",
-                    "id": "cc2fc572-d9eb-4437-9389-978fcc8e8361",
-                    "path": "<XRController>{RightHand}/devicePosition",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Generic XR Controller",
-                    "action": "Position",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "third",
-                    "id": "30ee1f88-7e33-4886-8b3e-ff3fdeecbdc5",
-                    "path": "<XRHandDevice>{RightHand}/devicePosition",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Generic XR Controller",
-                    "action": "Position",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
                     "name": "",
                     "id": "4e6dbda7-6aa7-4f0e-ad0e-8093df28dc59",
-                    "path": "<XRController>{RightHand}/*",
+                    "path": "<ValveIndexController>{RightHand}/haptic",
                     "interactions": "",
                     "processors": "",
                     "groups": "Generic XR Controller",
@@ -690,19 +742,8 @@
                 },
                 {
                     "name": "",
-                    "id": "81c07202-0cd8-4a7c-97f2-c398c34d30d6",
-                    "path": "<XRHandDevice>{RightHand}/trackingState",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Generic XR Controller",
-                    "action": "Tracking State",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
                     "id": "f04d39c6-f39e-436e-8e5a-9b12c6ff6eaf",
-                    "path": "<MetaAimHand>{RightHand}/devicePosition",
+                    "path": "<ValveIndexController>{RightHand}/pointerPosition",
                     "interactions": "",
                     "processors": "",
                     "groups": "Generic XR Controller",
@@ -713,7 +754,7 @@
                 {
                     "name": "",
                     "id": "b41c62e5-5a79-453e-a1c3-df5f9af71490",
-                    "path": "<MetaAimHand>{RightHand}/deviceRotation",
+                    "path": "<ValveIndexController>{RightHand}/pointerRotation",
                     "interactions": "",
                     "processors": "",
                     "groups": "Generic XR Controller",
@@ -724,7 +765,7 @@
                 {
                     "name": "",
                     "id": "b4fae9ff-1162-4672-96c4-aff90377fb44",
-                    "path": "<XRController>{RightHand}/isTracked",
+                    "path": "<ValveIndexController>{RightHand}/isTracked",
                     "interactions": "",
                     "processors": "",
                     "groups": "Generic XR Controller",
@@ -734,12 +775,271 @@
                 },
                 {
                     "name": "",
-                    "id": "f001c026-344e-4ba8-a299-1952cf0053a9",
-                    "path": "<XRHandDevice>{RightHand}/isTracked",
+                    "id": "ab4b5ace-5c3a-4857-ac58-414604bb74f4",
+                    "path": "<ValveIndexController>{RightHand}/devicePosition",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Generic XR Controller",
-                    "action": "Is Tracked",
+                    "groups": "",
+                    "action": "Position",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "7f31a53b-a605-475b-8e3c-289a61aee5db",
+                    "path": "<ValveIndexController>{RightHand}/deviceRotation",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Rotation",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        },
+        {
+            "name": "Right Basic Input",
+            "id": "945a3fae-6a22-4a0a-bdec-059b8707cd6f",
+            "actions": [
+                {
+                    "name": "ButtonAClick",
+                    "type": "Button",
+                    "id": "90afb981-3ce8-4952-a130-e7d2a0cfd31f",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "ButtonATouch",
+                    "type": "Value",
+                    "id": "17ee364b-7d2d-49da-911a-90eaf1f941a4",
+                    "expectedControlType": "Axis",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
+                    "name": "Menu",
+                    "type": "Button",
+                    "id": "0dbdaded-4d46-4447-a503-cc2f3efdcd1b",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "ThumbstickAxis",
+                    "type": "Value",
+                    "id": "e41dcd3d-d0b7-4a90-b953-f95fd635bbec",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
+                    "name": "ThumbstickClick",
+                    "type": "Button",
+                    "id": "ada44684-123f-49fb-a400-575202e168d6",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "ThumbstickTouch",
+                    "type": "Button",
+                    "id": "61581967-69cb-43f6-966c-2bc24350e73f",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "TouchpadAxis",
+                    "type": "Value",
+                    "id": "ee2938ae-c028-49df-8a9d-e01407fe8d3f",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
+                    "name": "TouchpadTouch",
+                    "type": "Button",
+                    "id": "18c7e677-bd75-42b4-b941-b75ee1b27a3f",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "GripPress",
+                    "type": "Button",
+                    "id": "e0a13d1e-252f-4d47-8876-b9726b95ccc1",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "ButtonBClick",
+                    "type": "Button",
+                    "id": "85faf465-d82e-4967-a023-d1a84f61faa5",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "ButtonBTouch",
+                    "type": "Button",
+                    "id": "282295bb-58c6-49e7-b123-325b857a5b09",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "TriggerPress",
+                    "type": "Button",
+                    "id": "a6caa44f-b347-4251-b34d-64f3c9011f26",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "7affc755-2c60-4c8f-8b42-7e032313e358",
+                    "path": "<ValveIndexController>{RightHand}/triggerPressed",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "TriggerPress",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "b52e8a48-8166-4d3b-9503-6fa008a380db",
+                    "path": "<ValveIndexController>{RightHand}/secondaryTouched",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ButtonBTouch",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "06515c34-f15c-462a-926e-dc311b68071e",
+                    "path": "<ValveIndexController>{RightHand}/secondaryButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ButtonBClick",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "e73a2fc6-a33b-48f0-a191-1ac007a70e1f",
+                    "path": "<ValveIndexController>{RightHand}/gripPressed",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "GripPress",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "a3f22eb0-7d50-417a-88eb-953291357480",
+                    "path": "<ValveIndexController>{RightHand}/trackpadTouched",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "TouchpadTouch",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "f60fb3a2-3f2e-4551-8b30-b760a2887aa2",
+                    "path": "<ValveIndexController>{RightHand}/trackpad",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "TouchpadAxis",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "a98c84fe-1699-4448-93da-4aef1f481c4c",
+                    "path": "<ValveIndexController>{RightHand}/thumbstickTouched",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ThumbstickTouch",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "3dc03651-6952-45bc-add1-3b18dc78c41a",
+                    "path": "<ValveIndexController>{RightHand}/thumbstickClicked",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ThumbstickClick",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "8de2fcd6-3193-4060-88c5-90cc163df6f4",
+                    "path": "<ValveIndexController>{RightHand}/thumbstick",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ThumbstickAxis",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "3263b6ac-5c2b-4155-9bb3-aa7a3151e83f",
+                    "path": "<ValveIndexController>{RightHand}/system",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Menu",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "eb864690-ebd1-4e14-9d09-c38afd9d19c4",
+                    "path": "<ValveIndexController>{RightHand}/primaryTouched",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ButtonATouch",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "f6f4e725-34e8-4a3f-a7ac-42155d0f9669",
+                    "path": "<ValveIndexController>{RightHand}/primaryButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ButtonAClick",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
@@ -852,7 +1152,7 @@
                 {
                     "name": "",
                     "id": "bb934d8b-e2c6-40a5-9700-89ba05a33d7f",
-                    "path": "<XRController>{RightHand}/trigger",
+                    "path": "<ValveIndexController>{RightHand}/trigger",
                     "interactions": "",
                     "processors": "",
                     "groups": "Generic XR Controller",
@@ -900,7 +1200,7 @@
                 {
                     "name": "",
                     "id": "b67963e1-3994-4caa-ba02-3b6eebb28195",
-                    "path": "<XRController>{RightHand}/triggerPressed",
+                    "path": "<ValveIndexController>{RightHand}/triggerPressed",
                     "interactions": "Hold",
                     "processors": "",
                     "groups": "Spatula",
@@ -911,7 +1211,7 @@
                 {
                     "name": "",
                     "id": "920928e2-c029-495a-a6c3-eb860f24fb7c",
-                    "path": "<XRController>{LeftHand}/gripPressed",
+                    "path": "<ValveIndexController>{RightHand}/gripPressed",
                     "interactions": "",
                     "processors": "",
                     "groups": "Bulldozer",
@@ -933,37 +1233,17 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": true
-                },
-                {
-                    "name": "Turn",
-                    "type": "Button",
-                    "id": "0dd0fd33-0e9b-4bc8-8e98-bd0f9a0387e5",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
                 }
             ],
             "bindings": [
                 {
                     "name": "",
                     "id": "27dd650a-c695-42a1-b38a-4ad439f57a81",
-                    "path": "<XRController>{RightHand}/Primary2DAxis",
+                    "path": "<ValveIndexController>{RightHand}/thumbstick",
                     "interactions": "",
                     "processors": "StickDeadzone",
                     "groups": "Continuous Move",
                     "action": "Move",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "8dc82773-cc59-462d-9556-af66966d5bc8",
-                    "path": "<XRController>{RightHand}/Primary2DAxis",
-                    "interactions": "",
-                    "processors": "StickDeadzone",
-                    "groups": "",
-                    "action": "Turn",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

@@ -61,11 +61,6 @@ namespace PathNav.Events
         TriggerUp,
 
         [EventId(typeof(ControllerEventArgs))]
-        LongHoldStart,
-        [EventId(typeof(ControllerEventArgs))]
-        LongHoldEnd,
-
-        [EventId(typeof(ControllerEventArgs))]
         SystemClick,
 
         [EventId(typeof(ControllerEventArgs))]
@@ -86,14 +81,7 @@ namespace PathNav.Events
         TouchpadTouchEnd,
 
         [EventId(typeof(ControllerEventArgs))]
-        GripStart,
-        [EventId(typeof(ControllerEventArgs))]
-        GripEnd,
-
-        [EventId(typeof(ControllerEventArgs))]
-        PinchStart,
-        [EventId(typeof(ControllerEventArgs))]
-        PinchEnd,
+        GripClick,
 
         [EventId(typeof(ControllerEventArgs))]
         JoystickClickStart,
@@ -103,7 +91,7 @@ namespace PathNav.Events
         [EventId(typeof(ControllerEventArgs))]
         JoystickTouchStart,
         [EventId(typeof(ControllerEventArgs))]
-        JoystickTouchUpdate,
+        JoystickPoseUpdate,
         [EventId(typeof(ControllerEventArgs))]
         JoystickTouchEnd,
         #endregion

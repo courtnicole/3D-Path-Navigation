@@ -50,12 +50,12 @@ namespace PathNav.Interaction
         #region Manage Event Subscriptions
         private void SubscribeToEvents()
         {
-            EventManager.Subscribe<ControllerEventArgs>(EventId.JoystickTouchUpdate, ChangeRayLength);
+            EventManager.Subscribe<ControllerEventArgs>(EventId.JoystickPoseUpdate, ChangeRayLength);
         }
 
         private void UnsubscribeToEvents()
         {
-            EventManager.Unsubscribe<ControllerEventArgs>(EventId.JoystickTouchUpdate, ChangeRayLength);
+            EventManager.Unsubscribe<ControllerEventArgs>(EventId.JoystickPoseUpdate, ChangeRayLength);
         }
         #endregion
 

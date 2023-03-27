@@ -68,17 +68,7 @@ namespace PathNav.Input
         }
 
         private ControllerEventArgs ControllerEventArgs => new(this);
-
-        private void LongHoldStart(InputAction fromAction, InputDevice fromSource)
-        {
-            EventManager.Publish(EventId.LongHoldStart, this, ControllerEventArgs);
-        }
-
-        private void LongHoldEnd(InputAction fromAction, InputDevice fromSource)
-        {
-            EventManager.Publish(EventId.LongHoldEnd, this, ControllerEventArgs);
-        }
-
+        
         private void SystemClick(InputAction fromAction, InputDevice fromSource)
         {
             EventManager.Publish(EventId.SystemClick, this, ControllerEventArgs);
@@ -115,24 +105,9 @@ namespace PathNav.Input
 
         private void GripStart(InputAction fromAction, InputDevice fromSource)
         {
-            EventManager.Publish(EventId.GripStart, this, ControllerEventArgs);
+            EventManager.Publish(EventId.GripClick, this, ControllerEventArgs);
         }
-
-        private void GripEnd(InputAction fromAction, InputDevice fromSource)
-        {
-            EventManager.Publish(EventId.GripEnd, this, ControllerEventArgs);
-        }
-
-        private void PinchStart(InputAction fromAction, InputDevice fromSource)
-        {
-            EventManager.Publish(EventId.PinchStart, this, ControllerEventArgs);
-        }
-
-        private void PinchEnd(InputAction fromAction, InputDevice fromSource)
-        {
-            EventManager.Publish(EventId.PinchEnd, this, ControllerEventArgs);
-        }
-
+        
         private void ButtonAStart(InputAction fromAction, InputDevice fromSource)
         {
             EventManager.Publish(EventId.ButtonAClickStart, this, ControllerEventArgs);
@@ -162,7 +137,7 @@ namespace PathNav.Input
         {
             JoystickPose      = axis;
             JoystickPoseDelta = delta;
-            EventManager.Publish(EventId.JoystickTouchUpdate, this, ControllerEventArgs);
+            EventManager.Publish(EventId.JoystickPoseUpdate, this, ControllerEventArgs);
         }
 
         private void JoystickTouchEnd(InputAction fromAction, InputDevice fromSource)

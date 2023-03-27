@@ -336,13 +336,11 @@ namespace PathNav.Interaction
         private void SubscribeToEvaluatorEvents()
         {
             EventManager.Subscribe<ControllerEventArgs>(EventId.TriggerDown, DoSelected);
-            EventManager.Subscribe<ControllerEventArgs>(EventId.GripEnd,     DoUnselected);
         }
 
         private void UnsubscribeToEvaluatorEvents()
         {
             EventManager.Unsubscribe<ControllerEventArgs>(EventId.TriggerDown, DoSelected);
-            EventManager.Unsubscribe<ControllerEventArgs>(EventId.GripEnd,     DoUnselected);
         }
 
         private void DoSelected(object sender, ControllerEventArgs controllerEventArgs)
