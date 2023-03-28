@@ -25,7 +25,7 @@ namespace PathNav.Interaction
         #endregion
         
         #region Unity Methods
-        private void OnEnable()
+        private void Start()
         {
             Enable();
         }
@@ -39,8 +39,8 @@ namespace PathNav.Interaction
         #region Initialization
         private void Enable()
         {
-            OnControllerEvaluatorEvent(EventId.SetPathStrategy, GetControllerEvaluatorEventArgs(null));
             SubscribeToEvaluatorEvents();
+            OnControllerEvaluatorEvent(EventId.SetPathStrategy, GetControllerEvaluatorEventArgs(null));
         }
 
         private void Disable()
@@ -55,7 +55,7 @@ namespace PathNav.Interaction
             EventManager.Subscribe<PlacementEventArgs>(EventId.StartPointPlaced, StartPointPlaced);
             EventManager.Subscribe<ControllerEventArgs>(EventId.TriggerDown,       EvaluateTriggerInputDown);
             EventManager.Subscribe<ControllerEventArgs>(EventId.TriggerUp,         EvaluateTriggerInputUp);
-            EventManager.Subscribe<ControllerEventArgs>(EventId.ButtonAClickStart, EvaluateButtonAInput);
+            EventManager.Subscribe<ControllerEventArgs>(EventId.ButtonAClick, EvaluateButtonAInput);
         }
 
         private void UnsubscribeToEvaluatorEvents()
@@ -63,7 +63,7 @@ namespace PathNav.Interaction
             EventManager.Unsubscribe<PlacementEventArgs>(EventId.StartPointPlaced, StartPointPlaced);
             EventManager.Unsubscribe<ControllerEventArgs>(EventId.TriggerDown,       EvaluateTriggerInputDown);
             EventManager.Unsubscribe<ControllerEventArgs>(EventId.TriggerUp,         EvaluateTriggerInputUp);
-            EventManager.Unsubscribe<ControllerEventArgs>(EventId.ButtonAClickStart, EvaluateButtonAInput);
+            EventManager.Unsubscribe<ControllerEventArgs>(EventId.ButtonAClick, EvaluateButtonAInput);
         }
         #endregion
 

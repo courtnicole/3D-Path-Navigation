@@ -6,12 +6,13 @@ namespace PathNav.Input
     using UnityEngine.InputSystem;
     using UnityEngine.InputSystem.XR;
     using UnityEngine.XR.OpenXR.Input;
+    using InputDevice = UnityEngine.InputSystem.InputDevice;
 
     public class XRController : MonoBehaviour, IController
     {
-        [Header("Controller Info")] [SerializeField]
-        private TrackedPoseDriver controllerPose;
-
+        [Header("Controller Info")] 
+        
+        [SerializeField] private TrackedPoseDriver controllerPose;
         [SerializeField] private ControllerInfo controllerInfo;
         [SerializeField] private AttachmentPoint attachmentPoint;
 
@@ -19,11 +20,10 @@ namespace PathNav.Input
 
         #region Input Actions
         public InputActionReference triggerClick;
-
         public InputActionReference systemClick;
         public InputActionReference buttonAClick;
         public InputActionReference buttonBClick;
-        public InputActionReference trackpadPose;
+        public InputActionReference touchpadPose;
         public InputActionReference trackpadTouch;
         public InputActionReference gripClick;
         public InputActionReference joystickPose;
@@ -31,8 +31,6 @@ namespace PathNav.Input
         public InputActionReference joystickClick;
         public InputActionReference hapticAction;
         #endregion
-
-        private InputDevice InputDevice => controllerPose.positionInput.action.activeControl.device;
 
         #region Implementation of IController
         public Transform Transform => controllerPose.transform;
@@ -47,10 +45,12 @@ namespace PathNav.Input
         public Vector2 JoystickPose { get; private set; }
         public Vector2 JoystickPoseDelta { get; private set; }
         public Transform AttachmentPoint => attachmentPoint.transform;
+        public InputDevice InputDevice => hapticAction.action.activeControl.device;
+        public void HapticFeedback(InputDevice inputDevice) { }
 
         public void HapticFeedback()
         {
-            OpenXRInput.SendHapticImpulse(hapticAction.action, 1.0f, 0.0f, 0.1f, InputDevice);
+            OpenXRInput.SendHapticImpulse(hapticAction.action, 1.0f, 0.0f, 0.1f);
         }
         #endregion
 
@@ -76,15 +76,15 @@ namespace PathNav.Input
             systemClick.action.performed += SystemClick;
 
             buttonAClick.action.Enable();
-            buttonAClick.action.performed += ButtonAStart;
+            buttonAClick.action.performed += ButtonAPress;
 
             buttonBClick.action.Enable();
-            buttonBClick.action.performed += ButtonBStart;
+            buttonBClick.action.performed += ButtonBPress;
 
-            trackpadPose.action.Enable();
+            touchpadPose.action.Enable();
             TouchPose                     =  Vector2.zero;
             TouchPoseDelta                =  Vector2.zero;
-            trackpadPose.action.performed += TouchpadTouchUpdate;
+            touchpadPose.action.performed += TouchpadTouchUpdate;
 
             trackpadTouch.action.Enable();
             trackpadTouch.action.performed += TouchpadTouchStart;
@@ -109,11 +109,10 @@ namespace PathNav.Input
         private void DisableActions()
         {
             triggerClick.action.performed  -= TriggerDown;
-            triggerClick.action.canceled   -= TriggerUp;
             systemClick.action.performed   -= SystemClick;
-            buttonAClick.action.performed  -= ButtonAStart;
-            buttonBClick.action.performed  -= ButtonBStart;
-            trackpadPose.action.performed  -= TouchpadTouchUpdate;
+            buttonAClick.action.performed  -= ButtonAPress;
+            buttonBClick.action.performed  -= ButtonBPress;
+            touchpadPose.action.performed  -= TouchpadTouchUpdate;
             trackpadTouch.action.performed -= TouchpadTouchStart;
             trackpadTouch.action.canceled  -= TouchpadTouchEnd;
             gripClick.action.performed     -= GripClick;
@@ -125,7 +124,7 @@ namespace PathNav.Input
             systemClick.action.Disable();
             buttonAClick.action.Disable();
             buttonBClick.action.Disable();
-            trackpadPose.action.Disable();
+            touchpadPose.action.Disable();
             trackpadTouch.action.Disable();
             gripClick.action.Disable();
             joystickPose.action.Disable();
@@ -160,6 +159,7 @@ namespace PathNav.Input
 
         private void TriggerDown(InputAction.CallbackContext callbackContext)
         {
+            HapticFeedback();
             EventManager.Publish(EventId.TriggerDown, this, ControllerEventArgs);
         }
 
@@ -173,24 +173,14 @@ namespace PathNav.Input
             EventManager.Publish(EventId.GripClick, this, ControllerEventArgs);
         }
 
-        private void ButtonAStart(InputAction.CallbackContext callbackContext)
+        private void ButtonAPress(InputAction.CallbackContext callbackContext)
         {
-            EventManager.Publish(EventId.ButtonAClickStart, this, ControllerEventArgs);
+            EventManager.Publish(EventId.ButtonAClick, this, ControllerEventArgs);
         }
-
-        private void ButtonAEnd(InputAction fromAction, InputDevice fromSource)
+        
+        private void ButtonBPress(InputAction.CallbackContext callbackContext)
         {
-            EventManager.Publish(EventId.ButtonAClickEnd, this, ControllerEventArgs);
-        }
-
-        private void ButtonBStart(InputAction.CallbackContext callbackContext)
-        {
-            EventManager.Publish(EventId.ButtonBClickStart, this, ControllerEventArgs);
-        }
-
-        private void ButtonBEnd(InputAction fromAction, InputDevice fromSource)
-        {
-            EventManager.Publish(EventId.ButtonBClickEnd, this, ControllerEventArgs);
+            EventManager.Publish(EventId.ButtonBClick, this, ControllerEventArgs);
         }
 
         private void JoystickTouchStart(InputAction.CallbackContext callbackContext)

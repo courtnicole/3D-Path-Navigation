@@ -64,14 +64,10 @@ namespace PathNav.Events
         SystemClick,
 
         [EventId(typeof(ControllerEventArgs))]
-        ButtonAClickStart,
-        [EventId(typeof(ControllerEventArgs))]
-        ButtonAClickEnd,
+        ButtonAClick,
 
         [EventId(typeof(ControllerEventArgs))]
-        ButtonBClickStart,
-        [EventId(typeof(ControllerEventArgs))]
-        ButtonBClickEnd,
+        ButtonBClick,
 
         [EventId(typeof(ControllerEventArgs))]
         TouchpadTouchStart,

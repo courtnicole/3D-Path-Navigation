@@ -2,8 +2,8 @@ namespace PathNav.Input
 {
     using System;
     using Interaction;
-    using PathPlanning;
     using UnityEngine;
+    using UnityEngine.InputSystem;
 
     public interface IController
     {
@@ -26,8 +26,9 @@ namespace PathNav.Input
 
         public Transform AttachmentPoint { get; }
 
+        public InputDevice InputDevice { get; }
+
         public void HapticFeedback();
-        
     }
 
     public class ControllerEventArgs : EventArgs

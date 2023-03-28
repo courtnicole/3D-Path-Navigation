@@ -25,6 +25,7 @@ namespace PathNav.PathPlanning
         private GameObject _startObject;
         private SegmentStartPoint _startObjectController;
         private bool _startPointActive;
+        private bool StartPointExists => _startObject != null;
         private bool _startPointPlaced; 
         #endregion
 
@@ -35,6 +36,7 @@ namespace PathNav.PathPlanning
         #endregion
 
         #region Strategy Variables
+        private bool _strategySet;
         private PathStrategy _strategy;
         private IPathStrategy _activeStrategy;
         private IPathStrategy _bulldozerStrategy;
@@ -74,6 +76,7 @@ namespace PathNav.PathPlanning
         #region Manage Event Subscriptions
         private void SubscribeToEvents()
         {
+            Debug.Log("Subscribed to events");
             EventManager.Subscribe<ControllerEvaluatorEventArgs>(EventId.BeginPlacingStartPoint,  BeginPlacingStartPoint);
             EventManager.Subscribe<ControllerEvaluatorEventArgs>(EventId.FinishPlacingStartPoint, FinishPlacingStartPoint);
 
@@ -94,12 +97,14 @@ namespace PathNav.PathPlanning
         #region Event Callbacks
         private void StartPointPlaced(object sender, PlacementEventArgs args)
         {
+            if (!_strategySet) return;
             _activeStrategy.SetStartPosition(args.Position, -args.Heading);
             ConfigureSegment();
         }
 
         private void SetPathStrategy(object sender, ControllerEvaluatorEventArgs args)
         {
+            Debug.Log("Called");
             _strategy = args.Strategy;
             switch (_strategy)
             {
@@ -123,6 +128,7 @@ namespace PathNav.PathPlanning
         private void SetStrategy(IPathStrategy strategy)
         {
             _activeStrategy = strategy;
+            _strategySet    = true;
         }
 
         private void ConfigureStrategy()
@@ -133,6 +139,7 @@ namespace PathNav.PathPlanning
 
         private void ClearStrategy()
         {
+            if(!_strategySet) return;
             _activeStrategy.UnsubscribeToEvents();
             _activeStrategy = null;
         }
@@ -148,6 +155,7 @@ namespace PathNav.PathPlanning
 
         private void FinishPlacingStartPoint(object obj, ControllerEvaluatorEventArgs args)
         {
+            if (!StartPointExists) return;
             if (!_startPointActive) return;
             if (_startPointPlaced) return;
             
