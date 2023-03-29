@@ -6,20 +6,27 @@ namespace PathNav.Input
     using UnityEngine.InputSystem;
     using UnityEngine.InputSystem.XR;
     using UnityEngine.XR.OpenXR.Input;
-    using InputDevice = UnityEngine.InputSystem.InputDevice;
 
     public class XRController : MonoBehaviour, IController
     {
-        [Header("Controller Info")] 
-        
-        [SerializeField] private TrackedPoseDriver controllerPose;
+        private enum Hand
+        {
+            Right,
+            Left,
+        }
+
+        [Header("Controller Info")] [SerializeField]
+        private TrackedPoseDriver controllerPose;
+
         [SerializeField] private ControllerInfo controllerInfo;
         [SerializeField] private AttachmentPoint attachmentPoint;
+        [SerializeField] private Hand hand;
 
         [Header("Input Actions")]
 
         #region Input Actions
         public InputActionReference triggerClick;
+
         public InputActionReference systemClick;
         public InputActionReference buttonAClick;
         public InputActionReference buttonBClick;
@@ -45,12 +52,13 @@ namespace PathNav.Input
         public Vector2 JoystickPose { get; private set; }
         public Vector2 JoystickPoseDelta { get; private set; }
         public Transform AttachmentPoint => attachmentPoint.transform;
-        public InputDevice InputDevice => hapticAction.action.activeControl.device;
-        public void HapticFeedback(InputDevice inputDevice) { }
+
+        public InputDevice InputDevice =>
+            hand == Hand.Left ? UnityEngine.InputSystem.XR.XRController.leftHand : UnityEngine.InputSystem.XR.XRController.rightHand;
 
         public void HapticFeedback()
         {
-            OpenXRInput.SendHapticImpulse(hapticAction.action, 1.0f, 0.0f, 0.1f);
+            OpenXRInput.SendHapticImpulse(hapticAction.action, 1.0f, 0.0f, 0.1f, InputDevice);
         }
         #endregion
 
@@ -177,7 +185,7 @@ namespace PathNav.Input
         {
             EventManager.Publish(EventId.ButtonAClick, this, ControllerEventArgs);
         }
-        
+
         private void ButtonBPress(InputAction.CallbackContext callbackContext)
         {
             EventManager.Publish(EventId.ButtonBClick, this, ControllerEventArgs);

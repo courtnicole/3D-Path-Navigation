@@ -104,6 +104,9 @@ namespace PathNav.Events
 
         [EventId(typeof(RaycastResultEventArgs))]
         RaycastUpdated,
+        
+        [EventId(typeof(SpawnPointEventArgs))]
+        SpawnPointSelected,
         #endregion
 
         #region LocomotionEvaluatorEventArgs
@@ -114,10 +117,7 @@ namespace PathNav.Events
         [EventId(typeof(LocomotionEvaluatorEventArgs))]
         LocomotionEnded, 
         #endregion
-
-        [EventId(typeof(SpawnPointEventArgs))]
-        SpawnPointSelected,
-
+        
         #region MoveEventArgs
         [EventId(typeof(MoveEventArgs))]
         MoveStarted,
@@ -154,6 +154,9 @@ namespace PathNav.Events
         StartErasingPath,
         [EventId(typeof(ControllerEvaluatorEventArgs))]
         StopErasingPath,
+        
+        [EventId(typeof(ControllerEvaluatorEventArgs))]
+        PathCreationComplete,
 
         [EventId(typeof(ControllerEvaluatorEventArgs))]
         StartPlaceOrMovePoint,
@@ -187,6 +190,8 @@ namespace PathNav.Events
         [EventId(typeof(PointVisualEventArgs))]
         NodeCreated,
         [EventId(typeof(PointVisualEventArgs))]
+        Node,
+        [EventId(typeof(PointVisualEventArgs))]
         NodeConfigured,
         [EventId(typeof(PointVisualEventArgs))]
         NodeEnabled,
@@ -203,6 +208,8 @@ namespace PathNav.Events
         SegmentEnabled,
         [EventId(typeof(SegmentEventArgs))]
         SegmentDisabled, 
+        [EventId(typeof(SegmentEventArgs))]
+        SegmentComplete, 
         #endregion
 
         #region PointVisualEventArgs
@@ -218,7 +225,6 @@ namespace PathNav.Events
         [EventId(typeof(PlacementPlaneEventArgs))]
         PlacementPlaneUntriggered,
         #endregion
-        
     }
 
     [AttributeUsage(AttributeTargets.Field)]

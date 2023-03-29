@@ -76,7 +76,6 @@ namespace PathNav.PathPlanning
         #region Manage Event Subscriptions
         private void SubscribeToEvents()
         {
-            Debug.Log("Subscribed to events");
             EventManager.Subscribe<ControllerEvaluatorEventArgs>(EventId.BeginPlacingStartPoint,  BeginPlacingStartPoint);
             EventManager.Subscribe<ControllerEvaluatorEventArgs>(EventId.FinishPlacingStartPoint, FinishPlacingStartPoint);
 
@@ -104,7 +103,6 @@ namespace PathNav.PathPlanning
 
         private void SetPathStrategy(object sender, ControllerEvaluatorEventArgs args)
         {
-            Debug.Log("Called");
             _strategy = args.Strategy;
             switch (_strategy)
             {

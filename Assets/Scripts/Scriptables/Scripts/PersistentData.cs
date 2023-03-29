@@ -1,4 +1,4 @@
-namespace PathNav
+namespace PathNav.PathPlanning
 {
     using UnityEngine;
 
@@ -12,8 +12,9 @@ namespace PathNav
             set => modelPose = value;
         }
 
-        [SerializeField] private Vector3 modelRotation;
-        public Vector3 ModelRotation
+        [SerializeField] private Quaternion modelRotation;
+
+        public Quaternion ModelRotation
         {
             get => modelRotation;
             set => modelRotation = value;
@@ -24,6 +25,15 @@ namespace PathNav
         {
             get => modelScale;
             set => modelScale = value;
+        }
+        public Matrix4x4 LocalToWorld
+        {
+            get
+            {
+                Matrix4x4 localToWorld = default;
+                localToWorld.SetTRS(modelPose, modelRotation, modelScale);
+                return localToWorld;
+            }
         }
     }
 }

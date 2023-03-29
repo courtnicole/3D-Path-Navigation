@@ -40,7 +40,7 @@ namespace PathNav.PathPlanning
 
         private bool HasController => interactingController                      != null;
         private bool HasSegment => ActiveSegment                                 != null;
-        private bool HasValidPlane => _placementPlane?.HasCollidingController     == true;
+        private bool HasValidPlane => _placementPlane?.HasCollidingController    == true;
         private bool HasStartPosition => StartPosition                           != Vector3.zero;
         private bool HasFirstSegmentPoint => ActiveSegment.CurrentPointCount     > 0;
         private bool HasMultipleSegmentPoints => ActiveSegment.CurrentPointCount > 1;
@@ -79,18 +79,28 @@ namespace PathNav.PathPlanning
         {
             EventManager.Subscribe<ControllerEvaluatorEventArgs>(EventId.StartPlaceOrMovePoint, EvaluateStartPlaceOrMovePoint);
             EventManager.Subscribe<ControllerEvaluatorEventArgs>(EventId.StopPlaceOrMovePoint,  EvaluateStopPlaceOrMovePoint);
-            //EventManager.Subscribe<ControllerEvaluatorEventArgs>(EventId.PlacePoint,       PlacePoint);
-            //EventManager.Subscribe<ControllerEvaluatorEventArgs>(EventId.StartMovingPoint, StartMovingPoint);
-            //EventManager.Subscribe<ControllerEvaluatorEventArgs>(EventId.StopMovingPoint,  StopMovingPoint);
+            EventManager.Subscribe<ControllerEvaluatorEventArgs>(EventId.PathCreationComplete,  FinishPath);
         }
 
         public void UnsubscribeToEvents()
         {
             EventManager.Unsubscribe<ControllerEvaluatorEventArgs>(EventId.StartPlaceOrMovePoint, EvaluateStartPlaceOrMovePoint);
             EventManager.Unsubscribe<ControllerEvaluatorEventArgs>(EventId.StopPlaceOrMovePoint,  EvaluateStopPlaceOrMovePoint);
-            //EventManager.Unsubscribe<ControllerEvaluatorEventArgs>(EventId.PlacePoint, PlacePoint);
-            //EventManager.Unsubscribe<ControllerEvaluatorEventArgs>(EventId.StartMovingPoint, StartMovingPoint);
-            //EventManager.Unsubscribe<ControllerEvaluatorEventArgs>(EventId.StopMovingPoint,  StopMovingPoint);
+            EventManager.Unsubscribe<ControllerEvaluatorEventArgs>(EventId.PathCreationComplete,  FinishPath);
+        }
+
+        private void FinishPath(object obj, ControllerEvaluatorEventArgs args)
+        {
+            if (_state.CurrentState == _createPointState) _state.ChangeState(_idleState);
+
+            if (_state.CurrentState == _movePointState) _state.ChangeState(_idleState);
+
+            if (_state.CurrentState != _idleState)
+            {
+                throw new System.Exception("SpatulaStrategy: FinishPath called while not in idle state");
+            }
+
+            ActiveSegment.SaveSpline();
         }
         #endregion
 

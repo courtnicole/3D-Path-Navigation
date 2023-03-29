@@ -19,15 +19,20 @@ namespace PathNav.Interaction
 
         #region Controller Variables
         internal IController[] Controllers => ControllerManagement.controllers;
-        internal IController interactingController;
-        private void SetController(IController controller) => interactingController = controller;
-        internal void ClearController() => interactingController = null;
+        private IController _interactingController;
+        private void SetController(IController controller) => _interactingController = controller;
+        internal void ClearController() => _interactingController = null;
         #endregion
         
         #region Unity Methods
-        private void Start()
+        private void OnEnable()
         {
             Enable();
+        }
+
+        private void Start()
+        {
+            OnControllerEvaluatorEvent(EventId.SetPathStrategy, GetControllerEvaluatorEventArgs(null));
         }
 
         private void OnDisable()
@@ -39,18 +44,17 @@ namespace PathNav.Interaction
         #region Initialization
         private void Enable()
         {
-            SubscribeToEvaluatorEvents();
-            OnControllerEvaluatorEvent(EventId.SetPathStrategy, GetControllerEvaluatorEventArgs(null));
+            SubscribeToEvents();
         }
 
         private void Disable()
         {
-            UnsubscribeToEvaluatorEvents();
+            UnsubscribeToEvents();
         } 
         #endregion
 
         #region Manage Event Subscriptions
-        private void SubscribeToEvaluatorEvents()
+        private void SubscribeToEvents()
         {
             EventManager.Subscribe<PlacementEventArgs>(EventId.StartPointPlaced, StartPointPlaced);
             EventManager.Subscribe<ControllerEventArgs>(EventId.TriggerDown,       EvaluateTriggerInputDown);
@@ -58,7 +62,7 @@ namespace PathNav.Interaction
             EventManager.Subscribe<ControllerEventArgs>(EventId.ButtonAClick, EvaluateButtonAInput);
         }
 
-        private void UnsubscribeToEvaluatorEvents()
+        private void UnsubscribeToEvents()
         {
             EventManager.Unsubscribe<PlacementEventArgs>(EventId.StartPointPlaced, StartPointPlaced);
             EventManager.Unsubscribe<ControllerEventArgs>(EventId.TriggerDown,       EvaluateTriggerInputDown);
@@ -93,10 +97,10 @@ namespace PathNav.Interaction
                 switch (pathStrategy)
                 {
                     case PathStrategy.Bulldozer:
-                        EvaluateStartDrawingPath(obj, args);
+                        OnControllerEvaluatorEvent(EventId.StartDrawingPath, GetControllerEvaluatorEventArgs(args.Controller));
                         break;
                     case PathStrategy.Spatula:
-                        EvaluateStartPlaceOrMovePoint(obj, args);
+                        OnControllerEvaluatorEvent(EventId.StartPlaceOrMovePoint, GetControllerEvaluatorEventArgs(args.Controller));
                         break;
                     default:
                         throw new ArgumentOutOfRangeException();
@@ -115,10 +119,10 @@ namespace PathNav.Interaction
                 switch (pathStrategy)
                 {
                     case PathStrategy.Bulldozer:
-                        EvaluateStopDrawingPath(obj, args);
+                        OnControllerEvaluatorEvent(EventId.StopDrawingPath, GetControllerEvaluatorEventArgs(args.Controller));
                         break;
                     case PathStrategy.Spatula:
-                        EvaluateStopPlaceOrMovePoint(obj, args);
+                        OnControllerEvaluatorEvent(EventId.StopPlaceOrMovePoint, GetControllerEvaluatorEventArgs(args.Controller));
                         break;
                     default:
                         throw new ArgumentOutOfRangeException();
@@ -130,27 +134,10 @@ namespace PathNav.Interaction
         {
             //check if there's a node in our collider. If yes, remove it. otherwise, ignore input. 
             
+            //temp
+            OnControllerEvaluatorEvent(EventId.PathCreationComplete, GetControllerEvaluatorEventArgs(args.Controller));
         }
-
-        private void EvaluateStartDrawingPath(object obj, ControllerEventArgs args)
-        {
-            OnControllerEvaluatorEvent(EventId.StartDrawingPath, GetControllerEvaluatorEventArgs(args.Controller));
-        }
-
-        private void EvaluateStopDrawingPath(object obj, ControllerEventArgs args)
-        {
-            OnControllerEvaluatorEvent(EventId.StopDrawingPath, GetControllerEvaluatorEventArgs(args.Controller));
-        }
-
-        private void EvaluateStartPlaceOrMovePoint(object obj, ControllerEventArgs args)
-        {
-            OnControllerEvaluatorEvent(EventId.StartPlaceOrMovePoint, GetControllerEvaluatorEventArgs(args.Controller));
-        }
-
-        private void EvaluateStopPlaceOrMovePoint(object obj, ControllerEventArgs args)
-        {
-            OnControllerEvaluatorEvent(EventId.StopPlaceOrMovePoint, GetControllerEvaluatorEventArgs(args.Controller));
-        }
+        
         #endregion
     }
 

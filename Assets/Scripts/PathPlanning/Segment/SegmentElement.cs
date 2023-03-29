@@ -5,6 +5,7 @@ namespace PathNav.PathPlanning
     using Extensions;
     using Interaction;
     using Patterns.Factory;
+    using System;
     using System.Collections.Generic;
     using System.Threading.Tasks;
     using UnityEngine;
@@ -168,26 +169,24 @@ namespace PathNav.PathPlanning
             _configured = true;
 
             Enable();
-            OnSegmentConfigured();
+            EmitSegmentEvent(EventId.SegmentConfigured);
             return true;
         }
 
-        public bool ConfigureData()
+        public void ConfigureData()
         {
-            if (!gameObject.TryGetComponent(out SegmentDataContainer container)) return false;
+            if (!gameObject.TryGetComponent(out SegmentDataContainer container)) return;
 
             Data = container.SegmentData;
 
-            if (!gameObject.TryGetComponent(out SegmentInfoContainer info)) return false;
+            if (!gameObject.TryGetComponent(out SegmentInfoContainer info)) return;
 
             _segmentInfo = info.Info;
             Spline       = info.Spline;
 
-            if (!gameObject.GetComponent<InteractableElement>()) return false;
+            if (!gameObject.GetComponent<InteractableElement>()) return;
 
             gameObject.GetComponent<InteractableElement>().Id = Id;
-
-            return true;
         }
 
         public void ConfigureNodeVisuals(PathStrategy strategy)
@@ -213,6 +212,11 @@ namespace PathNav.PathPlanning
             if (SceneDataManager.Instance != null)
             {
                 SceneDataManager.Instance.SaveSplineComputer(Spline);
+                EmitSegmentEvent(EventId.SegmentComplete);
+            }
+            else
+            {
+                throw new Exception("SceneDataManager is null!");
             }
         }
         #endregion
@@ -331,32 +335,20 @@ namespace PathNav.PathPlanning
         #region Event Logic
         private void Enable()
         {
-            OnSegmentEnabled();
+            EmitSegmentEvent(EventId.SegmentEnabled);
         }
 
         private void Disable()
         {
-            OnSegmentDisabled();
+            EmitSegmentEvent(EventId.SegmentDisabled);
         }
-
-        private SegmentEventArgs GetSegmentEventArgs() => new();
-        #endregion
-
-        #region Emitted Events
-        private void OnSegmentConfigured()
+        
+        private void EmitSegmentEvent(EventId id)
         {
-            EventManager.Publish(EventId.SegmentConfigured, this, GetSegmentEventArgs());
+            EventManager.Publish(id, this, GetSegmentEventArgs());
         }
 
-        private void OnSegmentEnabled()
-        {
-            EventManager.Publish(EventId.SegmentEnabled, this, GetSegmentEventArgs());
-        }
-
-        private void OnSegmentDisabled()
-        {
-            EventManager.Publish(EventId.SegmentDisabled, this, GetSegmentEventArgs());
-        }
+        private SegmentEventArgs GetSegmentEventArgs() => new(this);
         #endregion
 
         #region Implementation of IColorChangeable

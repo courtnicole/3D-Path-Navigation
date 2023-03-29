@@ -16,10 +16,13 @@ namespace PathNav.PathPlanning
         void RemovePoint();
         void ConfigureNodeVisuals(PathStrategy strategy);
         bool IsCloseToPoint(out int pointIndex);
+        void SaveSpline();
     }
 
     public class SegmentEventArgs : EventArgs
     {
-        
+        public SegmentEventArgs(ISegment segment) => Segment = segment;
+
+        public ISegment Segment { get; }
     }
 }

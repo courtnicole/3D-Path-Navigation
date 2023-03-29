@@ -7,8 +7,7 @@ namespace PathNav
     {
         public static SceneDataManager Instance { get; private set; }
 
-        public PersistentData persistentData; 
-
+        public PersistentData persistentData;
         private SplineComputer _savedSplineComputer;
 
         protected void Awake()
@@ -16,15 +15,18 @@ namespace PathNav
             if (Instance == null)
             {
                 Instance = this;
-                DontDestroyOnLoad(gameObject);
+                DontDestroyOnLoad(this);
             }
             else
                 Destroy(gameObject);
         }
-
+        
         public void SaveSplineComputer(SplineComputer splineToSave)
         {
             _savedSplineComputer = splineToSave;
         }
+        
+        public SplineComputer GetSavedSplineComputer() => _savedSplineComputer;
     }
+    
 }

@@ -21,7 +21,7 @@ namespace PathNav.PathPlanning
         {
             float segmentLength = Vector3.Distance(entity.lastHandPosition, entity.interactingController.PointerPosition);
 
-            if (segmentLength < entity.minimumDelta) return;
+            if (segmentLength < BulldozerStrategy.minimumDelta) return;
 
             entity.ActiveSegment.RemovePoint();
 
