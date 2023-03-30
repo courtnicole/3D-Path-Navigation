@@ -1,6 +1,8 @@
 namespace PathNav
 {
     using Dreamteck.Splines;
+    using ExperimentControl;
+    using PathPlanning;
     using UnityEngine;
 
     public class SceneDataManager : MonoBehaviour
@@ -9,6 +11,7 @@ namespace PathNav
 
         public PersistentData persistentData;
         private SplineComputer _savedSplineComputer;
+        public SceneControl sceneControl;
 
         protected void Awake()
         {
@@ -21,9 +24,10 @@ namespace PathNav
                 Destroy(gameObject);
         }
         
-        public void SaveSplineComputer(SplineComputer splineToSave)
+        public async void SaveSplineComputer(SplineComputer splineToSave, GameObject model)
         {
             _savedSplineComputer = splineToSave;
+            sceneControl.LoadNewScene("CoralReef");
         }
         
         public SplineComputer GetSavedSplineComputer() => _savedSplineComputer;

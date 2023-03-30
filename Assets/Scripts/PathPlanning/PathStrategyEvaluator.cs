@@ -17,7 +17,6 @@ namespace PathNav.PathPlanning
         [SerializeField] private PlacementPlaneElement placementPlane;
 
         #region Factory Variables
-        private Factory _factory = new();
         private ISegment _activeSegment;
         #endregion
 
@@ -211,11 +210,13 @@ namespace PathNav.PathPlanning
 
         private async Task<ISegment> AddSegmentToPathAsync(int index)
         {
-            Task<GameObject> segmentTask = _factory.InstantiateObjectAsync(segmentKey, Utility.Parameterize(transform), CancellationToken.None);
-            GameObject segment = await segmentTask;
+            Task<GameObject> segmentTask = Factory.InstantiateObjectAsync(segmentKey, Utility.Parameterize(transform), CancellationToken.None);
+            GameObject       segment     = await segmentTask;
 
             if (!segmentTask.IsCompletedSuccessfully) return null;
             if (segment == null) return null;
+            
+            segment.transform.SetParent(null);
 
             UniqueId newId = UniqueId.Generate();
             SegmentData segmentData = new(index, newId);

@@ -10,7 +10,7 @@ namespace PathNav
         [SerializeField] private SplineComputer spline;
 
         private Vector3 _modelPose;
-        private Vector3 _modelRotation;
+        private Quaternion _modelRotation;
         private Vector3 _modelScale;
 
         private void GetSpline()

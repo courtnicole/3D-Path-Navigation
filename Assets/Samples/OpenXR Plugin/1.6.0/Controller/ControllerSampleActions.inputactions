@@ -463,7 +463,7 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "TriggerValue",
+                    "name": "Trigger",
                     "type": "Value",
                     "id": "2fccaf18-d578-4ac9-9d0b-08db4a2e1dc7",
                     "expectedControlType": "Axis",
@@ -653,7 +653,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "XR Usage",
-                    "action": "TriggerValue",
+                    "action": "Trigger",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },

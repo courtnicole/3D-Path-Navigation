@@ -86,7 +86,7 @@ namespace PathNav.Patterns.Factory
             return result;
         }
 
-        public async Task<GameObject> InstantiateObjectAsync(AssetReference key, InstantiationParameters parameters, CancellationToken cancellationToken)
+        public static async Task<GameObject> InstantiateObjectAsync(AssetReference key, InstantiationParameters parameters, CancellationToken cancellationToken)
         {
             if (!KeyIsValid(key)) return null;
 
