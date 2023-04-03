@@ -12,9 +12,9 @@ namespace PathNav.PathPlanning
             set => modelPose = value;
         }
 
-        [SerializeField] private Quaternion modelRotation;
+        [SerializeField] private Vector3 modelRotation;
 
-        public Quaternion ModelRotation
+        public Vector3 ModelRotation
         {
             get => modelRotation;
             set => modelRotation = value;
@@ -30,8 +30,9 @@ namespace PathNav.PathPlanning
         {
             get
             {
-                Matrix4x4 localToWorld = default;
-                localToWorld.SetTRS(modelPose, modelRotation, modelScale);
+                Quaternion rotation     = Quaternion.Euler(modelRotation);
+                Matrix4x4  localToWorld = default;
+                localToWorld.SetTRS(modelPose, rotation, modelScale);
                 return localToWorld;
             }
         }

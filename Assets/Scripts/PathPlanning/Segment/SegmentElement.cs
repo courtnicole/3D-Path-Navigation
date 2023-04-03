@@ -211,7 +211,7 @@ namespace PathNav.PathPlanning
         {
             if (SceneDataManager.Instance != null)
             {
-                SceneDataManager.Instance.SaveSplineComputer(Spline, Root);
+                SceneDataManager.Instance.SaveSplineComputer(Spline);
                 EmitSegmentEvent(EventId.SegmentComplete);
             }
             else
