@@ -8,35 +8,11 @@ namespace PathNav.Events
 
     public enum EventId
     {
-        #region Button Events
-        [EventId(typeof(MenuClickEventArgs))]
-        ButtonScaleClicked,
-        [EventId(typeof(MenuClickEventArgs))]
-        MoveNodeSelected,
-        [EventId(typeof(MenuClickEventArgs))]
-        DeleteNodeSelected,
-
-        [EventId(typeof(MenuClickEventArgs))]
-        ButtonPathbendClicked, 
-        [EventId(typeof(MenuClickEventArgs))]
-        ButtonBulldozeClicked, 
-        [EventId(typeof(MenuClickEventArgs))]
-        ButtonInsertNodeClicked, 
-        #endregion
-
         #region Enable/Disable Evaluators
         [EventId(typeof(EventArgs))]
         EnableLocomotion,
         [EventId(typeof(EventArgs))]
         DisableLocomotion,
-        [EventId(typeof(EventArgs))]
-        EnableRaycastPointer,
-        [EventId(typeof(EventArgs))]
-        DisableRaycastPointer,
-        [EventId(typeof(EventArgs))]
-        EnableRadialMenu,
-        [EventId(typeof(EventArgs))]
-        DisableRadialMenu,
         #endregion
 
         #region Evaluators Enabled/Disabled
@@ -48,10 +24,6 @@ namespace PathNav.Events
         RaycastEvaluatorEnabled,
         [EventId(typeof(EventArgs))]
         RaycastEvaluatorDisabled,
-        [EventId(typeof(EventArgs))]
-        RadialMenuEnabled,
-        [EventId(typeof(EventArgs))]
-        RadialMenuDisabled, 
         #endregion
 
         #region ControllerEventArgs
@@ -225,6 +197,12 @@ namespace PathNav.Events
         [EventId(typeof(PlacementPlaneEventArgs))]
         PlacementPlaneUntriggered,
         #endregion
+        
+        #region SceneControlArgs
+        [EventId(typeof(SceneControlEventArgs))]
+        FollowPathReady,
+        #endregion
+        
     }
 
     [AttributeUsage(AttributeTargets.Field)]

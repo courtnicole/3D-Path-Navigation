@@ -326,7 +326,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1ed86bf23606fb74ba6e1028a871a0fe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pathStrategy: 1
+  pathStrategy: 0
 --- !u!1 &209405008
 GameObject:
   m_ObjectHideFlags: 0
@@ -1206,7 +1206,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 16aad36e35f9f7346aac361e65bba541, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  trackingOriginTransform: {fileID: 2079910531}
+  trackingOriginTransform: {fileID: 8572805119614256447}
   cameraTransform: {fileID: 5171462226885780415}
   startingPosition: {fileID: 1845644791}
 --- !u!1 &1016198308
@@ -1633,7 +1633,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1671823385
 Transform:
   m_ObjectHideFlags: 0

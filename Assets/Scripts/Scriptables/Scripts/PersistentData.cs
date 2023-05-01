@@ -5,36 +5,26 @@ namespace PathNav.PathPlanning
     [CreateAssetMenu(fileName = "PersistentData", menuName = "Scriptables/PersistentData", order = 1)]
     public class PersistentData : ScriptableObject
     {
-        [SerializeField] private Vector3 modelPose;
-        public Vector3 ModelPose
+        [SerializeField] private Vector3 deltaTranslation;
+        public Vector3 DeltaTranslation
         {
-            get => modelPose;
-            set => modelPose = value;
+            get => deltaTranslation;
+            set => deltaTranslation = value;
         }
 
-        [SerializeField] private Vector3 modelRotation;
+        [SerializeField] private Vector3 deltaRotation;
 
-        public Vector3 ModelRotation
+        public Vector3 DeltaRotation
         {
-            get => modelRotation;
-            set => modelRotation = value;
+            get => deltaRotation;
+            set => deltaRotation = value;
         }
 
-        [SerializeField] private Vector3 modelScale;
-        public Vector3 ModelScale
+        [SerializeField] private float deltaScale;
+        public float DeltaScale
         {
-            get => modelScale;
-            set => modelScale = value;
-        }
-        public Matrix4x4 LocalToWorld
-        {
-            get
-            {
-                Quaternion rotation     = Quaternion.Euler(modelRotation);
-                Matrix4x4  localToWorld = default;
-                localToWorld.SetTRS(modelPose, rotation, modelScale);
-                return localToWorld;
-            }
+            get => deltaScale;
+            set => deltaScale = value;
         }
     }
 }

@@ -10,8 +10,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c4ab027611ab7304492d912d92238351, type: 3}
-  m_Name: PersistentData
+  m_Name: PersistentDataDemoCoral
   m_EditorClassIdentifier: 
-  modelPose: {x: 0, y: 0.965, z: 0}
-  modelRotation: {x: 0, y: 0, z: 0}
-  modelScale: {x: 0.025, y: 0.025, z: 0.025}
+  deltaTranslation: {x: 0, y: -0.965, z: 0}
+  deltaRotation: {x: 0, y: 0, z: 0}
+  deltaScale: {x: 40, y: 40, z: 40}
