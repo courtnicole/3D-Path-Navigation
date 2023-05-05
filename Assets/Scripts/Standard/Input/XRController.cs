@@ -20,6 +20,7 @@ namespace PathNav.Input
 
         [SerializeField] private ControllerInfo controllerInfo;
         [SerializeField] private AttachmentPoint attachmentPoint;
+        [SerializeField] private Collider eraserCollider;
         [SerializeField] private Hand hand;
 
         [Header("Input Actions")]
@@ -52,13 +53,14 @@ namespace PathNav.Input
         public Vector2 JoystickPose { get; private set; }
         public Vector2 JoystickPoseDelta { get; private set; }
         public Transform AttachmentPoint => attachmentPoint.transform;
+        public Bounds CollisionBounds => eraserCollider.bounds;
 
         public InputDevice InputDevice =>
             hand == Hand.Left ? UnityEngine.InputSystem.XR.XRController.leftHand : UnityEngine.InputSystem.XR.XRController.rightHand;
 
         public void HapticFeedback()
         {
-            OpenXRInput.SendHapticImpulse(hapticAction.action, 1.0f, 0.0f, 0.1f, InputDevice);
+            OpenXRInput.SendHapticImpulse(hapticAction.action, 0.80f, 0.0f, 0.1f, InputDevice);
         }
         #endregion
 

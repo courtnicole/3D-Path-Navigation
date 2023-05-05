@@ -97,7 +97,7 @@ namespace PathNav.Interaction
                 switch (pathStrategy)
                 {
                     case PathStrategy.Bulldozer:
-                        OnControllerEvaluatorEvent(EventId.StartDrawingPath, GetControllerEvaluatorEventArgs(args.Controller));
+                        OnControllerEvaluatorEvent(EventId.StartDrawOrErasePath, GetControllerEvaluatorEventArgs(args.Controller));
                         break;
                     case PathStrategy.Spatula:
                         OnControllerEvaluatorEvent(EventId.StartPlaceOrMovePoint, GetControllerEvaluatorEventArgs(args.Controller));
@@ -119,7 +119,7 @@ namespace PathNav.Interaction
                 switch (pathStrategy)
                 {
                     case PathStrategy.Bulldozer:
-                        OnControllerEvaluatorEvent(EventId.StopDrawingPath, GetControllerEvaluatorEventArgs(args.Controller));
+                        OnControllerEvaluatorEvent(EventId.StopDrawOrErasePath, GetControllerEvaluatorEventArgs(args.Controller));
                         break;
                     case PathStrategy.Spatula:
                         OnControllerEvaluatorEvent(EventId.StopPlaceOrMovePoint, GetControllerEvaluatorEventArgs(args.Controller));

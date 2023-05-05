@@ -49,6 +49,7 @@ namespace PathNav.Interaction
             transform.position = position;
         }
 
+        
         public void Hide()
         {
             transform.GetChild(0).gameObject.SetActive(false);

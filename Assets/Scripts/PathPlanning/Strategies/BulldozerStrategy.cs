@@ -22,46 +22,37 @@ namespace PathNav.PathPlanning
         {
             get
             {
-                if (_state.CurrentState != _drawState) return false;
+                if (_state.CurrentState != _idleState) return false;
 
-                return HasSegment && HasMultipleSegmentPoints;
+                return HasSegment && HasMultipleSegmentPoints && HasValidEraseTarget;
             }
         }
 
-        public bool CanStartDrawing => HasSegment && HasFirstSegmentPoint;
-
-        public bool CanUpdatePath
-        {
-            get
-            {
-                if (_state.CurrentState != _idleState || _state.CurrentState != _eraseState) return false;
-
-                return HasSegment && HasFirstSegmentPoint;
-            }
-        }
+        private bool CanStartDrawing => HasSegment && HasFirstSegmentPoint;
         #endregion
 
         #region Controller Variables
         internal IController[] Controllers => ControllerManagement.controllers;
         internal IController interactingController;
         private void SetController(IController controller) => interactingController = controller;
-        internal void ClearController() => interactingController = null;
+        private void ClearController() => interactingController = null;
         #endregion
 
         #region Segment and Path Variables
         internal Vector3 lastHandPosition;
         internal const float minimumDelta = 0.025f;
+        internal int TargetPointIndex => ActiveSegment.SelectedPointVisualIndex;
 
-        private bool HasController => interactingController != null;
-        private bool HasSegment => ActiveSegment            != null;
-        private bool HasStartPosition => StartPosition      != Vector3.zero;
+        private bool HasSegment => ActiveSegment != null;
 
         private bool HasFirstSegmentPoint => ActiveSegment.CurrentPointCount     > 0;
         private bool HasMultipleSegmentPoints => ActiveSegment.CurrentPointCount > 1;
+
+        private bool HasValidEraseTarget => ActiveSegment.SelectedSegmentIndex == ActiveSegment.CurrentPointCount - 1;
         #endregion
 
         #region Implementation of IPathStrategy
-        public ISegment ActiveSegment { get; set; } 
+        public ISegment ActiveSegment { get; set; }
         public Vector3 StartPosition { get; set; }
         public Vector3 StartHeading { get; set; }
 
@@ -89,33 +80,6 @@ namespace PathNav.PathPlanning
             if (_state.CurrentState == _idleState) _state.ChangeState(_disabledState);
         }
 
-        public void SubscribeToEvents()
-        {
-            EventManager.Subscribe<ControllerEvaluatorEventArgs>(EventId.StartDrawingPath,     StartDrawingPath);
-            EventManager.Subscribe<ControllerEvaluatorEventArgs>(EventId.StopDrawingPath,      StopDrawingPath);
-            EventManager.Subscribe<ControllerEvaluatorEventArgs>(EventId.PathCreationComplete, FinishPath);
-        }
-
-        public void UnsubscribeToEvents()
-        {
-            EventManager.Unsubscribe<ControllerEvaluatorEventArgs>(EventId.StartDrawingPath,     StartDrawingPath);
-            EventManager.Unsubscribe<ControllerEvaluatorEventArgs>(EventId.StopDrawingPath,      StopDrawingPath);
-            EventManager.Unsubscribe<ControllerEvaluatorEventArgs>(EventId.PathCreationComplete, FinishPath);
-        }
-
-        private void StartDrawingPath(object obj, ControllerEvaluatorEventArgs args)
-        {
-            if (!CanStartDrawing) return;
-            SetController(args.Controller);
-            StartDraw();
-        }
-
-        private void StopDrawingPath(object obj, ControllerEvaluatorEventArgs args)
-        {
-            StopDraw();
-            ClearController();
-        }
-        
         private void FinishPath(object obj, ControllerEvaluatorEventArgs args)
         {
             if (_state.CurrentState == _eraseState) _state.ChangeState(_idleState);
@@ -126,15 +90,65 @@ namespace PathNav.PathPlanning
             {
                 throw new System.Exception("BulldozerStrategy: FinishPath called while not in idle state");
             }
-            
+
             ActiveSegment.SaveSpline();
+        }
+        #endregion
+
+        #region Events
+        public void SubscribeToEvents()
+        {
+            EventManager.Subscribe<ControllerEvaluatorEventArgs>(EventId.StartDrawOrErasePath, EvaluateStartDrawOrErasePath);
+            EventManager.Subscribe<ControllerEvaluatorEventArgs>(EventId.StopDrawOrErasePath,  EvaluateStopDrawOrErasePath);
+            EventManager.Subscribe<ControllerEvaluatorEventArgs>(EventId.PathCreationComplete, FinishPath);
+        }
+
+        public void UnsubscribeToEvents()
+        {
+            EventManager.Unsubscribe<ControllerEvaluatorEventArgs>(EventId.StartDrawOrErasePath, EvaluateStartDrawOrErasePath);
+            EventManager.Unsubscribe<ControllerEvaluatorEventArgs>(EventId.StopDrawOrErasePath,  EvaluateStopDrawOrErasePath);
+            EventManager.Unsubscribe<ControllerEvaluatorEventArgs>(EventId.PathCreationComplete, FinishPath);
+        }
+        #endregion
+
+        #region Logic
+        private void EvaluateStartDrawOrErasePath(object obj, ControllerEvaluatorEventArgs args)
+        {
+            SetController(args.Controller);
+
+            if (ActiveSegment.CanErasePoint(ref interactingController))
+            {
+                if (!CanStartErasing) return;
+                Debug.Log("StartingErase");
+                StartErase();
+            }
+            else
+            {
+                if (!CanStartDrawing) return;
+
+                StartDraw();
+            }
+        }
+
+        private void EvaluateStopDrawOrErasePath(object obj, ControllerEvaluatorEventArgs args)
+        {
+            if (_state.CurrentState == _eraseState)
+            {
+                StopErase();
+            }
+            else if (_state.CurrentState == _drawState)
+            {
+                StopDraw();
+            }
+
+            ClearController();
         }
         #endregion
 
         #region State Change Logic
         private void StartDraw()
         {
-            if (_state.CurrentState == _disabledState) return;
+            if (_state.CurrentState != _idleState) return;
 
             _state.ChangeState(_drawState);
         }
@@ -146,20 +160,19 @@ namespace PathNav.PathPlanning
             _state.ChangeState(_idleState);
         }
 
-        internal void StartErase()
+        private void StartErase()
         {
-            if (_state.CurrentState != _drawState) return;
+            if (_state.CurrentState != _idleState) return;
 
             _state.ChangeState(_eraseState);
         }
 
-        internal void StopErase()
+        private void StopErase()
         {
             if (_state.CurrentState != _eraseState) return;
 
-            _state.ChangeState(_drawState);
+            _state.ChangeState(_idleState);
         }
-        
         #endregion
     }
 }

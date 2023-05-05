@@ -11,7 +11,7 @@ namespace PathNav.Interaction
         public IController Controller => controller as IController;
         
         public void OnTriggerEnter(Collider other)
-        {
+        { 
             Controller.HapticFeedback();
         }
         public void TriggerExited(Collider other) { }

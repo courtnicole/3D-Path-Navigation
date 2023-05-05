@@ -8,7 +8,6 @@ namespace PathNav.PathPlanning
     public class PlacePath : MonoBehaviour
     {
         [SerializeField] private SplineComputer targetSpline;
-        
 
         private SplineComputer _splineComputer;
         private Vector3 _deltaTranslation;
@@ -29,12 +28,12 @@ namespace PathNav.PathPlanning
                 throw new Exception("SceneDataManager is null!");
             }
         }
-        
+
         private void EmitEvent(EventId id)
         {
             EventManager.Publish(id, this, GetSceneControlEventArgs());
         }
-        
+
         private static SceneControlEventArgs GetSceneControlEventArgs() => new();
 
         private void SetupSpline()

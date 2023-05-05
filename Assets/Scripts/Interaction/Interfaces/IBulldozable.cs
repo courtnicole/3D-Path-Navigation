@@ -39,18 +39,13 @@ namespace PathNav.Interaction
             EventManager.Publish(EventId.DrawEnded, this, GetBulldozeEventArgs(t));
         }
 
-        BulldozeEventArgs GetBulldozeEventArgs(Transform t) => new(t, Id);
+        BulldozeEventArgs GetBulldozeEventArgs(Transform t) => new();
     }
 
     public class BulldozeEventArgs : EventArgs
     {
-        public BulldozeEventArgs(Transform t, UniqueId id)
+        public BulldozeEventArgs()
         {
-            Id    = id;
-            Transform = t;
         }
-        
-        public UniqueId Id { get; }
-        public Transform Transform { get; }
     }
 }

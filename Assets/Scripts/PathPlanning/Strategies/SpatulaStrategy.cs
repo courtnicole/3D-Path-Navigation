@@ -35,7 +35,7 @@ namespace PathNav.PathPlanning
         internal Vector3 lastHandPosition;
         internal const float minimumDelta = 0.025f;
 
-        internal int pointIndexToMove;
+        internal int PointIndexToMove => ActiveSegment.SelectedPointVisualIndex;
         private IPlacementPlane _placementPlane;
 
         private bool HasController => interactingController                      != null;
@@ -44,6 +44,8 @@ namespace PathNav.PathPlanning
         private bool HasStartPosition => StartPosition                           != Vector3.zero;
         private bool HasFirstSegmentPoint => ActiveSegment.CurrentPointCount     > 0;
         private bool HasMultipleSegmentPoints => ActiveSegment.CurrentPointCount > 1;
+
+        private bool HasValidPointTarget => ActiveSegment.SelectedPointVisualIndex > -1;
         #endregion
 
         #region Implementation of IPathStrategy
@@ -109,7 +111,7 @@ namespace PathNav.PathPlanning
         {
             SetController(args.Controller);
 
-            if (ActiveSegment.IsCloseToPoint(out pointIndexToMove))
+            if (HasValidPointTarget)
             {
                 if (!CanMovePoint) return;
 
@@ -125,7 +127,7 @@ namespace PathNav.PathPlanning
 
         private void EvaluateStopPlaceOrMovePoint(object sender, ControllerEvaluatorEventArgs args)
         {
-            SetController(args.Controller);
+            ClearController();
 
             if (_state.CurrentState != _movePointState) return;
 

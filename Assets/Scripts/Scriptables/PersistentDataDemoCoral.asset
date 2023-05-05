@@ -14,4 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   deltaTranslation: {x: 0, y: -0.965, z: 0}
   deltaRotation: {x: 0, y: 0, z: 0}
-  deltaScale: {x: 40, y: 40, z: 40}
+  deltaScale: 40

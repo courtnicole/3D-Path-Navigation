@@ -6,11 +6,9 @@ namespace PathNav.Interaction
     using UnityEngine;
     public class ControllerEvaluatorFollowing : MonoBehaviour
     {
+        
         #region Controller Variables
         internal IController[] Controllers => ControllerManagement.controllers;
-        private IController _interactingController;
-        private void SetController(IController controller) => _interactingController = controller;
-        internal void ClearController() => _interactingController = null;
         #endregion
         
         #region Unity Methods
@@ -39,41 +37,33 @@ namespace PathNav.Interaction
         #region Manage Event Subscriptions
         private void SubscribeToEvents()
         {
-            EventManager.Subscribe<ControllerEventArgs>(EventId.JoystickTouchStart, EvaluateJoystickTouchStart);
+            //EventManager.Subscribe<ControllerEventArgs>(EventId.JoystickTouchStart, EvaluateJoystickTouchStart);
             EventManager.Subscribe<ControllerEventArgs>(EventId.JoystickPoseUpdate, EvaluateJoystickPoseUpdate);
-            EventManager.Subscribe<ControllerEventArgs>(EventId.JoystickTouchEnd,   EvaluateJoystickTouchEnd);
+            //EventManager.Subscribe<ControllerEventArgs>(EventId.JoystickTouchEnd,   EvaluateJoystickTouchEnd);
         }
 
         private void UnsubscribeToEvents()
         {
-            EventManager.Subscribe<ControllerEventArgs>(EventId.JoystickTouchStart, EvaluateJoystickTouchStart);
+            //EventManager.Subscribe<ControllerEventArgs>(EventId.JoystickTouchStart, EvaluateJoystickTouchStart);
             EventManager.Subscribe<ControllerEventArgs>(EventId.JoystickPoseUpdate, EvaluateJoystickPoseUpdate);
-            EventManager.Subscribe<ControllerEventArgs>(EventId.JoystickTouchEnd,   EvaluateJoystickTouchEnd);
+            //EventManager.Subscribe<ControllerEventArgs>(EventId.JoystickTouchEnd,   EvaluateJoystickTouchEnd);
         }
         #endregion
         
-        private void EvaluateJoystickTouchEnd(object obj, ControllerEventArgs args)
-        {
-            
-        }
-
         private void EvaluateJoystickPoseUpdate(object obj, ControllerEventArgs args)
         {
-            
+            Debug.Log("Updating speed");
+            OnControllerEvaluatorFollowerEvent(EventId.ChangeSpeed, GetFollowerEvaluatorEventArgs(args.Controller));
         }
-
-        private void EvaluateJoystickTouchStart(object obj, ControllerEventArgs args)
-        {
-            
-        }
+        
 
         #region Emit Events
-        private void OnControllerEvaluatorEvent(EventId id, FollowerEvaluatorEventArgs args)
+        private void OnControllerEvaluatorFollowerEvent(EventId id, FollowerEvaluatorEventArgs args)
         {
-            EventManager.Publish(id, this, GetControllerEvaluatorEventArgs(args.Controller));
+            EventManager.Publish(id, this, args);
         }
 
-        private static FollowerEvaluatorEventArgs GetControllerEvaluatorEventArgs(IController controller) => new(controller);
+        private static FollowerEvaluatorEventArgs GetFollowerEvaluatorEventArgs(IController controller) => new(controller);
         #endregion
         
         
@@ -84,5 +74,6 @@ namespace PathNav.Interaction
         public FollowerEvaluatorEventArgs(IController c) => Controller = c;
 
         public IController Controller { get; }
+        public int Sign => Controller.JoystickPose.y > 0 ? 1 : -1;
     }
 }

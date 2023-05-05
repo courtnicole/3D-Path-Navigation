@@ -119,9 +119,9 @@ namespace PathNav.Events
         FinishPlacingStartPoint,
 
         [EventId(typeof(ControllerEvaluatorEventArgs))]
-        StartDrawingPath,
+        StartDrawOrErasePath,
         [EventId(typeof(ControllerEvaluatorEventArgs))]
-        StopDrawingPath,
+        StopDrawOrErasePath,
         [EventId(typeof(ControllerEvaluatorEventArgs))]
         StartErasingPath,
         [EventId(typeof(ControllerEvaluatorEventArgs))]
@@ -153,8 +153,6 @@ namespace PathNav.Events
         [EventId(typeof(BulldozeEventArgs))]
         EraseStarted,
         [EventId(typeof(BulldozeEventArgs))]
-        EraseUpdated,
-        [EventId(typeof(BulldozeEventArgs))]
         EraseEnded, 
         #endregion
 
@@ -182,6 +180,7 @@ namespace PathNav.Events
         SegmentDisabled, 
         [EventId(typeof(SegmentEventArgs))]
         SegmentComplete, 
+
         #endregion
 
         #region PointVisualEventArgs
@@ -203,6 +202,10 @@ namespace PathNav.Events
         FollowPathReady,
         #endregion
         
+        #region FollowerEvaluatorEventArgs
+        [EventId(typeof(FollowerEvaluatorEventArgs))]
+        ChangeSpeed,
+        #endregion
     }
 
     [AttributeUsage(AttributeTargets.Field)]

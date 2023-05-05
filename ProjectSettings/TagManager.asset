@@ -14,15 +14,15 @@ TagManager:
   - UI
   - Reef
   - Coral
-  - Path
+  - SegmentVisual
   - Scene
-  - CanSpawn
+  - 
   - Interactable
-  - SpawnBoundary
   - 
-  - 
-  - 
-  - 
+  - Controller
+  - PointVisual
+  - PlacementPlane
+  - Eraser
   - 
   - 
   - 

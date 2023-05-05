@@ -3,6 +3,7 @@ namespace PathNav.PathPlanning
     using Dreamteck.Splines;
     using Events;
     using Extensions;
+    using Input;
     using Interaction;
     using Patterns.Factory;
     using System;
@@ -34,7 +35,6 @@ namespace PathNav.PathPlanning
             UnsubscribeToEvents();
             Disable();
         }
-        
         #endregion
 
         #region Manage Event Subscriptions
@@ -58,6 +58,9 @@ namespace PathNav.PathPlanning
         public IData Data { get; private set; }
 
         public int CurrentPointCount => Spline.pointCount;
+        public int SelectedPointVisualIndex { get; private set; }
+
+        public int SelectedSegmentIndex { get; private set; }
 
         private SplinePoint[] CurrentPoints
         {
@@ -65,6 +68,7 @@ namespace PathNav.PathPlanning
             set => Spline.SetPoints(value);
         }
 
+        #region Point Addition/Removal
         public void AddFirstPoint(Vector3 newPosition, Vector3 heading)
         {
             Vector3 end = newPosition + (heading.normalized * 0.01f);
@@ -121,8 +125,9 @@ namespace PathNav.PathPlanning
             SplinePoint[] points = CurrentPoints;
             points[pointIndex].SetPosition(newPosition);
             CurrentPoints = points;
-            
+
             if (!_useNodeVisuals) return;
+
             MovePointVisual(pointIndex);
         }
 
@@ -139,6 +144,8 @@ namespace PathNav.PathPlanning
             }
 
             CurrentPoints = newPoints;
+            
+            Debug.Log("Removing Point");
 
             if (!_useNodeVisuals) return;
 
@@ -161,7 +168,9 @@ namespace PathNav.PathPlanning
 
             RemovePointVisual(oldPoints.Length - 1);
         }
+        #endregion
 
+        #region Configuration
         public bool Configure()
         {
             if (_configured) return true;
@@ -193,18 +202,10 @@ namespace PathNav.PathPlanning
         {
             if (strategy == PathStrategy.Bulldozer) return;
 
-            _triggeredIndex = -1;
+            SelectedPointVisualIndex = -1;
 
             EnablePointVisuals();
             SubscribeToEvents();
-        }
-
-        public int CompareTo(IPathElement other) => Index.CompareTo(other.Index);
-
-        public bool IsCloseToPoint(out int pointIndex)
-        {
-            pointIndex = _triggeredIndex;
-            return _triggeredIndex > -1;
         }
 
         public void SaveSpline()
@@ -221,6 +222,23 @@ namespace PathNav.PathPlanning
         }
         #endregion
 
+        #region Logic
+        public bool IsCloseToPoint(out int pointIndex)
+        {
+            pointIndex = SelectedPointVisualIndex;
+            return SelectedPointVisualIndex > -1;
+        }
+
+        public bool CanErasePoint(ref IController controller)
+        {
+            bool isInsideBounds = controller.CollisionBounds.Contains(CurrentPoints[CurrentPointCount -1].position);
+            SelectedSegmentIndex = isInsideBounds ? CurrentPointCount - 1 : -1;
+            return isInsideBounds;
+        }
+        public int CompareTo(IPathElement other) => Index.CompareTo(other.Index);
+        #endregion
+        #endregion
+
         #region INodeVisuals
         private List<PointVisualElement> _pointVisuals = new();
         private Dictionary<int, int> _pointVisualsIdIndexMap = new();
@@ -228,8 +246,6 @@ namespace PathNav.PathPlanning
 
         private const string _key = "NodeVisual";
         private GameObject _pointPrefab;
-
-        private int _triggeredIndex;
 
         private async void EnablePointVisuals()
         {
@@ -241,7 +257,7 @@ namespace PathNav.PathPlanning
             CalculatePointVisuals();
             _useNodeVisuals = true;
         }
-        
+
         private void CalculatePointVisuals()
         {
             if (CurrentPoints.Length < 2) return;
@@ -309,12 +325,12 @@ namespace PathNav.PathPlanning
             int id = args.Id.ID;
             if (!_pointVisualsIdIndexMap.TryGetValue(id, out int index)) return;
 
-            _triggeredIndex = index;
+            SelectedPointVisualIndex = index;
         }
 
         private void PointVisualUntriggered(object sender, PointVisualEventArgs args)
         {
-            _triggeredIndex = -1;
+            SelectedPointVisualIndex = -1;
         }
 
         private async Task<bool> LoadPrefab()
@@ -342,7 +358,7 @@ namespace PathNav.PathPlanning
         {
             EmitSegmentEvent(EventId.SegmentDisabled);
         }
-        
+
         private void EmitSegmentEvent(EventId id)
         {
             EventManager.Publish(id, this, GetSegmentEventArgs());

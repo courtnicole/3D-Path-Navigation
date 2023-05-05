@@ -7,7 +7,7 @@ namespace PathNav.PathPlanning
         #region Implementation of IState<T>
         public void Enter(T entity)
         {
-            if (entity.pointIndexToMove < 0)
+            if (entity.PointIndexToMove < 0)
             {
                 entity.StopMovePoint();
             }
@@ -15,14 +15,14 @@ namespace PathNav.PathPlanning
 
         public void UpdateLogic(T entity)
         {
-            entity.ActiveSegment.MovePoint(entity.pointIndexToMove, entity.interactingController.PointerPosition);
+            entity.ActiveSegment.MovePoint(entity.PointIndexToMove, entity.interactingController.PointerPosition);
         }
 
         public void UpdatePhysics(T entity) { }
 
         public void Exit(T entity)
         {
-            entity.pointIndexToMove = -1;
+           
         }
         #endregion
     }
