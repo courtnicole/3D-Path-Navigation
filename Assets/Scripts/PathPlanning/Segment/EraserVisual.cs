@@ -20,17 +20,17 @@ namespace PathNav.PathPlanning
 
         private void SubscribeToEvents()
         {
-            EventManager.Subscribe<BulldozeEventArgs>(EventId.EraseStarted, ToggleEraserVisibility);
-            EventManager.Subscribe<BulldozeEventArgs>(EventId.EraseEnded,   ToggleEraserVisibility);
+            EventManager.Subscribe<PathStrategyEventArgs>(EventId.EraseStarted, ToggleEraserVisibility);
+            EventManager.Subscribe<PathStrategyEventArgs>(EventId.EraseEnded,   ToggleEraserVisibility);
         }
 
         private void UnsubscribeToEvents()
         {
-            EventManager.Unsubscribe<BulldozeEventArgs>(EventId.EraseStarted, ToggleEraserVisibility);
-            EventManager.Unsubscribe<BulldozeEventArgs>(EventId.EraseEnded,   ToggleEraserVisibility);
+            EventManager.Unsubscribe<PathStrategyEventArgs>(EventId.EraseStarted, ToggleEraserVisibility);
+            EventManager.Unsubscribe<PathStrategyEventArgs>(EventId.EraseEnded,   ToggleEraserVisibility);
         }
 
-        private void ToggleEraserVisibility(object sender, BulldozeEventArgs args)
+        private void ToggleEraserVisibility(object sender, PathStrategyEventArgs args)
         {
             meshRenderer.enabled = !meshRenderer.enabled;
         }

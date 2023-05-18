@@ -307,9 +307,9 @@ MonoBehaviour:
   _clipTo: 1
   animClipFrom: 0
   animClipTo: 1
-  multithreaded: 0
-  buildOnAwake: 1
-  buildOnEnable: 0
+  multithreaded: 1
+  buildOnAwake: 0
+  buildOnEnable: 1
   _baked: 0
   _markDynamic: 1
   _size: 1
@@ -318,7 +318,7 @@ MonoBehaviour:
   _normalMethod: 1
   _calculateTangents: 1
   _useSplineSize: 1
-  _useSplineColor: 1
+  _useSplineColor: 0
   _rotation: 0
   _flipFaces: 0
   _doubleSided: 0
@@ -328,10 +328,10 @@ MonoBehaviour:
   _uvRotation: 0
   _meshIndexFormat: 0
   _bakedMesh: {fileID: 0}
-  colliderUpdateRate: 0.2
+  colliderUpdateRate: 0.3
   _sides: 12
   _roundCapLatitude: 6
-  _capMode: 1
+  _capMode: 0
   _revolve: 360
   _capUVScale: 1
   _uvTwist: 0

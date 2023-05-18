@@ -149,6 +149,7 @@ namespace PathNav.Input
 
         private void TouchpadTouchStart(InputAction.CallbackContext callbackContext)
         {
+            
             EventManager.Publish(EventId.TouchpadTouchStart, this, ControllerEventArgs);
         }
 

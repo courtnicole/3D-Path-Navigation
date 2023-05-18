@@ -11,7 +11,7 @@ namespace PathNav.PathPlanning
     using System.Threading.Tasks;
     using UnityEngine;
 
-    public class SegmentElement : MonoBehaviour, ISegment, IColorChangeable, IBulldozable
+    public class SegmentElement : MonoBehaviour, ISegment, IColorChangeable
     {
         #region Local Variables
         public GameObject Root => gameObject;
@@ -75,21 +75,21 @@ namespace PathNav.PathPlanning
 
             SplinePoint pt1 = new()
             {
+                type     = SplinePoint.Type.SmoothMirrored,
                 color    = Color.white,
                 normal   = Vector3.up,
                 size     = 0.01f,
-                tangent  = default,
-                tangent2 = default,
+                tangent  = Vector3.forward,
                 position = newPosition,
             };
 
             SplinePoint pt2 = new()
             {
+                type     = SplinePoint.Type.SmoothMirrored,
                 color    = Color.white,
                 normal   = Vector3.up,
                 size     = 0.01f,
-                tangent  = default,
-                tangent2 = default,
+                tangent  = Vector3.forward,
                 position = end,
             };
 
@@ -110,9 +110,7 @@ namespace PathNav.PathPlanning
                 newPoints[i] = oldPoints[i];
             }
 
-            newPoints[^1] = newPoints[^2];
-            newPoints[^1].SetPosition(position);
-
+            newPoints[^1] = new SplinePoint(position);
             CurrentPoints = newPoints;
 
             if (!_useNodeVisuals) return;
@@ -144,7 +142,7 @@ namespace PathNav.PathPlanning
             }
 
             CurrentPoints = newPoints;
-            
+
             Debug.Log("Removing Point");
 
             if (!_useNodeVisuals) return;
@@ -231,10 +229,11 @@ namespace PathNav.PathPlanning
 
         public bool CanErasePoint(ref IController controller)
         {
-            bool isInsideBounds = controller.CollisionBounds.Contains(CurrentPoints[CurrentPointCount -1].position);
+            bool isInsideBounds = controller.CollisionBounds.Contains(CurrentPoints[CurrentPointCount - 1].position);
             SelectedSegmentIndex = isInsideBounds ? CurrentPointCount - 1 : -1;
             return isInsideBounds;
         }
+
         public int CompareTo(IPathElement other) => Index.CompareTo(other.Index);
         #endregion
         #endregion

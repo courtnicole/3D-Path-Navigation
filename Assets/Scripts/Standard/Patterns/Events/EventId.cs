@@ -20,10 +20,6 @@ namespace PathNav.Events
         LocomotionEvaluatorEnabled,
         [EventId(typeof(EventArgs))]
         LocomotionEvaluatorDisabled,
-        [EventId(typeof(EventArgs))]
-        RaycastEvaluatorEnabled,
-        [EventId(typeof(EventArgs))]
-        RaycastEvaluatorDisabled,
         #endregion
 
         #region ControllerEventArgs
@@ -64,21 +60,9 @@ namespace PathNav.Events
         JoystickTouchEnd,
         #endregion
 
-        #region RaycastEvaluatorEventArgs
-        [EventId(typeof(RaycastEvaluatorEventArgs))]
-        RaycastInteractableSet,
-        [EventId(typeof(RaycastEvaluatorEventArgs))]
-        RaycastInteractableUnset,
-        [EventId(typeof(RaycastEvaluatorEventArgs))]
-        RaycastInteractableSelected,
-        [EventId(typeof(RaycastEvaluatorEventArgs))]
-        RaycastInteractableUnselected,
-
+        #region RaycastResultEventArgs
         [EventId(typeof(RaycastResultEventArgs))]
         RaycastUpdated,
-        
-        [EventId(typeof(SpawnPointEventArgs))]
-        SpawnPointSelected,
         #endregion
 
         #region LocomotionEvaluatorEventArgs
@@ -89,24 +73,10 @@ namespace PathNav.Events
         [EventId(typeof(LocomotionEvaluatorEventArgs))]
         LocomotionEnded, 
         #endregion
-        
-        #region MoveEventArgs
-        [EventId(typeof(MoveEventArgs))]
-        MoveStarted,
-        [EventId(typeof(MoveEventArgs))]
-        MoveUpdated,
-        [EventId(typeof(MoveEventArgs))]
-        MoveEnded,
-        #endregion
 
         #region Placement
         [EventId(typeof(PlacementEventArgs))]
         StartPointPlaced,
-        #endregion
-
-        #region CollisionEventArgs
-        [EventId(typeof(CollisionEventArgs))]
-        WandCursorTriggerEntered,
         #endregion
 
         #region ControllerEvaluator
@@ -142,17 +112,10 @@ namespace PathNav.Events
         StopMovingPoint,
         #endregion
 
-        #region BulldozeEventArgs
-        [EventId(typeof(BulldozeEventArgs))]
-        DrawStarted,
-        [EventId(typeof(BulldozeEventArgs))]
-        DrawUpdated,
-        [EventId(typeof(BulldozeEventArgs))]
-        DrawEnded, 
-
-        [EventId(typeof(BulldozeEventArgs))]
+        #region PathStrategyEventArgs
+        [EventId(typeof(PathStrategyEventArgs))]
         EraseStarted,
-        [EventId(typeof(BulldozeEventArgs))]
+        [EventId(typeof(PathStrategyEventArgs))]
         EraseEnded, 
         #endregion
 
@@ -205,6 +168,10 @@ namespace PathNav.Events
         #region FollowerEvaluatorEventArgs
         [EventId(typeof(FollowerEvaluatorEventArgs))]
         ChangeSpeed,
+        [EventId(typeof(FollowerEvaluatorEventArgs))]
+        StartSpeedUpdate,
+        [EventId(typeof(FollowerEvaluatorEventArgs))]
+        EndSpeedUpdate,
         #endregion
     }
 

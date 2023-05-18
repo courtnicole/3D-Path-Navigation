@@ -18,6 +18,7 @@ namespace PathNav.PathPlanning
         void AddPoint(Vector3 position);
         void MovePoint(int pointIndex, Vector3 newPosition);
         void RemovePoint();
+
         void RemovePoint(int pointIndex);
         void ConfigureNodeVisuals(PathStrategy strategy);
         bool IsCloseToPoint(out int pointIndex);

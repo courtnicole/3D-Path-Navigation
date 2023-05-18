@@ -37,22 +37,32 @@ namespace PathNav.Interaction
         #region Manage Event Subscriptions
         private void SubscribeToEvents()
         {
-            //EventManager.Subscribe<ControllerEventArgs>(EventId.JoystickTouchStart, EvaluateJoystickTouchStart);
-            EventManager.Subscribe<ControllerEventArgs>(EventId.JoystickPoseUpdate, EvaluateJoystickPoseUpdate);
-            //EventManager.Subscribe<ControllerEventArgs>(EventId.JoystickTouchEnd,   EvaluateJoystickTouchEnd);
+            EventManager.Subscribe<ControllerEventArgs>(EventId.JoystickTouchStart, EvaluateJoystickTouchStart);
+            //EventManager.Subscribe<ControllerEventArgs>(EventId.JoystickPoseUpdate, EvaluateJoystickPoseUpdate);
+            EventManager.Subscribe<ControllerEventArgs>(EventId.JoystickTouchEnd,   EvaluateJoystickTouchEnd);
         }
 
         private void UnsubscribeToEvents()
         {
-            //EventManager.Subscribe<ControllerEventArgs>(EventId.JoystickTouchStart, EvaluateJoystickTouchStart);
-            EventManager.Subscribe<ControllerEventArgs>(EventId.JoystickPoseUpdate, EvaluateJoystickPoseUpdate);
-            //EventManager.Subscribe<ControllerEventArgs>(EventId.JoystickTouchEnd,   EvaluateJoystickTouchEnd);
+            EventManager.Subscribe<ControllerEventArgs>(EventId.JoystickTouchStart, EvaluateJoystickTouchStart);
+            //EventManager.Subscribe<ControllerEventArgs>(EventId.JoystickPoseUpdate, EvaluateJoystickPoseUpdate);
+            EventManager.Subscribe<ControllerEventArgs>(EventId.JoystickTouchEnd,   EvaluateJoystickTouchEnd);
         }
         #endregion
         
+        private void EvaluateJoystickTouchStart(object obj, ControllerEventArgs args)
+        {
+            Debug.Log("EvaluateJoystickTouchStart");
+            OnControllerEvaluatorFollowerEvent(EventId.StartSpeedUpdate, GetFollowerEvaluatorEventArgs(args.Controller));
+        }
+        
+        private void EvaluateJoystickTouchEnd(object obj, ControllerEventArgs args)
+        {
+            OnControllerEvaluatorFollowerEvent(EventId.EndSpeedUpdate, GetFollowerEvaluatorEventArgs(args.Controller));
+        }
+        
         private void EvaluateJoystickPoseUpdate(object obj, ControllerEventArgs args)
         {
-            Debug.Log("Updating speed");
             OnControllerEvaluatorFollowerEvent(EventId.ChangeSpeed, GetFollowerEvaluatorEventArgs(args.Controller));
         }
         
@@ -65,8 +75,6 @@ namespace PathNav.Interaction
 
         private static FollowerEvaluatorEventArgs GetFollowerEvaluatorEventArgs(IController controller) => new(controller);
         #endregion
-        
-        
     }
     
     public class FollowerEvaluatorEventArgs : EventArgs

@@ -34,7 +34,7 @@ namespace PathNav.Extensions
         }
 
         public static float Mod(float a, float b) => a - b * Mathf.Floor(a / b);
-
+        
         public static float AngleSigned(Vector3 v1, Vector3 v2, Vector3 n) => Mathf.Atan2(Vector3.Dot(n, Vector3.Cross(v1, v2)), Vector3.Dot(v1, v2)) * Mathf.Rad2Deg;
 
         public static float NormalizeAngle(this float angle)

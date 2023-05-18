@@ -2,18 +2,23 @@ namespace PathNav.PathPlanning
 {
     using Dreamteck.Splines;
     using Events;
+    using Input;
     using Interaction;
-    using System;
     using UnityEngine;
 
     public class FollowController : MonoBehaviour
     {
         [SerializeField] private SplineFollower follower;
-        [SerializeField] private float maxSpeed = 2.05f;
-        private const float _minSpeed = 0.35f;
-        private const float _acceleration = 0.58f;
-        private float _speedRatio;
-        private const float _wave = 1.59155f;
+        private const float _maxSpeed = 5.65f;
+        private const float _minSpeed = 0f;
+        private float _from;
+        private float _to;
+        private float _startTime;
+        private const float _duration = 2.5f;
+        private bool _updateSpeed;
+        private IController _interactingController;
+        private void SetController(IController controller) => _interactingController = controller;
+        private void ClearController() => _interactingController = null;
         
         private void OnEnable()
         {
@@ -25,29 +30,48 @@ namespace PathNav.PathPlanning
             UnsubscribeToEvents();
         }
 
+        private void Update()
+        {
+            if(!_updateSpeed) return;
+            _from                = _interactingController?.JoystickPose.y > 0 ? _minSpeed : _maxSpeed;
+            _to                  = _interactingController?.JoystickPose.y > 0 ? _maxSpeed : _minSpeed;
+            follower.followSpeed = Mathf.SmoothStep(_from, _to, (Time.time - _startTime) / _duration);
+            Debug.Log("Speed: " + follower.followSpeed);
+        }
         private void SubscribeToEvents()
         {
             EventManager.Subscribe<SceneControlEventArgs>(EventId.FollowPathReady, FollowPath);
-            EventManager.Subscribe<FollowerEvaluatorEventArgs>(EventId.ChangeSpeed,     SetSpeed);
+            EventManager.Subscribe<FollowerEvaluatorEventArgs>(EventId.StartSpeedUpdate, StartSpeedUpdate);
+            EventManager.Subscribe<FollowerEvaluatorEventArgs>(EventId.EndSpeedUpdate,   EndSpeedUpdate);
+            //EventManager.Subscribe<FollowerEvaluatorEventArgs>(EventId.ChangeSpeed,     SetSpeed);
         }
 
         private void UnsubscribeToEvents()
         {
             EventManager.Unsubscribe<SceneControlEventArgs>(EventId.FollowPathReady, FollowPath);
-            EventManager.Unsubscribe<FollowerEvaluatorEventArgs>(EventId.ChangeSpeed, SetSpeed);
+            //EventManager.Unsubscribe<FollowerEvaluatorEventArgs>(EventId.ChangeSpeed, SetSpeed);
+            EventManager.Unsubscribe<FollowerEvaluatorEventArgs>(EventId.StartSpeedUpdate, StartSpeedUpdate);
+            EventManager.Unsubscribe<FollowerEvaluatorEventArgs>(EventId.EndSpeedUpdate,   EndSpeedUpdate);
+        }
+
+        private void StartSpeedUpdate(object sender, FollowerEvaluatorEventArgs args)
+        {
+            _updateSpeed = true;
+            _startTime   = Time.time;
+            SetController(args.Controller);
+        }
+        
+        private void EndSpeedUpdate(object sender, FollowerEvaluatorEventArgs args)
+        {
+            _updateSpeed = false;
+            _startTime   = 0;
+            ClearController();
         }
 
         private void FollowPath(object sender, SceneControlEventArgs args)
         {
             follower.followSpeed = _minSpeed;
             follower.follow      = true;
-            _speedRatio = 0;
-        }
-
-        private void SetSpeed(object sender, FollowerEvaluatorEventArgs args)
-        {
-            _speedRatio          = (follower.followSpeed + (args.Sign * _acceleration * Time.deltaTime)) / maxSpeed;
-            follower.followSpeed = _minSpeed + (maxSpeed * Mathf.Sin(_speedRatio * _wave));
         }
     }
 }

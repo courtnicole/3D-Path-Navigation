@@ -28,13 +28,14 @@ namespace PathNav
         public void SaveSplineComputer(SplineComputer splineToSave)
         {
             _savedSplineComputer = splineToSave;
-            LoadNewScene("CoralReef");
+            SceneManager.LoadScene("Loading");
+        }
+
+        public void LoadNextScene()
+        {
+             StartCoroutine(PlayNextScene("CoralReef"));
         }
         
-        private void LoadNewScene(string scene)
-        {
-            StartCoroutine(PlayNextScene(scene));
-        }
         private static IEnumerator PlayNextScene(string scene)
         {
             // Set the current Scene to be able to unload it later

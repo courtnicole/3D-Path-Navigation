@@ -29,6 +29,11 @@ MonoBehaviour:
     m_Address: NodeVisual
     m_ReadOnly: 0
     m_SerializedLabels: []
+  - m_GUID: 4de44472c99692d4785d0ff9100d582d
+    m_Address: Scene Reef
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Model
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 2a19ebdba0b390b43b6dc97fa047bcb6, type: 2}
   m_SchemaSet:

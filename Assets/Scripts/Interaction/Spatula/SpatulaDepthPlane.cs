@@ -4,6 +4,7 @@ namespace PathNav.Interaction
     using Extensions;
     using Input;
     using UnityEngine;
+    using Object = UnityEngine.Object;
 
     public class SpatulaDepthPlane : MonoBehaviour, IRaycastResultProvider
     {
@@ -81,4 +82,6 @@ namespace PathNav.Interaction
         private RaycastResultEventArgs GetRaycastResultEventArgs() => new(this, Id);
         #endregion
     }
+    
+
 }
