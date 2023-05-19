@@ -11,6 +11,9 @@ namespace PathNav.Input
 
         public ControllerInfo ControllerInfo { get; }
         public Vector3 PointerPosition { get; }
+        public Quaternion PointerRotation { get; }
+        public Vector3 PointerForward { get; }
+        public Vector3 PointerUp { get; }
 
         public Vector3 Position { get; }
         public Quaternion Rotation { get; }

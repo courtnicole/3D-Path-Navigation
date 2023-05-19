@@ -43,13 +43,11 @@ namespace PathNav.PathPlanning
             EventManager.Subscribe<SceneControlEventArgs>(EventId.FollowPathReady, FollowPath);
             EventManager.Subscribe<FollowerEvaluatorEventArgs>(EventId.StartSpeedUpdate, StartSpeedUpdate);
             EventManager.Subscribe<FollowerEvaluatorEventArgs>(EventId.EndSpeedUpdate,   EndSpeedUpdate);
-            //EventManager.Subscribe<FollowerEvaluatorEventArgs>(EventId.ChangeSpeed,     SetSpeed);
         }
 
         private void UnsubscribeToEvents()
         {
             EventManager.Unsubscribe<SceneControlEventArgs>(EventId.FollowPathReady, FollowPath);
-            //EventManager.Unsubscribe<FollowerEvaluatorEventArgs>(EventId.ChangeSpeed, SetSpeed);
             EventManager.Unsubscribe<FollowerEvaluatorEventArgs>(EventId.StartSpeedUpdate, StartSpeedUpdate);
             EventManager.Unsubscribe<FollowerEvaluatorEventArgs>(EventId.EndSpeedUpdate,   EndSpeedUpdate);
         }

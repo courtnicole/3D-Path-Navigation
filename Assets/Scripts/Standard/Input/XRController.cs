@@ -18,6 +18,7 @@ namespace PathNav.Input
         [Header("Controller Info")] [SerializeField]
         private TrackedPoseDriver controllerPose;
 
+        [SerializeField] private TrackedPoseDriver pointerPose;
         [SerializeField] private ControllerInfo controllerInfo;
         [SerializeField] private AttachmentPoint attachmentPoint;
         [SerializeField] private Collider eraserCollider;
@@ -43,11 +44,14 @@ namespace PathNav.Input
         #region Implementation of IController
         public Transform Transform => controllerPose.transform;
         public ControllerInfo ControllerInfo => controllerInfo;
-        public Vector3 PointerPosition => controllerPose.transform.position;
         public Vector3 Position => controllerPose.transform.position;
         public Quaternion Rotation => controllerPose.transform.rotation;
         public Vector3 Forward => Rotation * Vector3.forward;
         public Vector3 Up => Rotation      * Vector3.up;
+        public Vector3 PointerPosition => pointerPose.transform.position;
+        public Quaternion PointerRotation => pointerPose.transform.rotation;
+        public Vector3 PointerForward => pointerPose.transform.forward;
+        public Vector3 PointerUp => PointerRotation      * Vector3.up;
         public Vector2 TouchPose { get; private set; }
         public Vector2 TouchPoseDelta { get; private set; }
         public Vector2 JoystickPose { get; private set; }
@@ -149,7 +153,6 @@ namespace PathNav.Input
 
         private void TouchpadTouchStart(InputAction.CallbackContext callbackContext)
         {
-            
             EventManager.Publish(EventId.TouchpadTouchStart, this, ControllerEventArgs);
         }
 

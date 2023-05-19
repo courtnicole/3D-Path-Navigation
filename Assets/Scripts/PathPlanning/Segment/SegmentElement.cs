@@ -110,8 +110,9 @@ namespace PathNav.PathPlanning
                 newPoints[i] = oldPoints[i];
             }
 
-            newPoints[^1] = new SplinePoint(position);
-            CurrentPoints = newPoints;
+            newPoints[^1]      = new SplinePoint(position);
+            newPoints[^1].size = 0.01f;
+            CurrentPoints      = newPoints;
 
             if (!_useNodeVisuals) return;
 
@@ -229,6 +230,10 @@ namespace PathNav.PathPlanning
 
         public bool CanErasePoint(ref IController controller)
         {
+            if (CurrentPointCount < 3) return false;
+            {
+                
+            }
             bool isInsideBounds = controller.CollisionBounds.Contains(CurrentPoints[CurrentPointCount - 1].position);
             SelectedSegmentIndex = isInsideBounds ? CurrentPointCount - 1 : -1;
             return isInsideBounds;
