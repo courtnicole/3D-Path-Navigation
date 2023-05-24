@@ -18,7 +18,7 @@ namespace PathNav.PathPlanning
         private BulldozerEvaluatorDraw<BulldozerStrategy> _drawState = new();
         private BulldozerEvaluatorErase<BulldozerStrategy> _eraseState = new();
 
-        public bool CanStartErasing
+        internal bool CanStartErasing
         {
             get
             {
@@ -28,7 +28,7 @@ namespace PathNav.PathPlanning
             }
         }
 
-        private bool CanStartDrawing => HasSegment && HasFirstSegmentPoint;
+        internal bool CanStartDrawing => HasSegment && HasFirstSegmentPoint;
         #endregion
 
         #region Controller Variables
@@ -45,8 +45,8 @@ namespace PathNav.PathPlanning
 
         private bool HasSegment => ActiveSegment != null;
 
-        private bool HasFirstSegmentPoint => ActiveSegment.CurrentPointCount     > 0;
-        private bool HasMultipleSegmentPoints => ActiveSegment.CurrentPointCount > 1;
+        private bool HasFirstSegmentPoint => ActiveSegment.CurrentPointCount     > 1;
+        private bool HasMultipleSegmentPoints => ActiveSegment.CurrentPointCount > 2;
 
         private bool HasValidEraseTarget => ActiveSegment.SelectedSegmentIndex == ActiveSegment.CurrentPointCount - 1;
         #endregion
@@ -119,7 +119,6 @@ namespace PathNav.PathPlanning
             if (ActiveSegment.CanErasePoint(ref interactingController))
             {
                 if (!CanStartErasing) return;
-                Debug.Log("StartingErase");
                 StartErase();
             }
             else

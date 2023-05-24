@@ -9,16 +9,20 @@ namespace PathNav.PathPlanning
     public class FollowController : MonoBehaviour
     {
         [SerializeField] private SplineFollower follower;
-        private const float _maxSpeed = 5.65f;
+        private const float _maxSpeed = 3.65f;
         private const float _minSpeed = 0f;
         private float _from;
         private float _to;
         private float _startTime;
-        private const float _duration = 2.5f;
+        private const float _duration = 4.5f;
         private bool _updateSpeed;
         private IController _interactingController;
         private void SetController(IController controller) => _interactingController = controller;
         private void ClearController() => _interactingController = null;
+        
+        private const float Acceleration = 0.58f;
+        private float currentVelocity;
+        private float elapsedTime;
         
         private void OnEnable()
         {
@@ -33,10 +37,25 @@ namespace PathNav.PathPlanning
         private void Update()
         {
             if(!_updateSpeed) return;
-            _from                = _interactingController?.JoystickPose.y > 0 ? _minSpeed : _maxSpeed;
-            _to                  = _interactingController?.JoystickPose.y > 0 ? _maxSpeed : _minSpeed;
-            follower.followSpeed = Mathf.SmoothStep(_from, _to, (Time.time - _startTime) / _duration);
-            Debug.Log("Speed: " + follower.followSpeed);
+            elapsedTime += Time.deltaTime;
+            
+            if (_interactingController?.JoystickPose.y > 0)
+            {
+                currentVelocity      = Mathf.Lerp(_minSpeed, _maxSpeed, Acceleration * elapsedTime);
+                follower.followSpeed = currentVelocity;
+                //follower.followSpeed = follower.followSpeed + 1.0f * Time.deltaTime;
+                //follower.followSpeed = Mathf.Min(follower.followSpeed, _maxSpeed);
+            }
+            else
+            {
+                currentVelocity      = Mathf.Lerp(_maxSpeed, _minSpeed, Acceleration * elapsedTime);
+                follower.followSpeed = currentVelocity;
+                //follower.followSpeed = follower.followSpeed - 1.0f * Time.deltaTime;
+                //follower.followSpeed = Mathf.Max(follower.followSpeed, _minSpeed);
+            }
+            // _from                = _interactingController?.JoystickPose.y > 0 ? _minSpeed : _maxSpeed;
+            // _to                  = _interactingController?.JoystickPose.y > 0 ? _maxSpeed : _minSpeed;
+            // follower.followSpeed = Mathf.Lerp(_from, _to, (Time.time - _startTime) / _duration);
         }
         private void SubscribeToEvents()
         {
@@ -54,15 +73,19 @@ namespace PathNav.PathPlanning
 
         private void StartSpeedUpdate(object sender, FollowerEvaluatorEventArgs args)
         {
-            _updateSpeed = true;
-            _startTime   = Time.time;
+            elapsedTime          = 0;
+            follower.followSpeed = _minSpeed;
+            _updateSpeed         = true;
+            _startTime           = Time.time;
             SetController(args.Controller);
         }
         
         private void EndSpeedUpdate(object sender, FollowerEvaluatorEventArgs args)
         {
-            _updateSpeed = false;
-            _startTime   = 0;
+            elapsedTime          = 0;
+            follower.followSpeed = _minSpeed;
+            _updateSpeed         = false;
+            _startTime           = 0;
             ClearController();
         }
 

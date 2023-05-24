@@ -30,7 +30,6 @@ namespace PathNav.ExperimentControl
 
         public void LoadNextStep()
         {
-            
             switch (nextStep)
             {
                 case Steps.Tutorial:

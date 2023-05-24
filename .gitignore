@@ -71,3 +71,7 @@ crashlytics-build.properties
 /[Aa]ssets/[Ss]treamingAssets/aa.meta
 /[Aa]ssets/[Ss]treamingAssets/aa/*
 
+Assets/Scenes/Castle/LightingData.asset
+Assets/Scenes/Castle/LightingData.asset.meta
+Assets/Scenes/Tabletop/LightingData.asset
+Assets/Scenes/Tabletop/LightingData.asset.meta

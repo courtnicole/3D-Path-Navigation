@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.18028378, g: 0.22571412, b: 0.30692285, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -547,6 +547,7 @@ Canvas:
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
   m_AdditionalShaderChannelsFlag: 0
+  m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
   m_SortingOrder: 0
   m_TargetDisplay: 0
@@ -819,7 +820,6 @@ GameObject:
   m_Component:
   - component: {fileID: 705507995}
   - component: {fileID: 705507994}
-  - component: {fileID: 705507996}
   m_Layer: 0
   m_Name: Directional Light
   m_TagString: Untagged
@@ -904,26 +904,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
---- !u!114 &705507996
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 705507993}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 474bcb49853aa07438625e644c072ee6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Version: 1
-  m_UsePipelineSettings: 1
-  m_AdditionalLightsShadowResolutionTier: 2
-  m_LightLayerMask: 1
-  m_CustomShadowLayers: 0
-  m_ShadowLayerMask: 1
-  m_LightCookieSize: {x: 1, y: 1}
-  m_LightCookieOffset: {x: 0, y: 0}
 --- !u!4 &725964751 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 6169362948042999664, guid: 81eb8a07f64251845bbe5c9a2ef66920, type: 3}
@@ -1599,6 +1579,7 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
+    serializedVersion: 3
     m_TransformParent: {fileID: 1060976101}
     m_Modifications:
     - target: {fileID: 272850237864656164, guid: 81eb8a07f64251845bbe5c9a2ef66920, type: 3}
@@ -2196,7 +2177,7 @@ PrefabInstance:
     - target: {fileID: 4114370766090396417, guid: 81eb8a07f64251845bbe5c9a2ef66920, type: 3}
       propertyPath: action
       value: 
-      objectReference: {fileID: 11711766586467970, guid: e0ca4504471ca124088e1e2cfe6804ae, type: 3}
+      objectReference: {fileID: -8514278639596572500, guid: e0ca4504471ca124088e1e2cfe6804ae, type: 3}
     - target: {fileID: 4114370766090396417, guid: 81eb8a07f64251845bbe5c9a2ef66920, type: 3}
       propertyPath: _duration
       value: 0.5
@@ -2389,14 +2370,6 @@ PrefabInstance:
       propertyPath: m_RotationInput.m_Reference
       value: 
       objectReference: {fileID: 967343632835644457, guid: e0ca4504471ca124088e1e2cfe6804ae, type: 3}
-    - target: {fileID: 6169362947660032381, guid: 81eb8a07f64251845bbe5c9a2ef66920, type: 3}
-      propertyPath: m_TrackingStateInput.m_Action.m_Id
-      value: 482c2b3b-7ec7-4934-8c4a-6b33329a40cb
-      objectReference: {fileID: 0}
-    - target: {fileID: 6169362947660032381, guid: 81eb8a07f64251845bbe5c9a2ef66920, type: 3}
-      propertyPath: m_TrackingStateInput.m_Action.m_Name
-      value: Tracking State Input
-      objectReference: {fileID: 0}
     - target: {fileID: 6169362947660032381, guid: 81eb8a07f64251845bbe5c9a2ef66920, type: 3}
       propertyPath: m_PositionAction.m_SingletonActionBindings.Array.data[0].m_Path
       value: <XRController>{RightHand}/devicePosition
@@ -2614,14 +2587,6 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 3258231915646350909, guid: e0ca4504471ca124088e1e2cfe6804ae, type: 3}
     - target: {fileID: 6169362948954005581, guid: 81eb8a07f64251845bbe5c9a2ef66920, type: 3}
-      propertyPath: m_TrackingStateInput.m_Action.m_Id
-      value: afd54745-784f-4150-a05f-0beb08b288f9
-      objectReference: {fileID: 0}
-    - target: {fileID: 6169362948954005581, guid: 81eb8a07f64251845bbe5c9a2ef66920, type: 3}
-      propertyPath: m_TrackingStateInput.m_Action.m_Name
-      value: Tracking State Input
-      objectReference: {fileID: 0}
-    - target: {fileID: 6169362948954005581, guid: 81eb8a07f64251845bbe5c9a2ef66920, type: 3}
       propertyPath: m_PositionAction.m_SingletonActionBindings.Array.data[0].m_Path
       value: <XRController>{RightHand}/pointerPosition
       objectReference: {fileID: 0}
@@ -2665,10 +2630,6 @@ PrefabInstance:
       propertyPath: m_LocalPosition.x
       value: 0.11
       objectReference: {fileID: 0}
-    - target: {fileID: 7624408825068668218, guid: 81eb8a07f64251845bbe5c9a2ef66920, type: 3}
-      propertyPath: m_Materials.Array.data[0]
-      value: 
-      objectReference: {fileID: 2100000, guid: e80438874c2ec2e43834123ce1f64fa5, type: 2}
     - target: {fileID: 7624408825205195837, guid: 81eb8a07f64251845bbe5c9a2ef66920, type: 3}
       propertyPath: m_LocalScale.y
       value: 0.1
@@ -2677,14 +2638,6 @@ PrefabInstance:
       propertyPath: m_LocalPosition.x
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 7624408826040987637, guid: 81eb8a07f64251845bbe5c9a2ef66920, type: 3}
-      propertyPath: m_Materials.Array.data[0]
-      value: 
-      objectReference: {fileID: 2100000, guid: 62cf331424e9c154284798e5e3142d42, type: 2}
-    - target: {fileID: 7624408826223561718, guid: 81eb8a07f64251845bbe5c9a2ef66920, type: 3}
-      propertyPath: m_Materials.Array.data[0]
-      value: 
-      objectReference: {fileID: 2100000, guid: 1d16a82d4313b794f99a0e7b89b61ad5, type: 2}
     - target: {fileID: 7624408826223561720, guid: 81eb8a07f64251845bbe5c9a2ef66920, type: 3}
       propertyPath: m_LocalScale.y
       value: 0.1
@@ -2698,6 +2651,8 @@ PrefabInstance:
       value: 
       objectReference: {fileID: -3947085769738995516, guid: e0ca4504471ca124088e1e2cfe6804ae, type: 3}
     m_RemovedComponents: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 81eb8a07f64251845bbe5c9a2ef66920, type: 3}
 --- !u!4 &1195018942 stripped
 Transform:
@@ -2804,7 +2759,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 01614664b831546d2ae94a42149d80ac, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_SendPointerHoverToParent: 1
   m_MoveRepeatDelay: 0.5
   m_MoveRepeatRate: 0.1
   m_XRTrackingOrigin: {fileID: 0}
@@ -2821,7 +2775,6 @@ MonoBehaviour:
   m_TrackedDeviceOrientationAction: {fileID: -8081773802841398021, guid: e0ca4504471ca124088e1e2cfe6804ae, type: 3}
   m_DeselectOnBackgroundClick: 1
   m_PointerBehavior: 0
-  m_CursorLockBehavior: 0
 --- !u!114 &1632315499
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2984,7 +2937,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: cadced02efcd811458791ab2965af775, type: 2}
+  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -3076,7 +3029,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_TrackingType: 0
   m_UpdateType: 0
-  m_IgnoreTrackingState: 0
   m_PositionInput:
     m_UseReference: 0
     m_Action:
@@ -3115,18 +3067,6 @@ MonoBehaviour:
         m_Groups: 
         m_Action: Rotation
         m_Flags: 0
-      m_Flags: 0
-    m_Reference: {fileID: 0}
-  m_TrackingStateInput:
-    m_UseReference: 0
-    m_Action:
-      m_Name: 
-      m_Type: 0
-      m_ExpectedControlType: 
-      m_Id: 
-      m_Processors: 
-      m_Interactions: 
-      m_SingletonActionBindings: []
       m_Flags: 0
     m_Reference: {fileID: 0}
   m_PositionAction:
@@ -3462,7 +3402,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_TrackingType: 0
   m_UpdateType: 0
-  m_IgnoreTrackingState: 0
   m_PositionInput:
     m_UseReference: 0
     m_Action:
@@ -3501,18 +3440,6 @@ MonoBehaviour:
         m_Groups: 
         m_Action: Rotation
         m_Flags: 0
-      m_Flags: 0
-    m_Reference: {fileID: 0}
-  m_TrackingStateInput:
-    m_UseReference: 0
-    m_Action:
-      m_Name: 
-      m_Type: 0
-      m_ExpectedControlType: 
-      m_Id: 
-      m_Processors: 
-      m_Interactions: 
-      m_SingletonActionBindings: []
       m_Flags: 0
     m_Reference: {fileID: 0}
   m_PositionAction:
@@ -3791,6 +3718,7 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
+    serializedVersion: 3
     m_TransformParent: {fileID: 1060976101}
     m_Modifications:
     - target: {fileID: 272850237864656164, guid: 81eb8a07f64251845bbe5c9a2ef66920, type: 3}
@@ -4298,10 +4226,6 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4114370766090396417, guid: 81eb8a07f64251845bbe5c9a2ef66920, type: 3}
-      propertyPath: action
-      value: 
-      objectReference: {fileID: 5113088590926889233, guid: e0ca4504471ca124088e1e2cfe6804ae, type: 3}
-    - target: {fileID: 4114370766090396417, guid: 81eb8a07f64251845bbe5c9a2ef66920, type: 3}
       propertyPath: _duration
       value: 0.5
       objectReference: {fileID: 0}
@@ -4593,10 +4517,6 @@ PrefabInstance:
       propertyPath: m_Camera
       value: 
       objectReference: {fileID: 963194227}
-    - target: {fileID: 7624408825068668218, guid: 81eb8a07f64251845bbe5c9a2ef66920, type: 3}
-      propertyPath: m_Materials.Array.data[0]
-      value: 
-      objectReference: {fileID: 2100000, guid: e80438874c2ec2e43834123ce1f64fa5, type: 2}
     - target: {fileID: 7624408825205195837, guid: 81eb8a07f64251845bbe5c9a2ef66920, type: 3}
       propertyPath: m_LocalScale.y
       value: 0.1
@@ -4605,14 +4525,6 @@ PrefabInstance:
       propertyPath: m_LocalPosition.x
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 7624408826040987637, guid: 81eb8a07f64251845bbe5c9a2ef66920, type: 3}
-      propertyPath: m_Materials.Array.data[0]
-      value: 
-      objectReference: {fileID: 2100000, guid: 62cf331424e9c154284798e5e3142d42, type: 2}
-    - target: {fileID: 7624408826223561718, guid: 81eb8a07f64251845bbe5c9a2ef66920, type: 3}
-      propertyPath: m_Materials.Array.data[0]
-      value: 
-      objectReference: {fileID: 2100000, guid: 1d16a82d4313b794f99a0e7b89b61ad5, type: 2}
     - target: {fileID: 7624408826223561720, guid: 81eb8a07f64251845bbe5c9a2ef66920, type: 3}
       propertyPath: m_LocalScale.y
       value: 0.1
@@ -4626,4 +4538,6 @@ PrefabInstance:
       value: 
       objectReference: {fileID: -7428500947354388255, guid: e0ca4504471ca124088e1e2cfe6804ae, type: 3}
     m_RemovedComponents: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 81eb8a07f64251845bbe5c9a2ef66920, type: 3}

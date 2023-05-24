@@ -52,7 +52,6 @@ namespace PathNav.Interaction
         
         private void EvaluateJoystickTouchStart(object obj, ControllerEventArgs args)
         {
-            Debug.Log("EvaluateJoystickTouchStart");
             OnControllerEvaluatorFollowerEvent(EventId.StartSpeedUpdate, GetFollowerEvaluatorEventArgs(args.Controller));
         }
         

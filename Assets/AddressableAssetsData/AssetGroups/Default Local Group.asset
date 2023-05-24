@@ -20,17 +20,30 @@ MonoBehaviour:
   - m_GUID: c03603e8114cb0f46b2babbbf6b33eed
     m_Address: PathStartPointPrefab
     m_ReadOnly: 0
-    m_SerializedLabels: []
+    m_SerializedLabels:
+    - PathCreation
   - m_GUID: 8031af614c2dc0e439e6871a2efa4d96
     m_Address: SegmentPrefab
     m_ReadOnly: 0
-    m_SerializedLabels: []
+    m_SerializedLabels:
+    - PathCreation
   - m_GUID: 55d853d698d576746b9d409678b82e33
     m_Address: NodeVisual
     m_ReadOnly: 0
-    m_SerializedLabels: []
+    m_SerializedLabels:
+    - PathCreation
   - m_GUID: 4de44472c99692d4785d0ff9100d582d
-    m_Address: Scene Reef
+    m_Address: Reef
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Model
+  - m_GUID: 1e275015a55794b42918871ffda0fcfc
+    m_Address: Tabletop
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Model
+  - m_GUID: 5ca72f8923331b34588cde0a94c12bdc
+    m_Address: Castle
     m_ReadOnly: 0
     m_SerializedLabels:
     - Model

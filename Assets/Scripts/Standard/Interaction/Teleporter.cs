@@ -66,11 +66,6 @@ namespace PathNav.Interaction
                 }
             }
 
-            // if (!cameraTransform.gameObject.GetComponent<SteamVR_Fade>())
-            // {
-            //     cameraTransform.gameObject.AddComponent<SteamVR_Fade>();
-            // }
-
             _enabled = true;
         }
 

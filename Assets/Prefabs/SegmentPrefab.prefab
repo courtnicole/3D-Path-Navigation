@@ -10,12 +10,11 @@ GameObject:
   m_Component:
   - component: {fileID: 4660966899102463589}
   - component: {fileID: -4458142688382300969}
-  - component: {fileID: 135215333936874371}
-  - component: {fileID: 3289862636738511954}
-  - component: {fileID: -3918335335050171991}
-  - component: {fileID: 1580887308312812948}
   - component: {fileID: 3090619270443911710}
-  m_Layer: 9
+  - component: {fileID: 8647980501506276079}
+  - component: {fileID: 7905707098166073567}
+  - component: {fileID: 5944507959379784860}
+  m_Layer: 0
   m_Name: SegmentPrefab
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -114,7 +113,7 @@ MonoBehaviour:
   _space: 0
   _sampleMode: 1
   _subscribers:
-  - {fileID: -3918335335050171991}
+  - {fileID: 5944507959379784860}
   _rawSamples:
   - position: {x: -0.01, y: 0, z: 0.01}
     up: {x: 0, y: 1, z: 0}
@@ -207,7 +206,21 @@ MonoBehaviour:
     size: 0.1
     percent: 1
   _nodes: []
---- !u!33 &135215333936874371
+--- !u!114 &3090619270443911710
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4660966899102463591}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: add19ade7da34044d8e4ce7dd8e2a71b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  segmentInfo: {fileID: 11400000, guid: fe35d87291b3e75419872a9665bd893a, type: 2}
+  spline: {fileID: -4458142688382300969}
+--- !u!33 &8647980501506276079
 MeshFilter:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -215,7 +228,7 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4660966899102463591}
   m_Mesh: {fileID: 0}
---- !u!23 &3289862636738511954
+--- !u!23 &7905707098166073567
 MeshRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -257,7 +270,7 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!114 &-3918335335050171991
+--- !u!114 &5944507959379784860
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -266,7 +279,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 4660966899102463591}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 77ab80dc0820f9d4a8cd9fddbbc89057, type: 3}
+  m_Script: {fileID: 11500000, guid: 2e1690bb01d509a439fc991a10f8278f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   updateMethod: 0
@@ -307,9 +320,9 @@ MonoBehaviour:
   _clipTo: 1
   animClipFrom: 0
   animClipTo: 1
-  multithreaded: 1
-  buildOnAwake: 0
-  buildOnEnable: 1
+  multithreaded: 0
+  buildOnAwake: 1
+  buildOnEnable: 0
   _baked: 0
   _markDynamic: 1
   _size: 1
@@ -318,48 +331,30 @@ MonoBehaviour:
   _normalMethod: 1
   _calculateTangents: 1
   _useSplineSize: 1
-  _useSplineColor: 0
+  _useSplineColor: 1
   _rotation: 0
   _flipFaces: 0
-  _doubleSided: 0
+  _doubleSided: 1
   _uvMode: 0
   _uvScale: {x: 1, y: 1}
   _uvOffset: {x: 0, y: 0}
   _uvRotation: 0
   _meshIndexFormat: 0
   _bakedMesh: {fileID: 0}
-  colliderUpdateRate: 0.3
-  _sides: 12
-  _roundCapLatitude: 6
-  _capMode: 0
-  _revolve: 360
-  _capUVScale: 1
-  _uvTwist: 0
---- !u!64 &1580887308312812948
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4660966899102463591}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 4
-  m_Convex: 0
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 0}
---- !u!114 &3090619270443911710
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4660966899102463591}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: add19ade7da34044d8e4ce7dd8e2a71b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  segmentInfo: {fileID: 11400000, guid: fe35d87291b3e75419872a9665bd893a, type: 2}
-  spline: {fileID: -4458142688382300969}
+  colliderUpdateRate: 0.2
+  _slices: 2
+  _compensateCorners: 1
+  _useShapeCurve: 0
+  _shape:
+    serializedVersion: 2
+    m_Curve: []
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  _lastShape:
+    serializedVersion: 2
+    m_Curve: []
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  _shapeExposure: 1

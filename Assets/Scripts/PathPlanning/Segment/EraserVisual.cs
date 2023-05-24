@@ -7,6 +7,7 @@ namespace PathNav.PathPlanning
     public class EraserVisual : MonoBehaviour
     {
         [SerializeField] private MeshRenderer meshRenderer;
+
         private void OnEnable()
         {
             meshRenderer.enabled = false;
@@ -20,19 +21,28 @@ namespace PathNav.PathPlanning
 
         private void SubscribeToEvents()
         {
-            EventManager.Subscribe<PathStrategyEventArgs>(EventId.EraseStarted, ToggleEraserVisibility);
-            EventManager.Subscribe<PathStrategyEventArgs>(EventId.EraseEnded,   ToggleEraserVisibility);
+            EventManager.Subscribe<PathStrategyEventArgs>(EventId.CanErase,     ShowEraser);
+            EventManager.Subscribe<PathStrategyEventArgs>(EventId.EraseStarted, ShowEraser);
+            EventManager.Subscribe<PathStrategyEventArgs>(EventId.EraseEnded,   HideEraser);
+            EventManager.Subscribe<PathStrategyEventArgs>(EventId.CannotErase,  HideEraser);
         }
 
         private void UnsubscribeToEvents()
         {
-            EventManager.Unsubscribe<PathStrategyEventArgs>(EventId.EraseStarted, ToggleEraserVisibility);
-            EventManager.Unsubscribe<PathStrategyEventArgs>(EventId.EraseEnded,   ToggleEraserVisibility);
+            EventManager.Unsubscribe<PathStrategyEventArgs>(EventId.CanErase,     ShowEraser);
+            EventManager.Unsubscribe<PathStrategyEventArgs>(EventId.EraseStarted, ShowEraser);
+            EventManager.Unsubscribe<PathStrategyEventArgs>(EventId.EraseEnded,   HideEraser);
+            EventManager.Unsubscribe<PathStrategyEventArgs>(EventId.CannotErase,  HideEraser);
         }
 
-        private void ToggleEraserVisibility(object sender, PathStrategyEventArgs args)
+        private void ShowEraser(object sender, PathStrategyEventArgs args)
         {
-            meshRenderer.enabled = !meshRenderer.enabled;
+            meshRenderer.enabled = true;
+        }
+
+        private void HideEraser(object sender, PathStrategyEventArgs args)
+        {
+            meshRenderer.enabled = false;
         }
     }
 }

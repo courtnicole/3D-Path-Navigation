@@ -1,10 +1,12 @@
 namespace PathNav.Events
 {
+    using ExperimentControl;
     using System;
     using PathPlanning;
     using Input;
     using Interaction;
     using PointVisualEventArgs = PathPlanning.PointVisualEventArgs;
+    using Type = System.Type;
 
     public enum EventId
     {
@@ -81,9 +83,6 @@ namespace PathNav.Events
 
         #region ControllerEvaluator
         [EventId(typeof(ControllerEvaluatorEventArgs))]
-        SetPathStrategy,
-
-        [EventId(typeof(ControllerEvaluatorEventArgs))]
         BeginPlacingStartPoint,
         [EventId(typeof(ControllerEvaluatorEventArgs))]
         FinishPlacingStartPoint,
@@ -117,6 +116,10 @@ namespace PathNav.Events
         EraseStarted,
         [EventId(typeof(PathStrategyEventArgs))]
         EraseEnded, 
+        [EventId(typeof(PathStrategyEventArgs))]
+        CanErase, 
+        [EventId(typeof(PathStrategyEventArgs))]
+        CannotErase, 
         #endregion
 
         #region NodeEventArgs
@@ -172,6 +175,11 @@ namespace PathNav.Events
         StartSpeedUpdate,
         [EventId(typeof(FollowerEvaluatorEventArgs))]
         EndSpeedUpdate,
+        #endregion
+
+        #region CreationTrialEventArgs
+        [EventId(typeof(CreationTrialEventArgs))]
+        SetPathStrategy,
         #endregion
     }
 

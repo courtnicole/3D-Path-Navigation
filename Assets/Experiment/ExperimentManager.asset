@@ -16,6 +16,8 @@ MonoBehaviour:
   - {fileID: 11400000, guid: f85e42c98c4748c45bf3ba8635731384, type: 2}
   models:
   - {fileID: 11400000, guid: b4f1be84244926646bf1303cd7380ea0, type: 2}
+  - {fileID: 11400000, guid: 37928f53a7085c444b8a232c8c5465d4, type: 2}
+  - {fileID: 11400000, guid: a8618e0ed27ad0d40b72518ff8d04d34, type: 2}
   loadingScene: LoadingScene
   currentModelIndex: 0
   currentConditionIndex: 0

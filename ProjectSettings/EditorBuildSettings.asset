@@ -14,6 +14,12 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Loading.unity
     guid: 197e0ef8e2c2d5f4195e1c7330933622
+  - enabled: 1
+    path: Assets/Scenes/PathCreationTrial.unity
+    guid: 9af391bb1f0426e4fbc88b4345028330
+  - enabled: 1
+    path: Assets/Scenes/Castle.unity
+    guid: 27fe1717e5e45494890c2454a9896c44
   m_configObjects:
     Unity.XR.OpenVR.Settings: {fileID: 11400000, guid: ef81bc5db50acf3438eccc31a036afe8, type: 2}
     com.unity.addressableassets: {fileID: 11400000, guid: b34dad98baa64ef488376026e897a177, type: 2}

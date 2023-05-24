@@ -1,6 +1,7 @@
 namespace PathNav.PathPlanning
 {
     using Events;
+    using ExperimentControl;
     using Extensions;
     using Input;
     using Interaction;
@@ -79,7 +80,7 @@ namespace PathNav.PathPlanning
             EventManager.Subscribe<ControllerEvaluatorEventArgs>(EventId.FinishPlacingStartPoint, FinishPlacingStartPoint);
 
             EventManager.Subscribe<PlacementEventArgs>(EventId.StartPointPlaced, StartPointPlaced);
-            EventManager.Subscribe<ControllerEvaluatorEventArgs>(EventId.SetPathStrategy, SetPathStrategy);
+            EventManager.Subscribe<CreationTrialEventArgs>(EventId.SetPathStrategy, SetPathStrategy);
         }
 
         private void UnsubscribeToEvents()
@@ -88,7 +89,7 @@ namespace PathNav.PathPlanning
             EventManager.Unsubscribe<ControllerEvaluatorEventArgs>(EventId.FinishPlacingStartPoint, FinishPlacingStartPoint);
 
             EventManager.Unsubscribe<PlacementEventArgs>(EventId.StartPointPlaced, StartPointPlaced);
-            EventManager.Unsubscribe<ControllerEvaluatorEventArgs>(EventId.SetPathStrategy, SetPathStrategy);
+            EventManager.Unsubscribe<CreationTrialEventArgs>(EventId.SetPathStrategy, SetPathStrategy);
         } 
         #endregion
 
@@ -100,7 +101,7 @@ namespace PathNav.PathPlanning
             ConfigureSegment();
         }
 
-        private void SetPathStrategy(object sender, ControllerEvaluatorEventArgs args)
+        private void SetPathStrategy(object sender, CreationTrialEventArgs args)
         {
             _strategy = args.Strategy;
             switch (_strategy)

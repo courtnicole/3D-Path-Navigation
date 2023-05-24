@@ -33,7 +33,7 @@ namespace PathNav
 
         public void LoadNextScene()
         {
-             StartCoroutine(PlayNextScene("CoralReef"));
+             StartCoroutine(PlayNextScene("Castle"));
         }
         
         private static IEnumerator PlayNextScene(string scene)
