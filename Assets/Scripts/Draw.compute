@@ -1,0 +1,37 @@
+#pragma kernel draw
+#pragma kernel init
+
+float4 position;
+bool is_drawing;
+float4 previous_position;
+RWTexture2D<float4> canvas;
+
+const float width = 0.1;
+const float stroke_smoothing_interval = 0.1;
+const float4 colour = float4(1,0,0,1);
+
+
+float4 hard_brush(const float2 pixel_pos, float4 current_color)
+{
+    for (float i = 0; i < 1.0; i += stroke_smoothing_interval)
+    {
+        const float2 pos = lerp(previous_position, position, i);
+        if (length(pixel_pos - pos) < width)
+            return colour;
+    }
+
+    return current_color;
+}
+
+[numthreads(8,8,1)]
+void draw (uint3 id : SV_DispatchThreadID)
+{
+    if (!is_drawing) return;
+    canvas[id.xy] = hard_brush(id.xy, canvas[id.xy]);
+}
+
+[numthreads(8,8,1)]
+void init (uint3 id : SV_DispatchThreadID)
+{
+    canvas[id.xy] = float4(0,0,0,0);
+}

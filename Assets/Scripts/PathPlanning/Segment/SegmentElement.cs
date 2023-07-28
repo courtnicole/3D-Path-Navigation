@@ -231,9 +231,6 @@ namespace PathNav.PathPlanning
         public bool CanErasePoint(ref IController controller)
         {
             if (CurrentPointCount < 3) return false;
-            {
-                
-            }
             bool isInsideBounds = controller.CollisionBounds.Contains(CurrentPoints[CurrentPointCount - 1].position);
             SelectedSegmentIndex = isInsideBounds ? CurrentPointCount - 1 : -1;
             return isInsideBounds;

@@ -48,7 +48,7 @@ namespace PathNav.PathPlanning
         private bool HasFirstSegmentPoint => ActiveSegment.CurrentPointCount     > 1;
         private bool HasMultipleSegmentPoints => ActiveSegment.CurrentPointCount > 2;
 
-        private bool HasValidEraseTarget => ActiveSegment.SelectedSegmentIndex == ActiveSegment.CurrentPointCount - 1;
+        private bool HasValidEraseTarget => ActiveSegment.SelectedSegmentIndex != -1;  //== ActiveSegment.CurrentPointCount - 1;
         #endregion
 
         #region Implementation of IPathStrategy
