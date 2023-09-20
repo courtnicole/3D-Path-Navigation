@@ -11,6 +11,7 @@ namespace PathNav.Interaction
         [SerializeField] private Transform cameraTransform;
 
         [SerializeField] private Transform startingPosition;
+        [SerializeField][Range(0.0f,5.0f)] private float fadeTime = 2.25f;
         #endregion
 
         #region Local Variables

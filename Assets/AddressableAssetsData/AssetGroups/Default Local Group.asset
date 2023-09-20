@@ -47,6 +47,10 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels:
     - Model
+  - m_GUID: 0a125ddaa5bc0e34a8125233875b8a2c
+    m_Address: Assets/Prefabs/Sphere.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 2a19ebdba0b390b43b6dc97fa047bcb6, type: 2}
   m_SchemaSet:

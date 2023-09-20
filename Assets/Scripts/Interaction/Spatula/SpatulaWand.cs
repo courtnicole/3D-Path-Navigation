@@ -28,7 +28,13 @@ namespace PathNav.Interaction
             get => _hitResult;
             set => _hitResult = value;
         }
-        public Vector3 RayHitPoint => _hitResult.point;
+        private Vector3 _rayHitPoint;
+
+        public Vector3 RayHitPoint
+        {
+            get => _rayHitPoint;
+            set => _rayHitPoint = value;
+        } 
 
         private SurfaceHit _surfaceHit;
         public ISurfaceHit SurfaceHit => _surfaceHit;

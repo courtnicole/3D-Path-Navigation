@@ -3,6 +3,7 @@ namespace PathNav.PathPlanning
     using Events;
     using Input;
     using Patterns.FSM;
+    using UnityEngine;
 
     public class BulldozerEvaluatorIdle<T> : IState<T> where T : BulldozerStrategy
     {
@@ -10,10 +11,6 @@ namespace PathNav.PathPlanning
         public void Enter(T entity) { }
 
         public void UpdateLogic(T entity)
-        {
-        }
-
-        public void UpdatePhysics(T entity)
         {
             if (entity.ActiveSegment.CanErasePoint(ref entity.Controllers[0]))
             {
@@ -34,7 +31,16 @@ namespace PathNav.PathPlanning
                 EventManager.Publish(EventId.CannotErase, this, new PathStrategyEventArgs(entity));
             }
         }
-        public void Exit(T entity) { }
+
+        public void UpdatePhysics(T entity)
+        {
+
+        }
+
+        public void Exit(T entity)
+        {
+            
+        }
         #endregion
     }
 }

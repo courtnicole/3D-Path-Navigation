@@ -83,7 +83,7 @@ namespace PathNav.Input
         private void EnableActions()
         {
             triggerClick.action.Enable();
-            triggerClick.action.performed += TriggerDown;
+            triggerClick.action.started += TriggerDown;
             triggerClick.action.canceled  += TriggerUp;
 
             systemClick.action.Enable();
@@ -101,7 +101,7 @@ namespace PathNav.Input
             touchpadPose.action.performed += TouchpadTouchUpdate;
 
             trackpadTouch.action.Enable();
-            trackpadTouch.action.performed += TouchpadTouchStart;
+            trackpadTouch.action.started += TouchpadTouchStart;
             trackpadTouch.action.canceled  += TouchpadTouchEnd;
 
             gripClick.action.Enable();
@@ -113,7 +113,7 @@ namespace PathNav.Input
             joystickPose.action.performed += JoystickPoseUpdate;
 
             joystickTouch.action.Enable();
-            joystickTouch.action.performed += JoystickTouchStart;
+            joystickTouch.action.started += JoystickTouchStart;
             joystickTouch.action.canceled  += JoystickTouchEnd;
 
             joystickClick.action.Enable();

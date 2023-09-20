@@ -2,6 +2,7 @@ namespace PathNav.PathPlanning
 {
     using Dreamteck.Splines;
     using Events;
+    using ExperimentControl;
     using System;
     using UnityEngine;
 

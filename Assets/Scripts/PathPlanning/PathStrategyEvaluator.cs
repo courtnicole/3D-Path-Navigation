@@ -80,7 +80,7 @@ namespace PathNav.PathPlanning
             EventManager.Subscribe<ControllerEvaluatorEventArgs>(EventId.FinishPlacingStartPoint, FinishPlacingStartPoint);
 
             EventManager.Subscribe<PlacementEventArgs>(EventId.StartPointPlaced, StartPointPlaced);
-            EventManager.Subscribe<CreationTrialEventArgs>(EventId.SetPathStrategy, SetPathStrategy);
+            EventManager.Subscribe<SceneControlEventArgs>(EventId.SetPathStrategy, SetPathStrategy);
         }
 
         private void UnsubscribeToEvents()
@@ -89,7 +89,7 @@ namespace PathNav.PathPlanning
             EventManager.Unsubscribe<ControllerEvaluatorEventArgs>(EventId.FinishPlacingStartPoint, FinishPlacingStartPoint);
 
             EventManager.Unsubscribe<PlacementEventArgs>(EventId.StartPointPlaced, StartPointPlaced);
-            EventManager.Unsubscribe<CreationTrialEventArgs>(EventId.SetPathStrategy, SetPathStrategy);
+            EventManager.Unsubscribe<SceneControlEventArgs>(EventId.SetPathStrategy, SetPathStrategy);
         } 
         #endregion
 
@@ -101,7 +101,7 @@ namespace PathNav.PathPlanning
             ConfigureSegment();
         }
 
-        private void SetPathStrategy(object sender, CreationTrialEventArgs args)
+        private void SetPathStrategy(object sender, SceneControlEventArgs args)
         {
             _strategy = args.Strategy;
             switch (_strategy)
@@ -112,10 +112,12 @@ namespace PathNav.PathPlanning
                     break;
                 case PathStrategy.Spatula:
                     _spatulaStrategy = new SpatulaStrategy(placementPlane);
+                    InitializeSpatulaStrategy();
                     SetStrategy(_spatulaStrategy);
                     break;
                 default:
                     _bulldozerStrategy = new BulldozerStrategy();
+                    InitializeBulldozerStrategy();
                     SetStrategy(_bulldozerStrategy);
                     break;
             }
@@ -123,6 +125,17 @@ namespace PathNav.PathPlanning
         #endregion
 
         #region Strategy Management
+
+        private void InitializeSpatulaStrategy()
+        {
+            placementPlane.Enable();
+        }
+
+        private void InitializeBulldozerStrategy()
+        {
+            placementPlane.Disable();
+        }
+        
         private void SetStrategy(IPathStrategy strategy)
         {
             _activeStrategy = strategy;

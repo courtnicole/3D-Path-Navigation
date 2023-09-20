@@ -50,6 +50,45 @@
             ]
         },
         {
+            "name": "Generic Input",
+            "id": "5877125b-6aba-446e-9a53-58cea7ff5062",
+            "actions": [
+                {
+                    "name": "DPad",
+                    "type": "Value",
+                    "id": "7c4cab9a-ca50-4c20-830c-1fdcd03a7251",
+                    "expectedControlType": "Dpad",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "5a7a945d-2270-4f6f-b7af-88c51fc03b57",
+                    "path": "<XRController>{LeftHand}/joystick",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "DPad",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "b5318989-c571-4082-a6eb-25b9fef98f6b",
+                    "path": "<XRController>{RightHand}/joystick",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "DPad",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        },
+        {
             "name": "LeftHand",
             "id": "4f387231-6a15-4121-9897-262f7b5a626f",
             "actions": [
@@ -184,7 +223,7 @@
                     "type": "Value",
                     "id": "fc8bccff-6300-4764-8da0-2daeb36790b6",
                     "expectedControlType": "Vector2",
-                    "processors": "StickDeadzone",
+                    "processors": "",
                     "interactions": "",
                     "initialStateCheck": true
                 },

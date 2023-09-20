@@ -1,37 +1,78 @@
-#pragma kernel draw
+#pragma kernel draw_texture
 #pragma kernel init
+#pragma kernel read_pixels
 
-float4 position;
+#define GROUP_SIZE 8
+#define TEX_SIZE 512
+#define INV_TEX_SIZE 0.001953125
+
 bool is_drawing;
+bool clear_canvas;
+uint _CanvasWidth;
+uint _CanvasHeight;
 float4 previous_position;
+float4 position;
+
 RWTexture2D<float4> canvas;
+AppendStructuredBuffer<float3> pixels;
+StructuredBuffer<float3> pixels_read;
+RWStructuredBuffer<float3> shift;
 
-const float width = 0.1;
-const float stroke_smoothing_interval = 0.1;
-const float4 colour = float4(1,0,0,1);
+float size;
+int array_size;
 
-
-float4 hard_brush(const float2 pixel_pos, float4 current_color)
+float4 draw(const float2 pixel_pos, float4 current_color, float3 curr_pos, float3 prev_pos, uint2 id)
 {
-    for (float i = 0; i < 1.0; i += stroke_smoothing_interval)
+    [unroll(10)]
+    for (float i = 0; i < 1.0; i += 0.1)
     {
-        const float2 pos = lerp(previous_position, position, i);
-        if (length(pixel_pos - pos) < width)
-            return colour;
+        const float2 pos = lerp(prev_pos.xy, curr_pos.xy, i);
+        const float l = abs(length(pixel_pos.xy - pos.xy));
+        [branch] if (l < size && l > 1e-6)
+        {
+            pixels.Append(float3(2*(id.x * INV_TEX_SIZE)-1,  0, 2*(id.y * INV_TEX_SIZE)-1));
+            return float4(1, 0, 0, 1);
+        }
     }
 
     return current_color;
 }
 
-[numthreads(8,8,1)]
-void draw (uint3 id : SV_DispatchThreadID)
+[numthreads(GROUP_SIZE, GROUP_SIZE, 1)]
+void draw_texture(uint3 id : SV_DispatchThreadID)
 {
-    if (!is_drawing) return;
-    canvas[id.xy] = hard_brush(id.xy, canvas[id.xy]);
+    if (id.x >= _CanvasWidth || id.y >= _CanvasHeight)
+        return;
+    canvas[id.xy] = draw(id.xy, canvas[id.xy], position, previous_position, id.xy);
 }
 
-[numthreads(8,8,1)]
-void init (uint3 id : SV_DispatchThreadID)
+[numthreads(GROUP_SIZE, GROUP_SIZE, 1)]
+void init(uint3 id : SV_DispatchThreadID)
 {
-    canvas[id.xy] = float4(0,0,0,0);
+    if (id.x >= _CanvasWidth || id.y >= _CanvasHeight)
+        return;
+    
+    if(clear_canvas)
+    {
+        canvas[id.xy] = float4(0.7, 0.7, 0.7,  0.5);
+    }
+    else
+    {
+        float4 color = canvas[id.xy];
+        canvas[id.xy] = float4(color.x, color.y, color.z, 0.5);
+    }
+}
+
+[numthreads(GROUP_SIZE * GROUP_SIZE, 1, 1)]
+void read_pixels(uint3 id : SV_DispatchThreadID)
+{
+    if(id.x >= array_size)
+        return;
+    
+    if (id.x == 0) {
+        shift[0] = float3(0, 0, 0);
+        return;
+    }
+    
+    shift[id.x] = pixels_read[id.x] - pixels_read[id.x-1];
 }

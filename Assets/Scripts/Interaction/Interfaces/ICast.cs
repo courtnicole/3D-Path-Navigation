@@ -8,5 +8,7 @@ namespace PathNav.Interaction
         Vector3 RayDirection { get; }
         float MaxRaycastDistance { get; }
         RaycastHit HitResult { get; set; }
+        
+        Vector3 RayHitPoint { get; set; }
     }
 }

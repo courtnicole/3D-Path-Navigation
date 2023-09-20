@@ -28,7 +28,7 @@ namespace PathNav.Interaction
         #region Unity Methods
         private void Start()
         {
-            EventManager.Publish(EventId.SetPathStrategy, this, new CreationTrialEventArgs(pathStrategy));
+            EventManager.Publish(EventId.SetPathStrategy, this, new SceneControlEventArgs(pathStrategy));
         }
 
         private void OnEnable()
@@ -57,7 +57,7 @@ namespace PathNav.Interaction
         #region Manage Event Subscriptions
         private void SubscribeToEvents()
         {
-            EventManager.Subscribe<CreationTrialEventArgs>(EventId.SetPathStrategy, SetPathStrategy);
+            EventManager.Subscribe<SceneControlEventArgs>(EventId.SetPathStrategy, SetPathStrategy);
             EventManager.Subscribe<PlacementEventArgs>(EventId.StartPointPlaced, StartPointPlaced);
             EventManager.Subscribe<ControllerEventArgs>(EventId.TriggerDown,  EvaluateTriggerInputDown);
             EventManager.Subscribe<ControllerEventArgs>(EventId.TriggerUp,    EvaluateTriggerInputUp);
@@ -66,7 +66,7 @@ namespace PathNav.Interaction
 
         private void UnsubscribeToEvents()
         {
-            EventManager.Unsubscribe<CreationTrialEventArgs>(EventId.SetPathStrategy, SetPathStrategy);
+            EventManager.Unsubscribe<SceneControlEventArgs>(EventId.SetPathStrategy, SetPathStrategy);
             EventManager.Unsubscribe<PlacementEventArgs>(EventId.StartPointPlaced, StartPointPlaced);
             EventManager.Unsubscribe<ControllerEventArgs>(EventId.TriggerDown,  EvaluateTriggerInputDown);
             EventManager.Unsubscribe<ControllerEventArgs>(EventId.TriggerUp,    EvaluateTriggerInputUp);
@@ -84,7 +84,7 @@ namespace PathNav.Interaction
         #endregion
 
         #region Event Callbacks
-        private void SetPathStrategy(object sender, CreationTrialEventArgs args)
+        private void SetPathStrategy(object sender, SceneControlEventArgs args)
         {
             pathStrategy    = args.Strategy;
             _pathStrategySet = true;
@@ -95,7 +95,7 @@ namespace PathNav.Interaction
             _startPointPlaced = true;
         }
 
-        private void EvaluateTriggerInputDown(object obj, ControllerEventArgs args)
+        private void EvaluateTriggerInputDown(object sender, ControllerEventArgs args)
         {
             if (!_pathStrategySet) return;
             
@@ -119,7 +119,7 @@ namespace PathNav.Interaction
             }
         }
 
-        private void EvaluateTriggerInputUp(object obj, ControllerEventArgs args)
+        private void EvaluateTriggerInputUp(object sender, ControllerEventArgs args)
         {
             if (!_startPointPlaced)
             {
@@ -141,7 +141,7 @@ namespace PathNav.Interaction
             }
         }
 
-        private void EvaluateButtonAInput(object obj, ControllerEventArgs args)
+        private void EvaluateButtonAInput(object sender, ControllerEventArgs args)
         {
             OnControllerEvaluatorEvent(EventId.PathCreationComplete, GetControllerEvaluatorEventArgs(args.Controller));
         }

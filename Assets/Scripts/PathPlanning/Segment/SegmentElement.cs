@@ -22,6 +22,8 @@ namespace PathNav.PathPlanning
         public SplineComputer Spline { get; private set; }
 
         private bool _useNodeVisuals;
+
+        private int _eraseLayerMask;
         #endregion
 
         #region Unity Methods
@@ -191,6 +193,8 @@ namespace PathNav.PathPlanning
 
             _segmentInfo = info.Info;
             Spline       = info.Spline;
+            
+            _eraseLayerMask = (1 << 8);
 
             if (!gameObject.GetComponent<InteractableElement>()) return;
 
@@ -231,6 +235,7 @@ namespace PathNav.PathPlanning
         public bool CanErasePoint(ref IController controller)
         {
             if (CurrentPointCount < 3) return false;
+
             bool isInsideBounds = controller.CollisionBounds.Contains(CurrentPoints[CurrentPointCount - 1].position);
             SelectedSegmentIndex = isInsideBounds ? CurrentPointCount - 1 : -1;
             return isInsideBounds;

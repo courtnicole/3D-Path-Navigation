@@ -2,7 +2,6 @@ namespace PathNav
 {
     using Dreamteck.Splines;
     using PathPlanning;
-    using System;
     using System.Collections;
     using UnityEngine;
     using UnityEngine.SceneManagement;
@@ -53,8 +52,5 @@ namespace PathNav
         public SplineComputer GetSavedSplineComputer() => _savedSplineComputer;
     }
     
-    public class SceneControlEventArgs : EventArgs
-    {
-        public SceneControlEventArgs() {}
-    }
+
 }

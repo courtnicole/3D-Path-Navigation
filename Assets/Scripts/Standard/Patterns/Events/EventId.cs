@@ -91,10 +91,6 @@ namespace PathNav.Events
         StartDrawOrErasePath,
         [EventId(typeof(ControllerEvaluatorEventArgs))]
         StopDrawOrErasePath,
-        [EventId(typeof(ControllerEvaluatorEventArgs))]
-        StartErasingPath,
-        [EventId(typeof(ControllerEvaluatorEventArgs))]
-        StopErasingPath,
         
         [EventId(typeof(ControllerEvaluatorEventArgs))]
         PathCreationComplete,
@@ -103,12 +99,6 @@ namespace PathNav.Events
         StartPlaceOrMovePoint,
         [EventId(typeof(ControllerEvaluatorEventArgs))]
         StopPlaceOrMovePoint,
-        [EventId(typeof(ControllerEvaluatorEventArgs))]
-        PlacePoint,
-        [EventId(typeof(ControllerEvaluatorEventArgs))]
-        StartMovingPoint,
-        [EventId(typeof(ControllerEvaluatorEventArgs))]
-        StopMovingPoint,
         #endregion
 
         #region PathStrategyEventArgs
@@ -120,24 +110,13 @@ namespace PathNav.Events
         CanErase, 
         [EventId(typeof(PathStrategyEventArgs))]
         CannotErase, 
-        #endregion
-
-        #region NodeEventArgs
-        [EventId(typeof(PointVisualEventArgs))]
-        NodeCreated,
-        [EventId(typeof(PointVisualEventArgs))]
-        Node,
-        [EventId(typeof(PointVisualEventArgs))]
-        NodeConfigured,
-        [EventId(typeof(PointVisualEventArgs))]
-        NodeEnabled,
-        [EventId(typeof(PointVisualEventArgs))]
-        NodeDisabled,
+        [EventId(typeof(PathStrategyEventArgs))]
+        MoveStarted,
+        [EventId(typeof(PathStrategyEventArgs))]
+        MoveEnded, 
         #endregion
 
         #region SegmentEventArgs
-        [EventId(typeof(SegmentEventArgs))]
-        SegmentCreated,
         [EventId(typeof(SegmentEventArgs))]
         SegmentConfigured,
         [EventId(typeof(SegmentEventArgs))]
@@ -145,8 +124,7 @@ namespace PathNav.Events
         [EventId(typeof(SegmentEventArgs))]
         SegmentDisabled, 
         [EventId(typeof(SegmentEventArgs))]
-        SegmentComplete, 
-
+        SegmentComplete,
         #endregion
 
         #region PointVisualEventArgs
@@ -165,9 +143,11 @@ namespace PathNav.Events
         
         #region SceneControlArgs
         [EventId(typeof(SceneControlEventArgs))]
+        SetPathStrategy,
+        [EventId(typeof(SceneControlEventArgs))]
         FollowPathReady,
         #endregion
-        
+
         #region FollowerEvaluatorEventArgs
         [EventId(typeof(FollowerEvaluatorEventArgs))]
         ChangeSpeed,
@@ -176,10 +156,14 @@ namespace PathNav.Events
         [EventId(typeof(FollowerEvaluatorEventArgs))]
         EndSpeedUpdate,
         #endregion
-
-        #region CreationTrialEventArgs
-        [EventId(typeof(CreationTrialEventArgs))]
-        SetPathStrategy,
+        
+        #region Locomotion6DEvaluatorArgs
+        [EventId(typeof(Locomotion6DEvaluatorArgs))]
+        StartHorizontalUpdate,
+        [EventId(typeof(Locomotion6DEvaluatorArgs))]
+        EndHorizontalUpdate,
+        [EventId(typeof(Locomotion6DEvaluatorArgs))]
+        VerticalUpdate,
         #endregion
     }
 

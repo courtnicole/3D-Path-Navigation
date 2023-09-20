@@ -8,26 +8,25 @@ namespace PathNav.Interaction
     using Patterns.FSM;
     using UnityEngine;
     using UnityEngine.AddressableAssets;
+    
+    internal enum LocomotionDof
+    {
+        FourDoF,
+        SixDof,
+    }
 
     public class LocomotionEvaluator : MonoBehaviour, IActiveState
     {
         #region Local Variables
-        [SerializeField] private AssetReferenceGameObject hintKey;
         [SerializeField] private LocomotionInfo locomotionInfo;
 
         [SerializeField] private Transform playerTransform;
         internal Transform PlayerTransform => playerTransform;
+        
+        private IController _activeController;
+        private bool HasController => _activeController != null;
 
-        private Factory _factory = new();
-
-        private GameObject _hintPrefab;
-        private GameObject _hintObject;
-        private bool _hintConfigured;
-
-        private Vector3 _hintOffset = new (0, 0, 0.05f);
-
-        internal IController activeController;
-        private bool HasController => activeController != null;
+        internal LocomotionDof dof;
         #endregion
 
         #region Movement Variables
@@ -35,7 +34,10 @@ namespace PathNav.Interaction
         internal float MinVelocity => locomotionInfo.MinVelocity;
         internal float Acceleration => locomotionInfo.Acceleration;
 
-        internal Vector2 TouchPose => activeController.TouchPose;
+        internal Vector2 InputPose     => _activeController.JoystickPose;
+
+        internal int adjustVertical;
+        internal Vector3 VerticalShift => _activeController.Forward;
         #endregion
 
         #region State Variables
@@ -45,20 +47,19 @@ namespace PathNav.Interaction
         private LocomotionIdle<LocomotionEvaluator> _idleState = new();
         private LocomotionMove<LocomotionEvaluator> _moveState = new();
         private Disabled<LocomotionEvaluator> _disabledState = new();
-
-        private bool HasHint => _hintObject.activeSelf;
+        
         private bool HasLocomotion => _state.CurrentState == _moveState;
         
         private bool _hasLocomotionInput;
 
-        private bool ShouldLocomote => HasHint         && _hasLocomotionInput && HasController;
+        private bool ShouldLocomote => _hasLocomotionInput && HasController;
         private bool ShouldUnlocomote => HasLocomotion && !_hasLocomotionInput;
         #endregion
 
         #region Unity Methods
-        private async void OnEnable()
+        private void OnEnable()
         {
-            await Enable();
+            Enable();
             SubscribeToEnableDisableEvents();
         }
 
@@ -84,41 +85,24 @@ namespace PathNav.Interaction
         #endregion
 
         #region Enable/Disable Methods
-        private async Task Enable()
+        private void Enable()
         {
-            if (!_hintConfigured)
-            {
-                Task<bool> task = LoadHintPrefab();
-                await task;
-
-                if (task.Result)
-                {
-                    CreateHintPrefab();
-                    _hintConfigured = true;
-                }
-            }
 
             if (!_state.IsConfigured) _state.Configure(this, _idleState);
 
             if (_state.CurrentState == _disabledState) _state.ChangeState(_idleState);
 
+            dof = locomotionInfo.Type switch
+                  {
+                      LocomotionType.FourDof => LocomotionDof.FourDoF,
+                      LocomotionType.SixDof  => LocomotionDof.SixDof,
+                      var _                  => dof,
+                  };
+
             OnLocomotionEnabled();
             SubscribeToLocomotionInputEvents();
         }
-
-        private async Task<bool> LoadHintPrefab()
-        {
-            Task<GameObject> task    = _factory.LoadFromKeyAsync<GameObject>(hintKey);
-            _hintPrefab = await task;
-            return _hintPrefab is not null;
-        }
-
-        private void CreateHintPrefab()
-        {
-            _hintObject = Instantiate(_hintPrefab, transform);
-            _hintObject.SetActive(false);
-        }
-
+        
         private void Disable()
         {
             UnsubscribeToLocomotionInputEvents();
@@ -134,22 +118,6 @@ namespace PathNav.Interaction
         #endregion
 
         #region State Management Methods
-        internal void ShowHintVisual()
-        {
-            _hintObject.transform.parent        = activeController.Transform;
-            _hintObject.transform.localRotation = Quaternion.identity;
-            _hintObject.transform.localPosition = _hintOffset;
-            _hintObject.SetActive(true);
-        }
-
-        internal void HideHintVisual()
-        {
-            _hintObject.SetActive(false);
-            _hintObject.transform.parent   = transform;
-            _hintObject.transform.rotation = Quaternion.identity;
-            _hintObject.transform.position = Vector3.zero;
-        }
-
         internal void Locomote()
         {
             if (_state.CurrentState != _idleState) return;
@@ -166,12 +134,12 @@ namespace PathNav.Interaction
 
         internal void SetActiveController(IController controller)
         {
-            activeController = controller;
+            _activeController = controller;
         }
 
         internal void ClearActiveController()
         {
-            activeController = null;
+            _activeController = null;
         }
         #endregion
 
@@ -221,24 +189,20 @@ namespace PathNav.Interaction
 
         private void SubscribeToLocomotionInputEvents()
         {
-            EventManager.Subscribe<ControllerEventArgs>(EventId.TouchpadTouchStart, ShowHint);
-            EventManager.Subscribe<ControllerEventArgs>(EventId.TouchpadTouchEnd,   HideHint);
-            EventManager.Subscribe<ControllerEventArgs>(EventId.JoystickClickStart, StartLocomotion);
-            EventManager.Subscribe<ControllerEventArgs>(EventId.JoystickClickEnd,   StopLocomotion);
+            EventManager.Subscribe<ControllerEventArgs>(EventId.JoystickTouchStart, StartLocomotion);
+            EventManager.Subscribe<ControllerEventArgs>(EventId.JoystickTouchEnd,   StopLocomotion);
         }
 
         private void UnsubscribeToLocomotionInputEvents()
         {
-            EventManager.Unsubscribe<ControllerEventArgs>(EventId.TouchpadTouchStart, ShowHint);
-            EventManager.Unsubscribe<ControllerEventArgs>(EventId.TouchpadTouchEnd,   HideHint);
-            EventManager.Unsubscribe<ControllerEventArgs>(EventId.JoystickClickStart, StartLocomotion);
-            EventManager.Unsubscribe<ControllerEventArgs>(EventId.JoystickClickEnd,   StopLocomotion);
+            EventManager.Unsubscribe<ControllerEventArgs>(EventId.JoystickTouchStart, StartLocomotion);
+            EventManager.Unsubscribe<ControllerEventArgs>(EventId.JoystickTouchEnd,   StopLocomotion);
         }
 
         private void StartLocomotion(object sender, ControllerEventArgs args)
         {
             if (HasLocomotion) return;
-
+            
             SetActiveController(args.Controller);
             _hasLocomotionInput = true;
 
@@ -250,23 +214,10 @@ namespace PathNav.Interaction
             _hasLocomotionInput = false;
             if (ShouldUnlocomote) Unlocomote();
         }
-
-        private void ShowHint(object sender, ControllerEventArgs args)
+        
+        private void EnableEvaluator(object sender, EventArgs controllerEventArgs)
         {
-            if (HasLocomotion) return;
-
-            SetActiveController(args.Controller);
-            ShowHintVisual();
-        }
-
-        private void HideHint(object sender, ControllerEventArgs args)
-        {
-            HideHintVisual();
-        }
-
-        private async void EnableEvaluator(object sender, EventArgs controllerEventArgs)
-        {
-            await Enable();
+            Enable();
         }
 
         private void DisableEvaluator(object sender, EventArgs controllerEventArgs) 

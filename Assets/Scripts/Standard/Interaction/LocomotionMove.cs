@@ -1,50 +1,80 @@
 namespace PathNav.Patterns.FSM
 {
-    using Extensions;
     using Interaction;
+    using System;
     using UnityEngine;
 
     public class LocomotionMove<T> : IState<T> where T : LocomotionEvaluator
     {
-        internal float elapsedTime;
-        internal float currentVelocity;
+        private float _elapsedTime;
+        private float _currentVelocity;
 
-        internal int direction;
-        internal Vector3 travelDirection;
-        internal Vector3 shift;
+        private Vector3 _travelDirection;
+        private float _vertical;
+        private Vector3 _shift;
 
         public void Enter(T entity)
         {
             entity.OnLocomotionStart();
-            entity.ShowHintVisual();
-            elapsedTime     = 0;
-            currentVelocity = entity.MinVelocity;
-            direction       = entity.TouchPose.y > 0 ? 1 : -1;
+
+            _elapsedTime     = 0;
+            _currentVelocity = entity.MinVelocity;
+            _travelDirection = Vector3.zero;
+            _vertical        = 0;
+            _shift           = Vector3.zero;
         }
 
         public void UpdateLogic(T entity)
         {
-            direction       =  entity.TouchPose.y > 0 ? 1 : -1;
-            elapsedTime     += Time.deltaTime;
-            travelDirection =  entity.activeController.Forward.FlattenY() * direction;
-            currentVelocity =  Mathf.Lerp(entity.MinVelocity, entity.MaxVelocity, entity.Acceleration * elapsedTime);
-            shift           =  travelDirection * (currentVelocity * Time.deltaTime);
+            switch (entity.dof)
+            {
+                case LocomotionDof.FourDoF:
+                    Update4DoF(entity);
+                    break;
+                case LocomotionDof.SixDof:
+                    Update6DoF(entity);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+
             entity.OnLocomotionUpdate();
         }
 
         public void UpdatePhysics(T entity)
         {
-            entity.PlayerTransform.position += shift;
+            entity.PlayerTransform.position += _shift;
         }
 
         public void Exit(T entity)
         {
-            currentVelocity   = 0;
-            direction         = 0;
+            _currentVelocity = 0;
 
-            entity.HideHintVisual();
             entity.ClearActiveController();
             entity.OnLocomotionEnd();
+        }
+
+        private void Update4DoF(T entity)
+        {
+            _elapsedTime     += Time.deltaTime;
+            _travelDirection =  new Vector3(entity.InputPose.x, 0, entity.InputPose.y).normalized;
+            _currentVelocity =  Mathf.Lerp(entity.MinVelocity, entity.MaxVelocity, entity.Acceleration * _elapsedTime);
+            _shift           =  _travelDirection * (_currentVelocity * Time.deltaTime);
+        }
+
+        private void Update6DoF(T entity)
+        {
+            _elapsedTime += Time.deltaTime;
+            _vertical    =  Vector3.Angle(entity.VerticalShift, Vector3.forward);
+
+            if (Vector3.Cross(entity.VerticalShift, Vector3.forward).y < 0)
+                _vertical = -_vertical;
+
+            _vertical *= entity.adjustVertical;
+
+            _travelDirection = new Vector3(entity.InputPose.x, _vertical, entity.InputPose.y).normalized;
+            _currentVelocity = Mathf.Lerp(entity.MinVelocity, entity.MaxVelocity, entity.Acceleration * _elapsedTime);
+            _shift           = _travelDirection * (_currentVelocity * Time.deltaTime);
         }
     }
 }

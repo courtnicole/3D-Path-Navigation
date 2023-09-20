@@ -2,6 +2,7 @@ namespace PathNav.PathPlanning
 {
     using Dreamteck.Splines;
     using Events;
+    using ExperimentControl;
     using Input;
     using Interaction;
     using UnityEngine;
@@ -43,19 +44,12 @@ namespace PathNav.PathPlanning
             {
                 currentVelocity      = Mathf.Lerp(_minSpeed, _maxSpeed, Acceleration * elapsedTime);
                 follower.followSpeed = currentVelocity;
-                //follower.followSpeed = follower.followSpeed + 1.0f * Time.deltaTime;
-                //follower.followSpeed = Mathf.Min(follower.followSpeed, _maxSpeed);
             }
             else
             {
                 currentVelocity      = Mathf.Lerp(_maxSpeed, _minSpeed, Acceleration * elapsedTime);
                 follower.followSpeed = currentVelocity;
-                //follower.followSpeed = follower.followSpeed - 1.0f * Time.deltaTime;
-                //follower.followSpeed = Mathf.Max(follower.followSpeed, _minSpeed);
             }
-            // _from                = _interactingController?.JoystickPose.y > 0 ? _minSpeed : _maxSpeed;
-            // _to                  = _interactingController?.JoystickPose.y > 0 ? _maxSpeed : _minSpeed;
-            // follower.followSpeed = Mathf.Lerp(_from, _to, (Time.time - _startTime) / _duration);
         }
         private void SubscribeToEvents()
         {

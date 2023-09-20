@@ -17,6 +17,10 @@ namespace PathNav.Interaction
         private IRayCast _rayCast;
         private bool _result;
         private Vector3 LineOrigin => Controller.Position;
+        
+        private Vector3 _previousHitPoint;
+        private Vector3 _previousOrigin;
+        private Vector3 CurrentHitPoint => lineRenderer.GetPosition(1);
         #endregion
 
         #region Implementation of IRayCast
@@ -30,24 +34,47 @@ namespace PathNav.Interaction
             get => _hitResult;
             set => _hitResult = value;
         }
+        
+        private Vector3 _rayHitPoint;
 
-        private Vector3 RayHitPoint => _hitResult.point;
+        public Vector3 RayHitPoint
+        {
+            get => _rayHitPoint;
+            set => _rayHitPoint = value;
+        } 
         #endregion
-
         private void Awake()
         {
             _rayCast = this;
         }
+        
+        private void OnEnable()
+        {
+            EnableLineRenderer();
+        }
+
+        private void EnableLineRenderer()
+        {
+            lineRenderer.enabled = true;
+            //lineRenderer.startWidth = 0.01f;
+            //lineRenderer.endWidth = 0.01f;
+        }
 
         private void LateUpdate()
         {
-            _result = _rayCast.Raycast();
+            _previousHitPoint = RayHitPoint;
+            _previousOrigin = RayOrigin;
+            
+            _result = _rayCast.Raycast(mask);
             UpdateVisual();
         }
 
         private void UpdateVisual()
         {
-            lineRenderer.SetPosition(0, LineOrigin);
+            if (Vector3.Distance(_previousHitPoint, RayHitPoint) < 0.005f &&
+                Vector3.Distance(_previousOrigin,   RayOrigin)   < 0.005f)  return;
+            
+            lineRenderer.SetPosition(0, RayOrigin);
             lineRenderer.SetPosition(1, RayHitPoint);
         }
     }

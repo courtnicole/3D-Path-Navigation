@@ -1,6 +1,7 @@
 namespace PathNav.PathPlanning
 {
     using Events;
+    using Input;
     using Interaction;
     using System.Threading.Tasks;
     using UnityEngine;
@@ -20,7 +21,7 @@ namespace PathNav.PathPlanning
 
         private const float _hideAfterPlacement = 1.25f;
 
-        private Transform _collidingTransform;
+        private IController _interactingController;
         private GameObject _ghostPointVisual;
 
         #region Unity Methods
@@ -47,15 +48,15 @@ namespace PathNav.PathPlanning
             if (_hidePointVisual) return;
 
             _ghostPointVisual.SetActive(true);
-            _ghostPointVisual.transform.position = _collidingTransform.position;
+            _ghostPointVisual.transform.position = _interactingController.PointerPosition;
         }
         
         private void OnTriggerEnter(Collider other)
         {
             if (!other.gameObject.CompareTag($"Hand")) return;
-
-            _collidingTransform = other.transform;
-            _hasValidCollision  = true;
+            
+            _interactingController = other.gameObject.GetComponent<ControllerCollider>().Controller;
+            _hasValidCollision     = true;
             PlacementPlane.OnTriggerEntered();
             Interactable.OnHover();
         }
@@ -63,11 +64,13 @@ namespace PathNav.PathPlanning
         private void OnTriggerExit(Collider other)
         {
             if (!_hasValidCollision) return;
-
-            _hasValidCollision  = false;
-            _collidingTransform = null;
+            
+            _hasValidCollision = false; 
+            _interactingController = null;
+            
             PlacementPlane.OnTriggerExited();
             Interactable.OnUnhover();
+            
             _ghostPointVisual.SetActive(false);
         }
         #endregion
