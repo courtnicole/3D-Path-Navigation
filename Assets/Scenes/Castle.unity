@@ -1006,6 +1006,7 @@ GameObject:
   m_Component:
   - component: {fileID: 899315421}
   - component: {fileID: 899315422}
+  - component: {fileID: 899315423}
   m_Layer: 0
   m_Name: Rig
   m_TagString: Untagged
@@ -1104,9 +1105,9 @@ MonoBehaviour:
     applyPosition2D: 1
     retainLocalPosition: 0
     direction: 1
-    applyRotationX: 1
-    applyRotationY: 1
-    applyRotationZ: 1
+    applyRotationX: 0
+    applyRotationY: 0
+    applyRotationZ: 0
     applyRotation2D: 1
     retainLocalRotation: 0
     applyScaleX: 0
@@ -1148,6 +1149,19 @@ MonoBehaviour:
   _unityOnBeginningReached:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &899315423
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 899315420}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b90eaae8ee7f6bf46be1c8ad060bd48d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_ActionAsset: {fileID: -944628639613478452, guid: ee35e82046ad68046b8d163c1260e4dd, type: 3}
 --- !u!1 &902137754
 GameObject:
   m_ObjectHideFlags: 0
@@ -1826,8 +1840,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1990144023}
   - component: {fileID: 1990144024}
-  - component: {fileID: 1990144025}
-  - component: {fileID: 1990144026}
   m_Layer: 0
   m_Name: Controller Management
   m_TagString: Untagged
@@ -1860,35 +1872,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 1990144022}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 498a9dd40abe9754cb8e840bf07712e3, type: 3}
+  m_Script: {fileID: 11500000, guid: 0ddb2fc51bff4994bb1bef8c3ad7f87a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &1990144025
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1990144022}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9a9a05599bb7916498af136253dcfd10, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  locomotionInfo: {fileID: 11400000, guid: 7636520d47952fa459a588ab9f75ac2e, type: 2}
+  locomotionDof: 0
+  playerTransform: {fileID: 899315421}
   follower: {fileID: 899315422}
---- !u!114 &1990144026
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1990144022}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b90eaae8ee7f6bf46be1c8ad060bd48d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_ActionAsset: {fileID: -944628639613478452, guid: ee35e82046ad68046b8d163c1260e4dd, type: 3}
 --- !u!4 &543450652152065018 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5253098579992917166, guid: 5ca72f8923331b34588cde0a94c12bdc, type: 3}

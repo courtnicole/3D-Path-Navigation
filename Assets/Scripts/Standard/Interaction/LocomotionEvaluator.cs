@@ -1,8 +1,10 @@
 namespace PathNav.Interaction
 {
+    using Dreamteck.Splines;
     using System;
     using System.Threading.Tasks;
     using Events;
+    using ExperimentControl;
     using Input;
     using Patterns.Factory;
     using Patterns.FSM;
@@ -20,23 +22,26 @@ namespace PathNav.Interaction
         #region Local Variables
         [SerializeField] private LocomotionInfo locomotionInfo;
 
+        [SerializeField] private LocomotionDof locomotionDof;
+
         [SerializeField] private Transform playerTransform;
+        
+        [SerializeField] internal SplineFollower follower;
         internal Transform PlayerTransform => playerTransform;
         
         private IController _activeController;
         private bool HasController => _activeController != null;
 
         internal LocomotionDof dof;
+
+        internal bool useVerticalShift;
         #endregion
 
         #region Movement Variables
         internal float MaxVelocity => locomotionInfo.MaxVelocity;
         internal float MinVelocity => locomotionInfo.MinVelocity;
         internal float Acceleration => locomotionInfo.Acceleration;
-
         internal Vector2 InputPose     => _activeController.JoystickPose;
-
-        internal int adjustVertical;
         internal Vector3 VerticalShift => _activeController.Forward;
         #endregion
 
@@ -87,17 +92,11 @@ namespace PathNav.Interaction
         #region Enable/Disable Methods
         private void Enable()
         {
-
             if (!_state.IsConfigured) _state.Configure(this, _idleState);
 
             if (_state.CurrentState == _disabledState) _state.ChangeState(_idleState);
 
-            dof = locomotionInfo.Type switch
-                  {
-                      LocomotionType.FourDof => LocomotionDof.FourDoF,
-                      LocomotionType.SixDof  => LocomotionDof.SixDof,
-                      var _                  => dof,
-                  };
+            dof = locomotionDof;
 
             OnLocomotionEnabled();
             SubscribeToLocomotionInputEvents();
@@ -189,8 +188,11 @@ namespace PathNav.Interaction
 
         private void SubscribeToLocomotionInputEvents()
         {
+            EventManager.Subscribe<SceneControlEventArgs>(EventId.FollowPathReady, FollowPath);
             EventManager.Subscribe<ControllerEventArgs>(EventId.JoystickTouchStart, StartLocomotion);
             EventManager.Subscribe<ControllerEventArgs>(EventId.JoystickTouchEnd,   StopLocomotion);
+            EventManager.Subscribe<ControllerEventArgs>(EventId.TriggerDown,       StartVertical);
+            EventManager.Subscribe<ControllerEventArgs>(EventId.TriggerUp,       StopVertical);
         }
 
         private void UnsubscribeToLocomotionInputEvents()
@@ -198,7 +200,12 @@ namespace PathNav.Interaction
             EventManager.Unsubscribe<ControllerEventArgs>(EventId.JoystickTouchStart, StartLocomotion);
             EventManager.Unsubscribe<ControllerEventArgs>(EventId.JoystickTouchEnd,   StopLocomotion);
         }
-
+        
+        private void FollowPath(object sender, SceneControlEventArgs args)
+        {
+            follower.followSpeed = 0;
+            follower.follow      = true;
+        }
         private void StartLocomotion(object sender, ControllerEventArgs args)
         {
             if (HasLocomotion) return;
@@ -213,6 +220,17 @@ namespace PathNav.Interaction
         {
             _hasLocomotionInput = false;
             if (ShouldUnlocomote) Unlocomote();
+        }
+        
+        private void StartVertical(object sender, ControllerEventArgs args)
+        {
+            if (useVerticalShift) return;
+            useVerticalShift = true;
+        }
+
+        private void StopVertical(object sender, ControllerEventArgs args)
+        {
+            useVerticalShift = false;
         }
         
         private void EnableEvaluator(object sender, EventArgs controllerEventArgs)

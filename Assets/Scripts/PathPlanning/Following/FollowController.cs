@@ -21,9 +21,9 @@ namespace PathNav.PathPlanning
         private void SetController(IController controller) => _interactingController = controller;
         private void ClearController() => _interactingController = null;
         
-        private const float Acceleration = 0.58f;
-        private float currentVelocity;
-        private float elapsedTime;
+        private const float _acceleration = 0.58f;
+        private float _currentVelocity;
+        private float _elapsedTime;
         
         private void OnEnable()
         {
@@ -38,19 +38,24 @@ namespace PathNav.PathPlanning
         private void Update()
         {
             if(!_updateSpeed) return;
-            elapsedTime += Time.deltaTime;
-            
+            _elapsedTime += Time.deltaTime;
+            UpdateSpeed();
+        }
+
+        private void UpdateSpeed()
+        {
             if (_interactingController?.JoystickPose.y > 0)
             {
-                currentVelocity      = Mathf.Lerp(_minSpeed, _maxSpeed, Acceleration * elapsedTime);
-                follower.followSpeed = currentVelocity;
+                _currentVelocity     = Mathf.Lerp(_minSpeed, _maxSpeed, _acceleration * _elapsedTime);
+                follower.followSpeed = _currentVelocity;
             }
             else
             {
-                currentVelocity      = Mathf.Lerp(_maxSpeed, _minSpeed, Acceleration * elapsedTime);
-                follower.followSpeed = currentVelocity;
+                _currentVelocity     = Mathf.Lerp(_maxSpeed, _minSpeed, _acceleration * _elapsedTime);
+                follower.followSpeed = _currentVelocity;
             }
         }
+        
         private void SubscribeToEvents()
         {
             EventManager.Subscribe<SceneControlEventArgs>(EventId.FollowPathReady, FollowPath);
@@ -67,7 +72,7 @@ namespace PathNav.PathPlanning
 
         private void StartSpeedUpdate(object sender, FollowerEvaluatorEventArgs args)
         {
-            elapsedTime          = 0;
+            _elapsedTime          = 0;
             follower.followSpeed = _minSpeed;
             _updateSpeed         = true;
             _startTime           = Time.time;
@@ -76,7 +81,7 @@ namespace PathNav.PathPlanning
         
         private void EndSpeedUpdate(object sender, FollowerEvaluatorEventArgs args)
         {
-            elapsedTime          = 0;
+            _elapsedTime          = 0;
             follower.followSpeed = _minSpeed;
             _updateSpeed         = false;
             _startTime           = 0;

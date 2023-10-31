@@ -12,7 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ba30e0500e0522f439cd87570ac04d11, type: 3}
   m_Name: LocomotionInfo
   m_EditorClassIdentifier: 
-  type: 2
   maxVelocity: 3.65
-  minVelocity: 0
+  minVelocity: -2.65
   acceleration: 0.58

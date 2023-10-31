@@ -12,14 +12,6 @@ namespace PathNav.Interaction
     [CreateAssetMenu(fileName = "LocomotionInfo", menuName = "Scriptables/Interaction/LocomotionInfo", order = 1)]
     public class LocomotionInfo : ScriptableObject
     {
-        [SerializeField] private LocomotionType type;
-
-        public LocomotionType Type
-        {
-            get => type;
-            set => type = value;
-        }
-
         [SerializeField, Range(1.5f, 7.0f),] private float maxVelocity = 2.05f;
 
         public float MaxVelocity
@@ -28,7 +20,7 @@ namespace PathNav.Interaction
             set => maxVelocity = value;
         }
 
-        [SerializeField, Range(0.00f, 1.0f),] private float minVelocity = 0.35f;
+        [SerializeField, Range(-7.00f, 0.0f),] private float minVelocity = 0.35f;
 
         public float MinVelocity
         {

@@ -43,12 +43,24 @@ namespace PathNav.Patterns.FSM
 
         public void UpdatePhysics(T entity)
         {
-            entity.PlayerTransform.position += _shift;
+            switch (entity.dof)
+            {
+                case LocomotionDof.FourDoF:
+                    Shift4DoF(entity);
+                    break;
+                case LocomotionDof.SixDof:
+                    Shift6DoF(entity);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
         }
 
         public void Exit(T entity)
         {
             _currentVelocity = 0;
+            if (entity.dof == LocomotionDof.FourDoF)
+                entity.follower.followSpeed = entity.MinVelocity;
 
             entity.ClearActiveController();
             entity.OnLocomotionEnd();
@@ -57,24 +69,43 @@ namespace PathNav.Patterns.FSM
         private void Update4DoF(T entity)
         {
             _elapsedTime     += Time.deltaTime;
-            _travelDirection =  new Vector3(entity.InputPose.x, 0, entity.InputPose.y).normalized;
+            //_travelDirection =  new Vector3(entity.InputPose.x, 0, entity.InputPose.y).normalized;
             _currentVelocity =  Mathf.Lerp(entity.MinVelocity, entity.MaxVelocity, entity.Acceleration * _elapsedTime);
-            _shift           =  _travelDirection * (_currentVelocity * Time.deltaTime);
+            //_shift           =  _travelDirection * (_currentVelocity * Time.deltaTime);
         }
 
         private void Update6DoF(T entity)
         {
             _elapsedTime += Time.deltaTime;
-            _vertical    =  Vector3.Angle(entity.VerticalShift, Vector3.forward);
 
-            if (Vector3.Cross(entity.VerticalShift, Vector3.forward).y < 0)
-                _vertical = -_vertical;
+            if (entity.useVerticalShift)
+            {
+                _vertical = Vector3.Angle(entity.VerticalShift, Vector3.forward);
+                _vertical = Map(0, 180, 0, 0.8f, _vertical);
 
-            _vertical *= entity.adjustVertical;
+                if (Vector3.Cross(entity.VerticalShift, Vector3.forward).y < 0)
+                    _vertical = -_vertical;
+            }
+            else
+            {
+                _vertical = 0;
+            }
 
             _travelDirection = new Vector3(entity.InputPose.x, _vertical, entity.InputPose.y).normalized;
             _currentVelocity = Mathf.Lerp(entity.MinVelocity, entity.MaxVelocity, entity.Acceleration * _elapsedTime);
             _shift           = _travelDirection * (_currentVelocity * Time.deltaTime);
         }
+
+        private void Shift4DoF(T entity)
+        {
+            entity.follower.followSpeed = _currentVelocity;
+        }
+
+        private void Shift6DoF(T entity)
+        {
+            entity.PlayerTransform.position += _shift;
+        }
+
+        private float Map(float a1, float a2, float b1, float b2, float s) => b1 + (s - a1) * (b2 - b1) / (a2 - a1);
     }
 }

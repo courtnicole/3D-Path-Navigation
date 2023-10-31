@@ -11,7 +11,9 @@ namespace PathNav.Interaction
         [SerializeField] private Transform cameraTransform;
 
         [SerializeField] private Transform startingPosition;
-        [SerializeField][Range(0.0f,5.0f)] private float fadeTime = 2.25f;
+        private Quaternion _additionalTeleportRotation = Quaternion.identity;
+        private bool _teleportToTargetObjectPivot;
+        private bool _rotateToTargetObjectFront;
         #endregion
 
         #region Local Variables
@@ -30,7 +32,6 @@ namespace PathNav.Interaction
         }
 
         private const float _currentFadeTime = 2.25f;
-        private Vector3 _teleportPoint;
         private bool _enabled;
         #endregion
 
@@ -73,6 +74,7 @@ namespace PathNav.Interaction
         private IEnumerator WaitToTeleport()
         {
             yield return new WaitForSeconds(0.05f);
+
             Teleport(startingPosition);
         }
 
@@ -81,35 +83,17 @@ namespace PathNav.Interaction
             if (!_enabled) Enable();
             if (teleportMarker == null) return false;
 
-            _teleportPoint = teleportMarker.position;
-            
             StartCoroutine(TeleportPlayer());
-            
+
             return true;
         }
 
         private IEnumerator TeleportPlayer()
         {
-            FadeOut();
             yield return new WaitForSeconds(_currentFadeTime);
-            MovePlayer(_teleportPoint);
+
+            TeleportAndRotatePlayer(startingPosition);
             yield return new WaitForSeconds(_currentFadeTime);
-            FadeIn();
-        }
-
-        private static void FadeOut()
-        {
-            //SteamVR_Fade.View(Color.black, _currentFadeTime);
-        }
-
-        private static void FadeIn()
-        {
-            //SteamVR_Fade.View(Color.clear, _currentFadeTime);
-        }
-
-        public void MoveAndRotate(Vector3 move, Vector3 look)
-        {
-            StartCoroutine(DoMoveAndRotate(move, look));
         }
 
         private void MovePlayer(Vector3 targetPoint)
@@ -118,21 +102,25 @@ namespace PathNav.Interaction
             trackingOriginTransform.position = targetPoint + playerOffset.FlattenY();
         }
 
-        private IEnumerator DoMoveAndRotate(Vector3 teleportPosition, Vector3 look)
+        private void TeleportAndRotatePlayer(Transform teleportTarget)
         {
-            Vector3 trackingOriginPosition = trackingOriginTransform.position;
-            Vector3 playerOffset = trackingOriginPosition - OffsetFromTrackingOrigin;
-            trackingOriginPosition = teleportPosition + playerOffset.FlattenY();
+            Vector3    cameraPos     = cameraTransform.position;
+            Vector3    cameraForward = cameraTransform.forward;
+            Vector3    originPos     = trackingOriginTransform.position;
+            Quaternion originRot     = trackingOriginTransform.rotation;
+            Vector3    originUp      = trackingOriginTransform.up;
+            Quaternion rotateHead    = _additionalTeleportRotation;
 
-            yield return new WaitForEndOfFrame();
+            Quaternion headRotFrontOnFloor = Quaternion.LookRotation(Vector3.ProjectOnPlane(cameraForward, originUp), originUp);
+            rotateHead = Quaternion.Inverse(headRotFrontOnFloor) * teleportTarget.rotation * rotateHead;
 
-            float angle = Vector3.Angle(cameraTransform.forward, look);
-            Vector3 playerFeetOffset = trackingOriginPosition - OffsetFromTrackingOrigin;
-            trackingOriginPosition -= playerFeetOffset;
-            trackingOriginTransform.Rotate(Vector3.up, angle);
-            playerFeetOffset = Quaternion.Euler(0.0f, angle, 0.0f) * playerFeetOffset;
-            trackingOriginPosition += playerFeetOffset;
-            trackingOriginTransform.position = trackingOriginPosition;
+            Vector3    headVector = Vector3.ProjectOnPlane(cameraPos - originPos, originUp);
+            Vector3    hitPos     = teleportTarget.position;
+            Vector3    targetPos  = hitPos - (rotateHead * headVector);
+            Quaternion targetRot  = originRot * rotateHead;
+
+            trackingOriginTransform.position = targetPos;
+            trackingOriginTransform.rotation = targetRot;
         }
     }
 }
