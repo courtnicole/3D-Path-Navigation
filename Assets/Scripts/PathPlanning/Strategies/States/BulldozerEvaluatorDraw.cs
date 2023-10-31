@@ -1,12 +1,16 @@
 namespace PathNav.PathPlanning
 {
+    using Events;
     using Patterns.FSM;
     using UnityEngine;
 
     public class BulldozerEvaluatorDraw<T> : IState<T> where T : BulldozerStrategy
     {
         #region Implementation of IState<T>
-        public void Enter(T entity) { }
+        public void Enter(T entity)
+        {
+            EventManager.Publish(EventId.DrawStarted, this, new PathStrategyEventArgs(entity));
+        }
 
         public void UpdateLogic(T entity)
         {
@@ -15,7 +19,10 @@ namespace PathNav.PathPlanning
 
         public void UpdatePhysics(T entity) { }
 
-        public void Exit(T entity) { }
+        public void Exit(T entity)
+        {
+            EventManager.Publish(EventId.DrawEnded, this, new PathStrategyEventArgs(entity));
+        }
 
         private static void AddPoint(T entity)
         {

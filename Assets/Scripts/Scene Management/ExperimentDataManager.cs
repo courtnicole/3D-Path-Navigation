@@ -43,11 +43,8 @@ namespace PathNav.ExperimentControl
             PathStrategy pathStrategy = condition.pathStrategy;
             EventManager.Publish(EventId.SetPathStrategy, this, new SceneControlEventArgs(pathStrategy));
 
-            Counting counting = gameObject.AddComponent<Counting>();
-            counting.Enable();
-
-            Timing timing = gameObject.AddComponent<Timing>();
-            timing.Enable();
+            ActionMonitor actionMonitor = gameObject.AddComponent<ActionMonitor>();
+            actionMonitor.Enable();
         }
 
         #region Model

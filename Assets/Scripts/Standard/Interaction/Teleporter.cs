@@ -9,11 +9,8 @@ namespace PathNav.Interaction
         #region Inspector Variables
         [SerializeField] private Transform trackingOriginTransform;
         [SerializeField] private Transform cameraTransform;
-
-        [SerializeField] private Transform startingPosition;
+        
         private Quaternion _additionalTeleportRotation = Quaternion.identity;
-        private bool _teleportToTargetObjectPivot;
-        private bool _rotateToTargetObjectFront;
         #endregion
 
         #region Local Variables
@@ -40,14 +37,6 @@ namespace PathNav.Interaction
             Enable();
         }
 
-        private void Start()
-        {
-            if (startingPosition != null)
-            {
-                StartCoroutine(WaitToTeleport());
-            }
-        }
-
         private void Enable()
         {
             if (trackingOriginTransform is null)
@@ -71,28 +60,21 @@ namespace PathNav.Interaction
             _enabled = true;
         }
 
-        private IEnumerator WaitToTeleport()
-        {
-            yield return new WaitForSeconds(0.05f);
-
-            Teleport(startingPosition);
-        }
-
         public bool Teleport(Transform teleportMarker)
         {
             if (!_enabled) Enable();
             if (teleportMarker == null) return false;
 
-            StartCoroutine(TeleportPlayer());
+            StartCoroutine(TeleportPlayer(teleportMarker));
 
             return true;
         }
 
-        private IEnumerator TeleportPlayer()
+        private IEnumerator TeleportPlayer(Transform teleportMarker)
         {
             yield return new WaitForSeconds(_currentFadeTime);
 
-            TeleportAndRotatePlayer(startingPosition);
+            TeleportAndRotatePlayer(teleportMarker);
             yield return new WaitForSeconds(_currentFadeTime);
         }
 
@@ -102,25 +84,22 @@ namespace PathNav.Interaction
             trackingOriginTransform.position = targetPoint + playerOffset.FlattenY();
         }
 
-        private void TeleportAndRotatePlayer(Transform teleportTarget)
+        private void TeleportAndRotatePlayer(Transform teleportPointVector)
         {
-            Vector3    cameraPos     = cameraTransform.position;
             Vector3    cameraForward = cameraTransform.forward;
-            Vector3    originPos     = trackingOriginTransform.position;
             Quaternion originRot     = trackingOriginTransform.rotation;
             Vector3    originUp      = trackingOriginTransform.up;
             Quaternion rotateHead    = _additionalTeleportRotation;
 
-            Quaternion headRotFrontOnFloor = Quaternion.LookRotation(Vector3.ProjectOnPlane(cameraForward, originUp), originUp);
-            rotateHead = Quaternion.Inverse(headRotFrontOnFloor) * teleportTarget.rotation * rotateHead;
+            Quaternion headRotationOnGround = Quaternion.LookRotation(Vector3.ProjectOnPlane(cameraForward, originUp), originUp);
+            rotateHead = Quaternion.Inverse(headRotationOnGround) * teleportPointVector.rotation * rotateHead;
 
-            Vector3    headVector = Vector3.ProjectOnPlane(cameraPos - originPos, originUp);
-            Vector3    hitPos     = teleportTarget.position;
-            Vector3    targetPos  = hitPos - (rotateHead * headVector);
-            Quaternion targetRot  = originRot * rotateHead;
+            Vector3    headVector     = OffsetFromTrackingOrigin;
+            Vector3    targetPosition = teleportPointVector.position - (rotateHead * headVector);
+            Quaternion targetRotation = originRot * rotateHead;
 
-            trackingOriginTransform.position = targetPos;
-            trackingOriginTransform.rotation = targetRot;
+            trackingOriginTransform.position = targetPosition;
+            trackingOriginTransform.rotation = targetRotation;
         }
     }
 }

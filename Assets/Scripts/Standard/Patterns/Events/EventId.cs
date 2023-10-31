@@ -103,6 +103,12 @@ namespace PathNav.Events
 
         #region PathStrategyEventArgs
         [EventId(typeof(PathStrategyEventArgs))]
+        DrawStarted,
+        [EventId(typeof(PathStrategyEventArgs))]
+        DrawEnded, 
+        [EventId(typeof(PathStrategyEventArgs))]
+        PointPlaced,
+        [EventId(typeof(PathStrategyEventArgs))]
         EraseStarted,
         [EventId(typeof(PathStrategyEventArgs))]
         EraseEnded, 

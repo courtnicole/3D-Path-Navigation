@@ -14,7 +14,7 @@ namespace PathNav.Interaction
 
     public class ControllerEvaluator : MonoBehaviour
     {
-        [SerializeField] private PathStrategy pathStrategy;
+        private PathStrategy _pathStrategy;
         private bool _pathStrategySet;
         private bool _startPointPlaced;
 
@@ -26,11 +26,6 @@ namespace PathNav.Interaction
         #endregion
 
         #region Unity Methods
-        private void Start()
-        {
-            EventManager.Publish(EventId.SetPathStrategy, this, new SceneControlEventArgs(pathStrategy));
-        }
-
         private void OnEnable()
         {
             Enable();
@@ -86,7 +81,7 @@ namespace PathNav.Interaction
         #region Event Callbacks
         private void SetPathStrategy(object sender, SceneControlEventArgs args)
         {
-            pathStrategy    = args.Strategy;
+            _pathStrategy    = args.Strategy;
             _pathStrategySet = true;
         }
 
@@ -105,7 +100,7 @@ namespace PathNav.Interaction
             }
             else
             {
-                switch (pathStrategy)
+                switch (_pathStrategy)
                 {
                     case PathStrategy.Bulldozer:
                         OnControllerEvaluatorEvent(EventId.StartDrawOrErasePath, GetControllerEvaluatorEventArgs(args.Controller));
@@ -127,7 +122,7 @@ namespace PathNav.Interaction
             }
             else
             {
-                switch (pathStrategy)
+                switch (_pathStrategy)
                 {
                     case PathStrategy.Bulldozer:
                         OnControllerEvaluatorEvent(EventId.StopDrawOrErasePath, GetControllerEvaluatorEventArgs(args.Controller));

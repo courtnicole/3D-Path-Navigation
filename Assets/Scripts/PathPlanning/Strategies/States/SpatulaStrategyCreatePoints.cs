@@ -1,5 +1,6 @@
 namespace PathNav.PathPlanning
 {
+    using Events;
     using Patterns.FSM;
     using UnityEngine;
 
@@ -19,7 +20,7 @@ namespace PathNav.PathPlanning
 
         public void Exit(T entity) { }
 
-        private static void AddPoint(T entity)
+        private void AddPoint(T entity)
         {
             float segmentLength = Vector3.Distance(entity.lastHandPosition, entity.interactingController.PointerPosition);
 
@@ -27,6 +28,7 @@ namespace PathNav.PathPlanning
             
             entity.ActiveSegment.AddPoint(entity.interactingController.PointerPosition);
             entity.lastHandPosition = entity.interactingController.PointerPosition;
+            EventManager.Publish(EventId.PointPlaced, this, new PathStrategyEventArgs(entity));
         }
         #endregion
     }
