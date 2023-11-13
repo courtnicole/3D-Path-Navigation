@@ -10,6 +10,13 @@ namespace PathNav.PathPlanning
     using System.Threading.Tasks;
     using UnityEngine;
     using UnityEngine.AddressableAssets;
+    
+    public enum PathStrategy
+    {
+        None,
+        Bulldozer,
+        Spatula,
+    }
 
     public class PathStrategyEvaluator : MonoBehaviour
     {

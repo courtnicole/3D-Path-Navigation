@@ -2257,8 +2257,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: PathNav.Interaction.Survey, Assembly-CSharp
+      - m_Target: {fileID: 6245166754542661371}
+        m_TargetAssemblyTypeName: PathNav.SceneManagement.SeqSurvey, Assembly-CSharp
         m_MethodName: RecordResponse
         m_Mode: 1
         m_Arguments:

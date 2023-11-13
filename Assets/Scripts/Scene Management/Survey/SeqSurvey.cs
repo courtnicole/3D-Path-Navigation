@@ -1,6 +1,8 @@
 
 namespace PathNav.SceneManagement
 {
+    using Events;
+    using ExperimentControl;
     using System.Collections.Generic;
     using System.Linq;
     using UnityEngine;
@@ -15,12 +17,12 @@ namespace PathNav.SceneManagement
         {
             IEnumerable<Toggle> toggles = toggleGroup.ActiveToggles();
             _value = int.Parse(toggles.First().name);
-            Debug.Log(_value);
         }
 
         public void RecordResponse()
         {
-            Debug.Log(_value + " submitted");
+            ExperimentDataManager.Instance.RecordSeqScore(_value);
+            EventManager.Publish(EventId.SeqComplete, this, new SceneControlEventArgs());
         }
     }
 }

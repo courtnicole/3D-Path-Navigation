@@ -3,14 +3,11 @@ namespace PathNav.Interaction
     using Events;
     using ExperimentControl;
     using Input;
+    using PathPlanning;
     using System;
     using UnityEngine;
 
-    public enum PathStrategy
-    {
-        Bulldozer,
-        Spatula,
-    }
+
 
     public class ControllerEvaluator : MonoBehaviour
     {

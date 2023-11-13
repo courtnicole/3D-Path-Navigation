@@ -1,11 +1,14 @@
 namespace PathNav.SceneManagement
 {
+    using DataLogging;
     using Events;
+    using ExperimentControl;
     using Interaction;
     using PathPlanning;
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
+    using System.Globalization;
     using UnityEngine;
 
     public class ActionMonitor : MonoBehaviour
@@ -15,15 +18,21 @@ namespace PathNav.SceneManagement
         private Stopwatch _taskTimer;
         private Stopwatch _actionTimer;
         private Stopwatch _editTimer;
-        private List<(string, DateTime)> _actionList;
+
+        private int    UserId { get; set; }
+        private string Scene  { get; set; }
+        
+        private string Block { get; set; }
 
         #region Logic
-        public void Enable()
+        public void Enable(int id, string activeScene, string block)
         {
             _taskTimer   = new Stopwatch();
             _editTimer   = new Stopwatch();
             _editActions = 0;
-            _actionList  = new List<(string, DateTime)>();
+            UserId       = id;
+            Scene        = activeScene;
+            Block        = block;
             SubscribeToEvents();
         }
 
@@ -64,6 +73,17 @@ namespace PathNav.SceneManagement
             _editTimer.Stop();
             _actionTimer.Stop();
         }
+        public void RecordAction(string action, DateTime timestamp)
+        {
+            FileWriterInterface.RecordData(nameof(UserId),    UserId.ToString());
+            FileWriterInterface.RecordData(nameof(Block),     Block);
+            FileWriterInterface.RecordData(nameof(Scene),     Scene);
+            FileWriterInterface.RecordData(nameof(action),    action);
+            FileWriterInterface.RecordData(nameof(timestamp), timestamp.ToString(CultureInfo.InvariantCulture));
+
+            FileWriterInterface.WriteRecordedData();
+        }
+        
         #endregion
 
         #region Event Subscription Management
@@ -87,10 +107,20 @@ namespace PathNav.SceneManagement
 
         private void UnsubscribeFromEvents()
         {
+            EventManager.Unsubscribe<ControllerEvaluatorEventArgs>(EventId.BeginPlacingStartPoint,  BeginPlacingStartPoint);
+            EventManager.Unsubscribe<ControllerEvaluatorEventArgs>(EventId.FinishPlacingStartPoint, FinishPlacingStartPoint);
+
+            EventManager.Unsubscribe<PathStrategyEventArgs>(EventId.DrawStarted, DrawStarted);
+            EventManager.Unsubscribe<PathStrategyEventArgs>(EventId.DrawEnded,   DrawEnded);
+
+            EventManager.Unsubscribe<PathStrategyEventArgs>(EventId.PointPlaced, PointPlaced);
+
             EventManager.Unsubscribe<PathStrategyEventArgs>(EventId.EraseStarted, EraseStarted);
             EventManager.Unsubscribe<PathStrategyEventArgs>(EventId.MoveStarted,  MoveStarted);
             EventManager.Unsubscribe<PathStrategyEventArgs>(EventId.EraseEnded,   EraseEnded);
             EventManager.Unsubscribe<PathStrategyEventArgs>(EventId.MoveEnded,    MoveEnded);
+
+            EventManager.Unsubscribe<ControllerEvaluatorEventArgs>(EventId.PathCreationComplete, FinishPath);
         }
         #endregion
 
@@ -101,44 +131,44 @@ namespace PathNav.SceneManagement
         {
             StartEditTimer();
             IncrementEditActions();
-            _actionList.Add(("EraseStart", DateTime.Now));
+            RecordAction("EraseStart", DateTime.Now);
         }
 
         private void EraseEnded(object sender, PathStrategyEventArgs args)
         {
             StopEditTimer();
-            _actionList.Add(("EraseEnd", DateTime.Now));
+            RecordAction("EraseEnd", DateTime.Now);
         }
 
         private void MoveStarted(object sender, PathStrategyEventArgs args)
         {
             StartEditTimer();
             IncrementEditActions();
-            _actionList.Add(("MoveStart", DateTime.Now));
+            RecordAction("MoveStart", DateTime.Now);
         }
 
         private void MoveEnded(object sender, PathStrategyEventArgs args)
         {
             StopEditTimer();
-            _actionList.Add(("MoveEnd", DateTime.Now));
+            RecordAction("MoveEnd", DateTime.Now);
         }
 
         private void DrawStarted(object sender, PathStrategyEventArgs args)
         {
             StartActionTimer();
             IncrementTotalActions();
-            _actionList.Add(("DrawStart", DateTime.Now));
+            RecordAction("DrawStart", DateTime.Now);
         }
 
         private void DrawEnded(object sender, PathStrategyEventArgs args)
         {
-            _actionList.Add(("DrawEnd", DateTime.Now));
+            RecordAction("DrawEnd", DateTime.Now);
         }
 
         private void PointPlaced(object sender, PathStrategyEventArgs args)
         {
             IncrementTotalActions();
-            _actionList.Add(("PointPlaced", DateTime.Now));
+            RecordAction("PointPlaced", DateTime.Now);
         }
 
         private void BeginPlacingStartPoint(object sender, ControllerEvaluatorEventArgs args)
@@ -146,25 +176,24 @@ namespace PathNav.SceneManagement
             _taskTimer.Start();
             StartActionTimer();
             IncrementTotalActions();
-            _actionList.Add(("BeginStartPointPlacement", DateTime.Now));
+            RecordAction("BeginStartPointPlacement", DateTime.Now);
         }
 
         private void FinishPlacingStartPoint(object sender, ControllerEvaluatorEventArgs args)
         {
             StopActionTimer();
-            _actionList.Add(("FinishStartPointPlacement", DateTime.Now));
+            RecordAction("FinishStartPointPlacement", DateTime.Now);
         }
 
         private void FinishPath(object sender, ControllerEvaluatorEventArgs args)
         {
             _taskTimer.Stop();
-            _actionList.Add(("FinishPath", DateTime.Now));
+            RecordAction("FinishPath", DateTime.Now);
         }
         #endregion
 
         public int                      GetEditActionCount()  => _editActions;
         public int                      GetTotalActionCount() => _totalActions;
-        public List<(string, DateTime)> GetEditInfo()         => _actionList;
         public TimeSpan                 GetTaskTime()         => _taskTimer.Elapsed;
         public TimeSpan                 GetActionTime()       => _actionTimer.Elapsed;
         public TimeSpan                 GetEditTime()         => _editTimer.Elapsed;

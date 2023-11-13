@@ -1,7 +1,9 @@
 namespace PathNav.ExperimentControl
 {
     using Interaction;
+    using PathPlanning;
     using SceneManagement;
+    using System;
     using System.Collections.Generic;
     using System.Threading.Tasks;
     using UnityEngine;
@@ -15,14 +17,13 @@ namespace PathNav.ExperimentControl
         [SerializeField] private Teleporter teleporter;
 
         private bool _enableTeleportation;
+        
+        private Trial _trial;
 
-        private void OnEnable()
+        internal void Enable(Trial trial)
         {
+            _trial = trial;
             _enableTeleportation = CheckTeleportation();
-        }
-
-        private void Start()
-        {
             StartTutorial();
         }
 
@@ -44,20 +45,39 @@ namespace PathNav.ExperimentControl
             return (teleporter is not null) && (teleportLocation is not null);
         }
 
+        private void ShowExample(bool show)
+        {
+            switch (_trial.pathStrategy)
+            {
+                case PathStrategy.Bulldozer:
+                    drawingExample?.SetActive(show);
+                    break;
+                case PathStrategy.Spatula:
+                    interpolationExample?.SetActive(show);
+                    break;
+                case PathStrategy.None:
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+
         private void TutorialComplete()
         {
-            
+            ExperimentDataManager.Instance.TutorialComplete();
         }
 
         private async void StartTutorial()
         {
+            await Task.Delay(1000);
+            
+            ShowExample(true);
+            
+            await Task.Delay(1000);
+            
             if (_enableTeleportation)
             {
                 teleporter.Teleport(teleportLocation);
             }
-            
-            //wait for 3 seconds before continuing
-            await Task.Delay(3000);
         }
     }
 }

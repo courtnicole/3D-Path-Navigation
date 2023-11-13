@@ -29,5 +29,12 @@ namespace PathNav.ExperimentControl
            get => scale;
            set => scale = value;
        }
+       
+       [SerializeField] private string id;
+       public string Id
+       {
+           get => id;
+           set => id = value;
+       }
     }
 }

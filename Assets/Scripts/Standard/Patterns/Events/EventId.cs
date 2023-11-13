@@ -152,6 +152,10 @@ namespace PathNav.Events
         SetPathStrategy,
         [EventId(typeof(SceneControlEventArgs))]
         FollowPathReady,
+        [EventId(typeof(SceneControlEventArgs))]
+        SeqComplete,
+        [EventId(typeof(SceneControlEventArgs))]
+        DiscomfortScoreComplete,
         #endregion
 
         #region FollowerEvaluatorEventArgs
@@ -161,15 +165,6 @@ namespace PathNav.Events
         StartSpeedUpdate,
         [EventId(typeof(FollowerEvaluatorEventArgs))]
         EndSpeedUpdate,
-        #endregion
-        
-        #region Locomotion6DEvaluatorArgs
-        [EventId(typeof(Locomotion6DEvaluatorArgs))]
-        StartHorizontalUpdate,
-        [EventId(typeof(Locomotion6DEvaluatorArgs))]
-        EndHorizontalUpdate,
-        [EventId(typeof(Locomotion6DEvaluatorArgs))]
-        VerticalUpdate,
         #endregion
     }
 

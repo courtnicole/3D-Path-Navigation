@@ -1,5 +1,6 @@
 namespace DataLogging
 {
+    using PathNav.ExperimentControl;
     using System;
     using System.Collections.Generic;
     using System.Reflection;
@@ -26,19 +27,17 @@ namespace DataLogging
         /// </summary>
         /// <param name="sender">The <see cref="UnityEngine.GameObject"/> The game object to set the log file for</param>
         /// <param name="useAutomaticQueuing">The <see cref="System.Boolean"/> Flag to indicate whether to queue automatically</param>
+        /// <param name="userInfo"></param>
         /// <param name="logDirectory">The <see cref="System.String"/> The directory to use for the log file</param>
         /// <param name="logPrefix">The <see cref="System.String"/> A prefix to use for the log file</param>
         /// <returns>The <see cref="System.Boolean"/> Determines whether the log file was successfully set up</returns>
-        public static bool SetupLogFile(GameObject sender, bool useAutomaticQueuing = false, string logDirectory = "Data", string logPrefix = "logFile")
+        public static bool SetupLogFile(GameObject sender, UserInfo userInfo, string logDirectory = "Data", bool useAutomaticQueuing = false )
         {
             _logger = sender.AddComponent<FileWriter>();
 
-            logDirectory = $"{logDirectory}/User_{ExperimentInfo.UserId}";
-
-            logPrefix = $"{logPrefix}_{ExperimentInfo.Date}_{ExperimentInfo.Time}";
-
+             logDirectory = $"{logDirectory}";
             _logger.logDirectory = logDirectory;
-            _logger.logName      = logPrefix;
+            _logger.logName      = userInfo.DataFile;
 
             _logger.queueOnLateUpdate = useAutomaticQueuing;
 
@@ -134,7 +133,7 @@ namespace DataLogging
         /// <typeparam name="T">The <see cref="System.Type"/> The type of the item to record</typeparam>
         /// <param name="item">The <see cref="System.Object"/> The item to record</param>
         /// <param name="id">The <see cref="System.String"/> The ID of the item to record</param>
-        public static void RecordData<T>(T item, string id)
+        public static void RecordData<T>(string id, T item)
         {
             if (_logger == null)
             {
@@ -181,9 +180,8 @@ namespace DataLogging
         }
 
         /// <summary>
-        /// Records the data of a <see cref="TransformRotation"/> item
+        /// Records the data of a struct item
         /// </summary>
-        /// <param name="item">The <see cref="TransformRotation"/> The item to record</param>
         public static void RecordData<T>(T item) where T : struct
         {
             if (_logger == null)

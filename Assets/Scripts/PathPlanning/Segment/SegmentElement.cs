@@ -2,6 +2,7 @@ namespace PathNav.PathPlanning
 {
     using Dreamteck.Splines;
     using Events;
+    using ExperimentControl;
     using Extensions;
     using Input;
     using Interaction;
@@ -215,7 +216,7 @@ namespace PathNav.PathPlanning
         {
             if (SceneDataManager.Instance != null)
             {
-                SceneDataManager.Instance.SaveSplineComputer(Spline);
+                ExperimentDataManager.Instance.SaveSplineComputer(Spline);
                 EmitSegmentEvent(EventId.SegmentComplete);
             }
             else

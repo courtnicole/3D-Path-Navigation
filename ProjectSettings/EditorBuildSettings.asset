@@ -12,7 +12,7 @@ EditorBuildSettings:
     path: Assets/Scenes_Development/CoralReef.unity
     guid: 9fc0d4010bbf28b4594072e72b8655ab
   - enabled: 1
-    path: Assets/Scenes_Development/Loading.unity
+    path: Assets/Scenes_Experiment/Loading.unity
     guid: 197e0ef8e2c2d5f4195e1c7330933622
   - enabled: 0
     path: Assets/Scenes_Development/PathCreationTrial.unity
@@ -20,6 +20,18 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/Scenes_Development/Castle.unity
     guid: 27fe1717e5e45494890c2454a9896c44
+  - enabled: 1
+    path: Assets/Scenes_Experiment/Creation_Model_A.unity
+    guid: 8f1db3d1c6e64bd419bb3d47fd443bef
+  - enabled: 1
+    path: Assets/Scenes_Experiment/Navigation_Model_A.unity
+    guid: af6b68ad00ddf4148827b196be40fe92
+  - enabled: 1
+    path: Assets/Scenes_Experiment/Startup.unity
+    guid: d3b14e03f4df01640a6fb0ce71d03025
+  - enabled: 1
+    path: Assets/Scenes_Experiment/Tutorial.unity
+    guid: 0442afc8b16a3be4fac0811e9d05f0d2
   m_configObjects:
     Unity.XR.OpenVR.Settings: {fileID: 11400000, guid: ef81bc5db50acf3438eccc31a036afe8, type: 2}
     com.unity.addressableassets: {fileID: 11400000, guid: b34dad98baa64ef488376026e897a177, type: 2}

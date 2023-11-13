@@ -1,0 +1,99 @@
+﻿{
+  "id": "1",
+  "conditionBlock": "A",
+  "creationTrials": {
+    "drawing": [
+      {
+        "totalActions": 0,
+        "editActions": 0,
+        "totalTime": 330090.25,
+        "editTime": 330090.25,
+        "drawingTime": 330090.25,
+        "modelId": "A",
+        "scene id": "1",
+        "trial number": "1",
+        "seq": 3
+      },
+      {
+        "totalActions": 0,
+        "editActions": 0,
+        "totalTime": 330090.25,
+        "editTime": 330090.25,
+        "drawingTime": 330090.25,
+        "modelId": "C",
+        "scene id": "2",
+        "trial number": "2",
+        "seq": 3
+      }
+    ],
+    "interpolating": [
+      {
+        "totalActions": 0,
+        "editActions": 0,
+        "totalTime": 330090.25,
+        "editTime": 330090.25,
+        "drawingTime": 330090.25,
+        "modelId": "B",
+        "scene id": 4,
+        "trial number": 1,
+        "seq": 3
+      },
+      {
+        "totalActions": 0,
+        "editActions": 0,
+        "totalTime": 330090.25,
+        "editTime": 330090.25,
+        "drawingTime": 330090.25,
+        "modelId": "B",
+        "scene id": 4,
+        "trial number": 1,
+        "seq": 3
+      }
+    ]
+  },
+  "navigationTrials": {
+    "4Dof": [
+      {
+        "creationMethod": "drawing",
+        "totalActions": 0,
+        "totalTime": 330090.25,
+        "modelId": "A",
+        "scene id": "1",
+        "trial number": "1",
+        "discomfort": 4
+      },
+      {
+        "creationMethod": "interpolating",
+        "totalActions": 0,
+        "totalTime": 330090.25,
+        "modelId": "C",
+        "scene id": "2",
+        "trial number": "2",
+        "discomfort": 4
+      }
+    ],
+    "6Dof": [
+      {
+        "creationMethod": "interpolating",
+        "totalActions": 0,
+        "totalTime": 330090.25,
+        "modelId": "A",
+        "scene id": "1",
+        "trial number": "1",
+        "discomfort": 4
+      },
+      {
+        "creationMethod": "drawing",
+        "totalActions": 0,
+        "totalTime": 330090.25,
+        "modelId": "C",
+        "scene id": "2",
+        "trial number": "2",
+        "discomfort": 4
+      }
+    ]
+  }
+}
+  
+    
+      

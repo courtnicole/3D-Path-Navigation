@@ -10,9 +10,10 @@ namespace PathNav.Interaction
     using Patterns.FSM;
     using UnityEngine;
     using UnityEngine.AddressableAssets;
-    
-    internal enum LocomotionDof
+
+    public enum LocomotionDof
     {
+        None,
         FourDoF,
         SixDof,
     }
