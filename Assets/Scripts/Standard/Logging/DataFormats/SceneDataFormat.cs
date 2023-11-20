@@ -3,8 +3,6 @@ namespace PathNav.ExperimentControl
 {
     public class SceneDataFormat
     {
-        
-
         public int    ID               { get; set; }	
         public int BLOCK_ID         { get; set; }	
         //Creation or Navigation

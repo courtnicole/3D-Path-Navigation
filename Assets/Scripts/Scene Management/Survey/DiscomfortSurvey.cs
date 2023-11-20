@@ -30,6 +30,7 @@ namespace PathNav.SceneManagement
             float change = obj.ReadValue<Vector2>().x;
             _updateValueCoroutine = StartCoroutine(UpdateValue(change));
         }
+        
         private IEnumerator UpdateValue(float change)
         {
             float sign = Mathf.Sign(change);

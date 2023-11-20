@@ -32,7 +32,7 @@ namespace PathNav.ExperimentControl
 
         public static async Task LogSceneData(SceneDataFormat data)
         {
-            await using StreamWriter streamWriter = new (_logFile);
+            await using StreamWriter streamWriter = new (_logFile, true);
             await using CsvWriter    csvWriter    = new (streamWriter, Config);
             csvWriter.Context.RegisterClassMap<SceneDataFormatMap>();
             csvWriter.WriteRecord(data);

@@ -4,18 +4,13 @@ namespace PathNav.ExperimentControl
     using DataLogging;
     using Dreamteck.Splines;
     using Events;
-    using Extensions;
     using Interaction;
     using PathPlanning;
-    using Patterns.Factory;
     using SceneManagement;
     using System;
     using System.Collections;
     using System.Collections.Generic;
-    using System.Threading;
-    using System.Threading.Tasks;
     using UnityEngine;
-    using UnityEngine.AddressableAssets;
     using UnityEngine.SceneManagement;
     #endregion
 
@@ -99,52 +94,12 @@ namespace PathNav.ExperimentControl
             await CsvLogger.InitSceneDataLog(_logDirectory, _logFilePath);
 
             _sceneIndex = 0;
-            _trialIndex = 0;
-            _modelIndex = 0;
 
             _currentTrial = _conditionBlock.GetCurrentTrial(_trialIndex);
-            _sceneIndex++;
 
             _trialState = TrialState.Tutorial;
             LoadNextScene();
         }
-
-        #region Model
-        private async void CreateModel(Model modelInfo)
-        {
-            bool result = await PlaceModelAsync(modelInfo);
-
-            if (!result)
-                Debug.LogError("Model Failed To Load! Unable to continue.");
-        }
-
-        private async Task<bool> PlaceModelAsync(Model modelInfo)
-        {
-            Task<GameObject> modelTask = InstantiateModelAsync(modelInfo.assetReference);
-            GameObject       model     = await modelTask;
-
-            if (model is null) return false;
-
-            model.transform.position   = modelInfo.Translation;
-            model.transform.localScale = modelInfo.Scale * Vector3.one;
-
-            return true;
-        }
-
-        private async Task<GameObject> InstantiateModelAsync(AssetReferenceGameObject key)
-        {
-            Task<GameObject> modelTask = Factory.InstantiateObjectAsync(key, Utility.Parameterize(transform), CancellationToken.None);
-            GameObject       model     = await modelTask;
-
-            if (!modelTask.IsCompletedSuccessfully) return null;
-            if (model == null) return null;
-
-            model.transform.SetParent(null);
-            model.AddComponent<ReleaseAddressable>();
-
-            return model;
-        }
-        #endregion
 
         #region Data Recording
         internal void RecordSeqScore(int value)
@@ -342,8 +297,8 @@ namespace PathNav.ExperimentControl
             _sceneData.MODEL      = _conditionBlock.GetCurrentModel(_modelIndex).name;
             _sceneData.METHOD     = _currentTrial.GetPathStrategyString();
 
-            ActionMonitor actionMonitor = gameObject.AddComponent<ActionMonitor>();
-            actionMonitor.Enable(_userId, _activeSceneName, _conditionBlock.conditionId);
+            CreationActionMonitor creationActionMonitor = gameObject.AddComponent<CreationActionMonitor>();
+            creationActionMonitor.Enable(_userId, _sceneData.MODEL, _userInfo.BlockId, _sceneData.METHOD, _logDirectory, _logFilePath);
 
             CreationManager creationManager = FindObjectOfType<CreationManager>();
             creationManager.Enable(_currentTrial, _sceneData);
@@ -365,8 +320,8 @@ namespace PathNav.ExperimentControl
             _sceneData.MODEL      = _conditionBlock.GetCurrentModel(_modelIndex).name;
             _sceneData.METHOD     = _currentTrial.GetLocomotionDofString();
 
-            ActionMonitor actionMonitor = gameObject.AddComponent<ActionMonitor>();
-            actionMonitor.Enable(_userId, _activeSceneName, _conditionBlock.conditionId);
+            CreationActionMonitor creationActionMonitor = gameObject.AddComponent<CreationActionMonitor>();
+            creationActionMonitor.Enable(_userId, _sceneData.MODEL, _userInfo.BlockId, _sceneData.METHOD, _logDirectory, _logFilePath);
 
             NavigationManager creationManager = FindObjectOfType<NavigationManager>();
             creationManager.Enable(_currentTrial, _sceneData);
@@ -379,14 +334,26 @@ namespace PathNav.ExperimentControl
 
         internal void TutorialComplete()
         {
-            _trialState = TrialState.Trial;
             _sceneIndex++;
+            _trialState = TrialState.Trial;
+            _trialIndex = 0;
+            _modelIndex = 0;
             LoadNextScene();
         }
 
         internal async void CreationComplete()
         {
             await CsvLogger.LogSceneData(_sceneData);
+            _trialIndex++;
+            _modelIndex++;
+        }
+
+        internal async void NavigationComplete()
+        {
+            await CsvLogger.LogSceneData(_sceneData);
+            _trialIndex++;
+            _modelIndex++;
+            LoadNextScene();
         }
 
         private string GetSceneId()

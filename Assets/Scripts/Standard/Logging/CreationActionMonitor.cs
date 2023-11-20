@@ -1,17 +1,18 @@
 namespace PathNav.SceneManagement
 {
-    using DataLogging;
+    using CsvHelper;
+    using CsvHelper.Configuration;
     using Events;
     using ExperimentControl;
     using Interaction;
     using PathPlanning;
     using System;
-    using System.Collections.Generic;
     using System.Diagnostics;
     using System.Globalization;
+    using System.IO;
     using UnityEngine;
 
-    public class ActionMonitor : MonoBehaviour
+    public class CreationActionMonitor : MonoBehaviour
     {
         private int _totalActions;
         private int _editActions;
@@ -19,21 +20,43 @@ namespace PathNav.SceneManagement
         private Stopwatch _taskTimerEdits;
         private Stopwatch _taskTimerCreate;
 
-        private int    UserId { get; set; }
-        private string Scene  { get; set; }
-        
-        private string Block { get; set; }
+        private CreationDataFormat _creationData;
+        private static string _logFile;
+        private static readonly CsvConfiguration Config = new(CultureInfo.InvariantCulture);
 
         #region Logic
-        public void Enable(int id, string activeScene, string block)
+        public void Enable(int id, string model, int block, string method, string logDirectory, string logFilePath)
         {
             _taskTimerTotal   = new Stopwatch();
             _taskTimerCreate   = new Stopwatch();
             _editActions = 0;
-            UserId       = id;
-            Scene        = activeScene;
-            Block        = block;
+            
+            InitDataLog(logDirectory, logFilePath);
+            
+            _creationData          = new CreationDataFormat
+            {
+                ID       = id,
+                BLOCK_ID = block,
+                MODEL    = model,
+                METHOD   = method,
+            };
+            
             SubscribeToEvents();
+        }
+
+        private static void InitDataLog(string logDirectory, string filePath)
+        {
+            if (!Directory.Exists(logDirectory))
+            {
+                Directory.CreateDirectory(logDirectory);
+            }
+            _logFile = filePath;
+            if (File.Exists(_logFile)) return;
+            using StreamWriter    streamWriter = new (_logFile);
+            using CsvWriter csvWriter    = new (streamWriter, Config);
+            csvWriter.Context.RegisterClassMap<CreationDataFormatMap>();
+            csvWriter.WriteHeader<CreationDataFormat>();
+            csvWriter.NextRecord();
         }
 
         private void OnDisable()
@@ -75,13 +98,13 @@ namespace PathNav.SceneManagement
         }
         public void RecordAction(string action, DateTime timestamp)
         {
-            FileWriterInterface.RecordData(nameof(UserId),    UserId.ToString());
-            FileWriterInterface.RecordData(nameof(Block),     Block);
-            FileWriterInterface.RecordData(nameof(Scene),     Scene);
-            FileWriterInterface.RecordData(nameof(action),    action);
-            FileWriterInterface.RecordData(nameof(timestamp), timestamp.ToString(CultureInfo.InvariantCulture));
-
-            FileWriterInterface.WriteRecordedData();
+            _creationData.ACTION    = action;
+            _creationData.TIMESTAMP = timestamp;
+            using StreamWriter streamWriter = new (_logFile, true);
+            using CsvWriter    csvWriter    = new (streamWriter, Config);
+            csvWriter.Context.RegisterClassMap<SceneDataFormatMap>();
+            csvWriter.WriteRecord(_creationData);
+            csvWriter.NextRecord();
         }
 
         public void RecordAllActions()
@@ -197,11 +220,5 @@ namespace PathNav.SceneManagement
             RecordAllActions();
         }
         #endregion
-
-        public int                      GetEditActionCount()  => _editActions;
-        public int                      GetTotalActionCount() => _totalActions;
-        public TimeSpan                 GetTaskTime()         => _taskTimerTotal.Elapsed;
-        public TimeSpan                 GetActionTime()       => _taskTimerEdits.Elapsed;
-        public TimeSpan                 GetEditTime()         => _taskTimerCreate.Elapsed;
     }
 }

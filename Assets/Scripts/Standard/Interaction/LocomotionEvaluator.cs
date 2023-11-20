@@ -1,5 +1,7 @@
 namespace PathNav.Interaction
 {
+    using CsvHelper;
+    using CsvHelper.Configuration;
     using Dreamteck.Splines;
     using System;
     using System.Threading.Tasks;
@@ -8,6 +10,9 @@ namespace PathNav.Interaction
     using Input;
     using Patterns.Factory;
     using Patterns.FSM;
+    using System.Diagnostics;
+    using System.Globalization;
+    using System.IO;
     using UnityEngine;
     using UnityEngine.AddressableAssets;
 
@@ -35,6 +40,11 @@ namespace PathNav.Interaction
         private LocomotionDof _dof;
 
         internal bool useVerticalShift;
+        
+        private Stopwatch _taskTimerTotal;
+        private NavigationDataFormat _navigationData;
+        private static string _logFile;
+        private static readonly CsvConfiguration Config = new(CultureInfo.InvariantCulture);
         #endregion
 
         #region Movement Variables
@@ -67,6 +77,15 @@ namespace PathNav.Interaction
             SubscribeToEnableDisableEvents();
         }
 
+        public void EnableData()
+        {
+            // _taskTimerTotal = new Stopwatch();
+            // InitDataLog(logDirectory, logFilePath);
+            // _navigationData 
+            
+            //QUERY EXP MANAGER TO GET INFO TO START DATA LOGGING. 
+        }
+
         private void OnDisable()
         {
             UnsubscribeToEnableDisableEvents();
@@ -78,13 +97,42 @@ namespace PathNav.Interaction
             if (_state.CurrentState == _disabledState) return;
 
             _state.UpdateLogic();
+            _state.UpdatePhysics();
         }
 
         private void LateUpdate()
         {
-            if (_state.CurrentState == _disabledState) return;
+            RecordData();
+        }
+        
+        
+        private static void InitDataLog(string logDirectory, string filePath)
+        {
+            if (!Directory.Exists(logDirectory))
+            {
+                Directory.CreateDirectory(logDirectory);
+            }
+            
+            _logFile = filePath;
+            if (File.Exists(_logFile)) return;
+            using StreamWriter streamWriter = new (_logFile);
+            using CsvWriter    csvWriter    = new (streamWriter, Config);
+            csvWriter.Context.RegisterClassMap<NavigationDataFormatMap>();
+            csvWriter.WriteHeader<NavigationDataFormat>();
+            csvWriter.NextRecord();
+        }
 
-            _state.UpdatePhysics();
+        private void RecordData()
+        {
+            _navigationData.SPEED     = follower.followSpeed;
+            _navigationData.POSITION  = playerTransform.position.ToString();
+            _navigationData.ROTATION  = playerTransform.rotation.ToString();
+            _navigationData.TIMESTAMP = DateTime.Now;
+            using StreamWriter streamWriter = new (_logFile, true);
+            using CsvWriter    csvWriter    = new (streamWriter, Config);
+            csvWriter.Context.RegisterClassMap<SceneDataFormatMap>();
+            csvWriter.WriteRecord(_navigationData);
+            csvWriter.NextRecord();
         }
         #endregion
 
