@@ -8,9 +8,7 @@ namespace PathNav.ExperimentControl
 
     public static class CsvLogger 
     {
-        private static string _logDirectory;
-        private static CsvWriter _csvWriter;
-        private static StreamWriter _streamWriter;
+        private static string _logFile;
         private static readonly CsvConfiguration Config = new (CultureInfo.InvariantCulture)
         {
             HasHeaderRecord = true,
@@ -23,30 +21,22 @@ namespace PathNav.ExperimentControl
                 Directory.CreateDirectory(logDirectory);
             }
             
-            _logDirectory = filePath;
-            bool             fileExists = File.Exists(_logDirectory);
-
-            _streamWriter = new StreamWriter(_logDirectory);
-            _csvWriter    = new CsvWriter(_streamWriter, Config);
-            _csvWriter.Context.RegisterClassMap<SceneDataFormatMap>();
-
-            if (fileExists) return;
-            
-            _csvWriter.WriteHeader<SceneDataFormat>();
-            await _csvWriter.NextRecordAsync();
+            _logFile = filePath;
+            if (File.Exists(_logFile)) return;
+            await using StreamWriter streamWriter = new (_logFile);
+            await using CsvWriter    csvWriter    = new (streamWriter, Config);
+            csvWriter.Context.RegisterClassMap<SceneDataFormatMap>();
+            csvWriter.WriteHeader<SceneDataFormat>();
+            await csvWriter.NextRecordAsync();
         }
 
         public static async Task LogSceneData(SceneDataFormat data)
         {
-            _csvWriter.WriteRecord(data);
-            await _csvWriter.NextRecordAsync();
+            await using StreamWriter streamWriter = new (_logFile);
+            await using CsvWriter    csvWriter    = new (streamWriter, Config);
+            csvWriter.Context.RegisterClassMap<SceneDataFormatMap>();
+            csvWriter.WriteRecord(data);
+            await csvWriter.NextRecordAsync();
         }
-
-        public static async Task EndLogging()
-        {
-             await _csvWriter.DisposeAsync();
-             await _streamWriter.DisposeAsync();
-        }
-
     }
 }

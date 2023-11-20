@@ -214,14 +214,14 @@ namespace PathNav.PathPlanning
 
         public void SaveSpline()
         {
-            if (SceneDataManager.Instance != null)
+            if (ExperimentDataManager.Instance != null)
             {
                 ExperimentDataManager.Instance.SaveSplineComputer(Spline);
                 EmitSegmentEvent(EventId.SegmentComplete);
             }
             else
             {
-                throw new Exception("SceneDataManager is null!");
+                throw new Exception("ExperimentDataManager is null!");
             }
         }
         #endregion

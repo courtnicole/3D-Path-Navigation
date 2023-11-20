@@ -1,5 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
+
 using UnityEngine;
 
 namespace PathNav.ExperimentControl
@@ -11,21 +10,15 @@ namespace PathNav.ExperimentControl
         {
             string path = Application.dataPath              + "/Data/test_01.csv";
             await CsvLogger.InitSceneDataLog(Application.dataPath + "/Data/", path);
-            SceneDataFormat data = new SceneDataFormat();
-            data.ID = 22;
-            data.METHOD = "Tester";
-            
+            SceneDataFormat data = new SceneDataFormat
+            {
+                ID     = 22,
+                METHOD = "Tester",
+            };
+
             await CsvLogger.LogSceneData(data);
             
             Debug.Log(path);
-            
-            await CsvLogger.EndLogging();
-        }
-
-        // Update is called once per frame
-        void Update()
-        {
-        
         }
     }
 }

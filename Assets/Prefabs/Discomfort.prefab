@@ -400,8 +400,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: PathNav.Interaction.Survey, Assembly-CSharp
+      - m_Target: {fileID: 3266234088930282017}
+        m_TargetAssemblyTypeName: PathNav.SceneManagement.DiscomfortSurvey, Assembly-CSharp
         m_MethodName: RecordResponse
         m_Mode: 1
         m_Arguments:
@@ -714,8 +714,8 @@ MonoBehaviour:
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: PathNav.Interaction.Survey, Assembly-CSharp
+      - m_Target: {fileID: 3266234088930282017}
+        m_TargetAssemblyTypeName: PathNav.SceneManagement.DiscomfortSurvey, Assembly-CSharp
         m_MethodName: RecordValue
         m_Mode: 1
         m_Arguments:
@@ -810,7 +810,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   slider: {fileID: 3266234088605664412}
   text: {fileID: 3266234087923638394}
-  inputProvider: {fileID: -6708713139157059372, guid: ee35e82046ad68046b8d163c1260e4dd, type: 3}
 --- !u!1 &3266234088939769346
 GameObject:
   m_ObjectHideFlags: 0

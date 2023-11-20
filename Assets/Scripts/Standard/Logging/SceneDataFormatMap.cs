@@ -15,12 +15,11 @@
             Map(m => m.MODEL).Index(6).Name("MODEL");
             Map(m => m.ACTIONS_TOTAL).Index(7).Name("ACTIONS_TOTAL");
             Map(m => m.ACTIONS_EDIT).Index(8).Name("ACTIONS_EDIT");
-            Map(m => m.ACTIONS_CREATE).Index(9).Name("ACTIONS_CREATE");
-            Map(m => m.TASK_TIME_TOTAL).Index(10).Name("TASK_TIME_TOTAL");
-            Map(m => m.TASK_TIME_EDIT).Index(11).Name("TASK_TIME_EDIT");
-            Map(m => m.TASK_TIME_CREATE).Index(12).Name("TASK_TIME_CREATE");
-            Map(m => m.SEQ_SCORE).Index(13).Name("SEQ_SCORE");
-            Map(m => m.DISCOMFORT_SCORE).Index(14).Name("DISCOMFORT_SCORE");
+            Map(m => m.TASK_TIME_TOTAL).Index(9).Name("TASK_TIME_TOTAL");
+            Map(m => m.TASK_TIME_EDIT).Index(10).Name("TASK_TIME_EDIT");
+            Map(m => m.TASK_TIME_CREATE).Index(11).Name("TASK_TIME_CREATE");
+            Map(m => m.SEQ_SCORE).Index(12).Name("SEQ_SCORE");
+            Map(m => m.DISCOMFORT_SCORE).Index(13).Name("DISCOMFORT_SCORE");
         }
     }
 }

@@ -156,6 +156,10 @@ namespace PathNav.Events
         SeqComplete,
         [EventId(typeof(SceneControlEventArgs))]
         DiscomfortScoreComplete,
+        [EventId(typeof(SceneControlEventArgs))]
+        SetLocomotionStrategy,
+        [EventId(typeof(SceneControlEventArgs))]
+        EndReached,
         #endregion
 
         #region FollowerEvaluatorEventArgs

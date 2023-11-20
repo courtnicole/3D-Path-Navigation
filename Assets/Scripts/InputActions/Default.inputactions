@@ -972,6 +972,15 @@
                     "initialStateCheck": false
                 },
                 {
+                    "name": "Point",
+                    "type": "PassThrough",
+                    "id": "db3671a4-d676-43f2-8dd5-56ce731561c6",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
                     "name": "pointerPosition",
                     "type": "PassThrough",
                     "id": "1cf6fc44-d3ac-4925-9552-a4d7f2310301",
@@ -981,27 +990,25 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "Point",
+                    "name": "pointerClick",
                     "type": "PassThrough",
-                    "id": "db3671a4-d676-43f2-8dd5-56ce731561c6",
-                    "expectedControlType": "Vector2",
+                    "id": "b7631955-0672-426e-ae60-413c76eab82c",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "pointerRotation",
+                    "type": "PassThrough",
+                    "id": "210850c5-0c11-43c9-9ec2-95fc251034bb",
+                    "expectedControlType": "Quaternion",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
                 }
             ],
             "bindings": [
-                {
-                    "name": "",
-                    "id": "2c83a49f-f526-4f25-b272-f08d05417949",
-                    "path": "<XRController>/triggerPressed",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "XR",
-                    "action": "Click",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
                 {
                     "name": "",
                     "id": "1f911bc1-06a6-4884-892b-4e71b21dd743",
@@ -1026,12 +1033,34 @@
                 },
                 {
                     "name": "",
+                    "id": "e004caeb-c07a-446a-b900-355cf7d14e49",
+                    "path": "<XRController>/triggerPressed",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "XR",
+                    "action": "pointerClick",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "3cad4d87-96cd-4f43-a36d-16c63ac36147",
                     "path": "<Mouse>/position",
                     "interactions": "",
                     "processors": "",
                     "groups": "Keyboard/Mouse",
                     "action": "Point",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "a1de6af9-3c9d-41a9-ac19-ee39890079fb",
+                    "path": "<XRController>/pointerRotation",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "pointerRotation",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

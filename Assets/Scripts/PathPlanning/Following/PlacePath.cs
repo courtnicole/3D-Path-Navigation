@@ -16,11 +16,12 @@ namespace PathNav.PathPlanning
 
         private void Start()
         {
-            if (SceneDataManager.Instance != null)
+            if (ExperimentDataManager.Instance != null)
             {
-                _splineComputer   = SceneDataManager.Instance.GetSavedSplineComputer();
-                _deltaTranslation = SceneDataManager.Instance.persistentData.DeltaTranslation;
-                _deltaScale       = SceneDataManager.Instance.persistentData.DeltaScale;
+                _splineComputer   = ExperimentDataManager.Instance.GetSavedSplineComputer();
+                
+                _deltaTranslation = ExperimentDataManager.Instance.GetSplineModel().Translation;
+                _deltaScale       = ExperimentDataManager.Instance.GetSplineModel().Scale;
 
                 SetupSpline();
             }

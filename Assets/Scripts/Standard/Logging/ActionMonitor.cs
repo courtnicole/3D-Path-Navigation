@@ -15,9 +15,9 @@ namespace PathNav.SceneManagement
     {
         private int _totalActions;
         private int _editActions;
-        private Stopwatch _taskTimer;
-        private Stopwatch _actionTimer;
-        private Stopwatch _editTimer;
+        private Stopwatch _taskTimerTotal;
+        private Stopwatch _taskTimerEdits;
+        private Stopwatch _taskTimerCreate;
 
         private int    UserId { get; set; }
         private string Scene  { get; set; }
@@ -27,8 +27,8 @@ namespace PathNav.SceneManagement
         #region Logic
         public void Enable(int id, string activeScene, string block)
         {
-            _taskTimer   = new Stopwatch();
-            _editTimer   = new Stopwatch();
+            _taskTimerTotal   = new Stopwatch();
+            _taskTimerCreate   = new Stopwatch();
             _editActions = 0;
             UserId       = id;
             Scene        = activeScene;
@@ -36,7 +36,7 @@ namespace PathNav.SceneManagement
             SubscribeToEvents();
         }
 
-        public void Disable()
+        private void OnDisable()
         {
             UnsubscribeFromEvents();
         }
@@ -54,24 +54,24 @@ namespace PathNav.SceneManagement
 
         private void StartActionTimer()
         {
-            _actionTimer.Start();
+            _taskTimerEdits.Start();
         }
 
         private void StopActionTimer()
         {
-            _actionTimer.Stop();
+            _taskTimerEdits.Stop();
         }
 
         private void StartEditTimer()
         {
-            _editTimer.Start();
-            _actionTimer.Start();
+            _taskTimerCreate.Start();
+            _taskTimerEdits.Start();
         }
 
         private void StopEditTimer()
         {
-            _editTimer.Stop();
-            _actionTimer.Stop();
+            _taskTimerCreate.Stop();
+            _taskTimerEdits.Stop();
         }
         public void RecordAction(string action, DateTime timestamp)
         {
@@ -82,6 +82,11 @@ namespace PathNav.SceneManagement
             FileWriterInterface.RecordData(nameof(timestamp), timestamp.ToString(CultureInfo.InvariantCulture));
 
             FileWriterInterface.WriteRecordedData();
+        }
+
+        public void RecordAllActions()
+        {
+            ExperimentDataManager.Instance.RecordActionData(_totalActions, _editActions, _taskTimerTotal.Elapsed, _taskTimerEdits.Elapsed, _taskTimerCreate.Elapsed);
         }
         
         #endregion
@@ -173,7 +178,7 @@ namespace PathNav.SceneManagement
 
         private void BeginPlacingStartPoint(object sender, ControllerEvaluatorEventArgs args)
         {
-            _taskTimer.Start();
+            _taskTimerTotal.Start();
             StartActionTimer();
             IncrementTotalActions();
             RecordAction("BeginStartPointPlacement", DateTime.Now);
@@ -187,15 +192,16 @@ namespace PathNav.SceneManagement
 
         private void FinishPath(object sender, ControllerEvaluatorEventArgs args)
         {
-            _taskTimer.Stop();
+            _taskTimerTotal.Stop();
             RecordAction("FinishPath", DateTime.Now);
+            RecordAllActions();
         }
         #endregion
 
         public int                      GetEditActionCount()  => _editActions;
         public int                      GetTotalActionCount() => _totalActions;
-        public TimeSpan                 GetTaskTime()         => _taskTimer.Elapsed;
-        public TimeSpan                 GetActionTime()       => _actionTimer.Elapsed;
-        public TimeSpan                 GetEditTime()         => _editTimer.Elapsed;
+        public TimeSpan                 GetTaskTime()         => _taskTimerTotal.Elapsed;
+        public TimeSpan                 GetActionTime()       => _taskTimerEdits.Elapsed;
+        public TimeSpan                 GetEditTime()         => _taskTimerCreate.Elapsed;
     }
 }

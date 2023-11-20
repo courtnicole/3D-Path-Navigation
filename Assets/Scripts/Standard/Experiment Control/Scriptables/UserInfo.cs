@@ -8,9 +8,9 @@ namespace PathNav.ExperimentControl
     {
         public void Initialize(int id)
         {
-            UserId     = id;
-            BlockId    = id % 4;
-            DataFile = "User_" + UserId + "_" + DateTime.Now.ToString("u") + ".csv";
+            UserId   = id;
+            BlockId  = id % 4;
+            DataFile = "User_" + UserId + "_" + DateTime.Now.ToString("yyyy_MM_dd_HH_mm_ss") + ".csv";
         }
 
         public int UserId { get; private set; }

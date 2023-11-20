@@ -7,6 +7,7 @@ namespace PathNav.ExperimentControl
     using System.Collections.Generic;
     using System.Threading.Tasks;
     using UnityEngine;
+    using UnityEngine.InputSystem;
 
     public class TutorialManager : MonoBehaviour
     {
@@ -15,6 +16,8 @@ namespace PathNav.ExperimentControl
         [SerializeField] private GameObject drawingExample;
         [SerializeField] private Transform teleportLocation;
         [SerializeField] private Teleporter teleporter;
+        
+        public InputActionReference debugEndTutorial;
 
         private bool _enableTeleportation;
         
@@ -22,9 +25,19 @@ namespace PathNav.ExperimentControl
 
         internal void Enable(Trial trial)
         {
-            _trial = trial;
-            _enableTeleportation = CheckTeleportation();
+            debugEndTutorial.action.Enable();
+            debugEndTutorial.action.started += TutorialComplete;
+            
+            _trial                       =  trial;
+            _enableTeleportation         =  CheckTeleportation();
+            
             StartTutorial();
+        }
+        
+        private void OnDisable()
+        {
+            debugEndTutorial.action.Disable();
+            debugEndTutorial.action.started -= TutorialComplete;
         }
 
         private bool CheckTeleportation()
@@ -61,7 +74,7 @@ namespace PathNav.ExperimentControl
             }
         }
 
-        private void TutorialComplete()
+        private void TutorialComplete(InputAction.CallbackContext callbackContext)
         {
             ExperimentDataManager.Instance.TutorialComplete();
         }

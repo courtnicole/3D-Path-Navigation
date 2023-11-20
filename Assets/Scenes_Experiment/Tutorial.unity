@@ -2326,6 +2326,7 @@ MonoBehaviour:
   drawingExample: {fileID: 2091762006}
   teleportLocation: {fileID: 1845644791}
   teleporter: {fileID: 873739334}
+  debugEndTutorial: {fileID: 5113088590926889233, guid: e0ca4504471ca124088e1e2cfe6804ae, type: 3}
 --- !u!1 &1817987309
 GameObject:
   m_ObjectHideFlags: 0
@@ -2936,7 +2937,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!135 &2091762007
 SphereCollider:
   m_ObjectHideFlags: 0

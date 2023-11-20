@@ -84,7 +84,7 @@ namespace ExperimentControl
                         }
                         
                         userId = firstAvailableUserId;
-                        Debug.Log("Reserved User ID: " + firstAvailableUserId);
+                        Debug.Log("Reserved New User ID: " + firstAvailableUserId);
                     }
                     else
                     {
@@ -121,7 +121,7 @@ namespace ExperimentControl
                     {
                         int mostRecentId = recentUserId.GetInt32();
                         userId = mostRecentId;
-                        Debug.Log("Reserved User ID: " + mostRecentId);
+                        Debug.Log("Reserved Prior User ID: " + mostRecentId);
                     }
                     else
                     {

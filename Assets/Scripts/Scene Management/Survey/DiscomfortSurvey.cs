@@ -4,6 +4,8 @@ using System.Collections.Generic;
 
 namespace PathNav.SceneManagement
 {
+    using Events;
+    using ExperimentControl;
     using TMPro;
     using UnityEngine;
     using UnityEngine.InputSystem;
@@ -13,7 +15,6 @@ namespace PathNav.SceneManagement
     {
         [SerializeField] private Slider slider;
         [SerializeField] private TMP_Text text;
-        public InputActionReference inputProvider;
         private int _value;
         private Coroutine _updateValueCoroutine;
 
@@ -21,12 +22,6 @@ namespace PathNav.SceneManagement
         {
             _value    = (int) slider.minValue;
             text.text = _value.ToString();
-            EnableActions();
-        }
-        private void EnableActions()
-        {
-            inputProvider.action.Enable();
-            inputProvider.action.performed += InputPerformed;
         }
 
         private void InputPerformed(InputAction.CallbackContext obj)
@@ -35,7 +30,6 @@ namespace PathNav.SceneManagement
             float change = obj.ReadValue<Vector2>().x;
             _updateValueCoroutine = StartCoroutine(UpdateValue(change));
         }
-
         private IEnumerator UpdateValue(float change)
         {
             float sign = Mathf.Sign(change);
@@ -53,12 +47,12 @@ namespace PathNav.SceneManagement
         {
             _value = (int)slider.value;
             text.text = _value.ToString();
-            Debug.Log(_value);
         }
 
         public void RecordResponse()
         {
-            Debug.Log(_value + " submitted");
+            ExperimentDataManager.Instance.RecordDiscomfortScore(_value);
+            EventManager.Publish(EventId.DiscomfortScoreComplete, this, new SceneControlEventArgs());
         }
     }
 }

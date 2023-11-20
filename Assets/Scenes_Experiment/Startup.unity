@@ -402,7 +402,7 @@ MonoBehaviour:
   m_MiddleClickAction: {fileID: 0}
   m_RightClickAction: {fileID: 0}
   m_ScrollWheelAction: {fileID: 0}
-  m_TrackedDevicePositionAction: {fileID: -1130744689710126638, guid: ee35e82046ad68046b8d163c1260e4dd, type: 3}
+  m_TrackedDevicePositionAction: {fileID: 0}
   m_TrackedDeviceOrientationAction: {fileID: -8421002263114211277, guid: ee35e82046ad68046b8d163c1260e4dd, type: 3}
   m_DeselectOnBackgroundClick: 1
   m_PointerBehavior: 0

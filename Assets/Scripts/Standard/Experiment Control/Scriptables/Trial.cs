@@ -10,7 +10,7 @@ namespace PathNav.ExperimentControl
         PathCreation,
         PathNavigation,
     }
-    
+
     [CreateAssetMenu(fileName = "Trial", menuName = "Scriptables/Standard/Trial", order = 25)]
     public class Trial : ScriptableObject
     {
@@ -26,6 +26,26 @@ namespace PathNav.ExperimentControl
                        TrialType.PathCreation   => "Creation",
                        TrialType.PathNavigation => "Navigation",
                        _                        => throw new ArgumentOutOfRangeException(),
+                   };
+        }
+
+        public string GetPathStrategyString()
+        {
+            return pathStrategy switch
+                   {
+                       PathStrategy.Bulldozer => "Drawing",
+                       PathStrategy.Spatula   => "Interpolation",
+                       _                      => throw new ArgumentOutOfRangeException(),
+                   };
+        }
+        
+        public string GetLocomotionDofString()
+        {
+            return locomotionDof switch
+                   {
+                       LocomotionDof.FourDoF => "4Dof",
+                       LocomotionDof.SixDof   => "6Dof",
+                       _                       => throw new ArgumentOutOfRangeException(),
                    };
         }
     }

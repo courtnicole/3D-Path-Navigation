@@ -18,10 +18,12 @@ namespace PathNav.ExperimentControl
         private bool _enableTeleportation;
         
         private Trial _trial;
+        private SceneDataFormat _sceneData;
 
-        internal void Enable(Trial trial)
+        internal void Enable(Trial trial, SceneDataFormat sceneData)
         {
             _trial           = trial;
+            _sceneData       = sceneData;
             _enableTeleportation = CheckTeleportation();
             SubscribeToEvents();
             StartCreation();

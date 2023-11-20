@@ -23,25 +23,24 @@ namespace PathNav.Interaction
         #region Local Variables
         [SerializeField] private LocomotionInfo locomotionInfo;
 
-        [SerializeField] private LocomotionDof locomotionDof;
-
         [SerializeField] private Transform playerTransform;
-        
+
         [SerializeField] internal SplineFollower follower;
         internal Transform PlayerTransform => playerTransform;
-        
+
         private IController _activeController;
         private bool HasController => _activeController != null;
 
         internal LocomotionDof dof;
+        private LocomotionDof _dof;
 
         internal bool useVerticalShift;
         #endregion
 
         #region Movement Variables
-        internal float MaxVelocity => locomotionInfo.MaxVelocity;
-        internal float MinVelocity => locomotionInfo.MinVelocity;
-        internal float Acceleration => locomotionInfo.Acceleration;
+        internal float   MaxVelocity   => locomotionInfo.MaxVelocity;
+        internal float   MinVelocity   => locomotionInfo.MinVelocity;
+        internal float   Acceleration  => locomotionInfo.Acceleration;
         internal Vector2 InputPose     => _activeController.JoystickPose;
         internal Vector3 VerticalShift => _activeController.Forward;
         #endregion
@@ -53,19 +52,18 @@ namespace PathNav.Interaction
         private LocomotionIdle<LocomotionEvaluator> _idleState = new();
         private LocomotionMove<LocomotionEvaluator> _moveState = new();
         private Disabled<LocomotionEvaluator> _disabledState = new();
-        
+
         private bool HasLocomotion => _state.CurrentState == _moveState;
-        
+
         private bool _hasLocomotionInput;
 
-        private bool ShouldLocomote => _hasLocomotionInput && HasController;
-        private bool ShouldUnlocomote => HasLocomotion && !_hasLocomotionInput;
+        private bool ShouldLocomote   => _hasLocomotionInput && HasController;
+        private bool ShouldUnlocomote => HasLocomotion       && !_hasLocomotionInput;
         #endregion
 
         #region Unity Methods
         private void OnEnable()
         {
-            Enable();
             SubscribeToEnableDisableEvents();
         }
 
@@ -97,12 +95,10 @@ namespace PathNav.Interaction
 
             if (_state.CurrentState == _disabledState) _state.ChangeState(_idleState);
 
-            dof = locomotionDof;
-
             OnLocomotionEnabled();
             SubscribeToLocomotionInputEvents();
         }
-        
+
         private void Disable()
         {
             UnsubscribeToLocomotionInputEvents();
@@ -144,7 +140,6 @@ namespace PathNav.Interaction
         #endregion
 
         #region Emitted Events
-
         internal void OnLocomotionStart()
         {
             EventManager.Publish(EventId.LocomotionStarted, this, GetLocomotionEvaluatorEventArgs());
@@ -171,20 +166,21 @@ namespace PathNav.Interaction
         }
 
         private LocomotionEvaluatorEventArgs GetLocomotionEvaluatorEventArgs() => new();
-
         #endregion
 
         #region Received Events
         private void SubscribeToEnableDisableEvents()
         {
-            EventManager.Subscribe<EventArgs>(EventId.EnableLocomotion,  EnableEvaluator);
-            EventManager.Subscribe<EventArgs>(EventId.DisableLocomotion, DisableEvaluator);
+            EventManager.Subscribe<EventArgs>(EventId.EnableLocomotion,      EnableEvaluator);
+            EventManager.Subscribe<EventArgs>(EventId.DisableLocomotion,     DisableEvaluator);
+            EventManager.Subscribe<SceneControlEventArgs>(EventId.SetLocomotionStrategy, SetStrategy);
         }
 
         private void UnsubscribeToEnableDisableEvents()
         {
             EventManager.Unsubscribe<ControllerEventArgs>(EventId.EnableLocomotion,  EnableEvaluator);
             EventManager.Unsubscribe<ControllerEventArgs>(EventId.DisableLocomotion, DisableEvaluator);
+            EventManager.Subscribe<SceneControlEventArgs>(EventId.SetLocomotionStrategy, SetStrategy);
         }
 
         private void SubscribeToLocomotionInputEvents()
@@ -192,8 +188,8 @@ namespace PathNav.Interaction
             EventManager.Subscribe<SceneControlEventArgs>(EventId.FollowPathReady, FollowPath);
             EventManager.Subscribe<ControllerEventArgs>(EventId.JoystickTouchStart, StartLocomotion);
             EventManager.Subscribe<ControllerEventArgs>(EventId.JoystickTouchEnd,   StopLocomotion);
-            EventManager.Subscribe<ControllerEventArgs>(EventId.TriggerDown,       StartVertical);
-            EventManager.Subscribe<ControllerEventArgs>(EventId.TriggerUp,       StopVertical);
+            EventManager.Subscribe<ControllerEventArgs>(EventId.TriggerDown,        StartVertical);
+            EventManager.Subscribe<ControllerEventArgs>(EventId.TriggerUp,          StopVertical);
         }
 
         private void UnsubscribeToLocomotionInputEvents()
@@ -201,16 +197,17 @@ namespace PathNav.Interaction
             EventManager.Unsubscribe<ControllerEventArgs>(EventId.JoystickTouchStart, StartLocomotion);
             EventManager.Unsubscribe<ControllerEventArgs>(EventId.JoystickTouchEnd,   StopLocomotion);
         }
-        
+
         private void FollowPath(object sender, SceneControlEventArgs args)
         {
             follower.followSpeed = 0;
             follower.follow      = true;
         }
+
         private void StartLocomotion(object sender, ControllerEventArgs args)
         {
             if (HasLocomotion) return;
-            
+
             SetActiveController(args.Controller);
             _hasLocomotionInput = true;
 
@@ -222,10 +219,11 @@ namespace PathNav.Interaction
             _hasLocomotionInput = false;
             if (ShouldUnlocomote) Unlocomote();
         }
-        
+
         private void StartVertical(object sender, ControllerEventArgs args)
         {
             if (useVerticalShift) return;
+
             useVerticalShift = true;
         }
 
@@ -233,21 +231,24 @@ namespace PathNav.Interaction
         {
             useVerticalShift = false;
         }
-        
-        private void EnableEvaluator(object sender, EventArgs controllerEventArgs)
+
+        private void EnableEvaluator(object sender, EventArgs args)
         {
             Enable();
         }
 
-        private void DisableEvaluator(object sender, EventArgs controllerEventArgs) 
+        private void DisableEvaluator(object sender, EventArgs args)
         {
             Disable();
+        }
+
+        private void SetStrategy(object sender, SceneControlEventArgs args)
+        {
+            _dof = args.LocomotionDof;
+            dof  = _dof;
         }
         #endregion
     }
 
-    public class LocomotionEvaluatorEventArgs : EventArgs
-    {
-
-    }
+    public class LocomotionEvaluatorEventArgs : EventArgs { }
 }
