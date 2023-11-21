@@ -1660,6 +1660,7 @@ MonoBehaviour:
   targetSpline: {fileID: 171351587}
   discomfortScore: {fileID: 2091227334}
   seq: {fileID: 1146886581}
+  debugEndTutorial: {fileID: 1330079843689968971, guid: ee35e82046ad68046b8d163c1260e4dd, type: 3}
 --- !u!1 &1146886581 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 6538127200302755969, guid: b959cff37854d004c917681c1ab65f07, type: 3}

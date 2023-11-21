@@ -7,7 +7,8 @@ namespace PathNav.ExperimentControl
     using System;
     using System.Collections.Generic;
     using UnityEngine;
-    
+    using UnityEngine.InputSystem;
+
     public class NavigationManager : MonoBehaviour
     {
         [SerializeField] private List<AudioClipMap> audioMap;
@@ -19,18 +20,24 @@ namespace PathNav.ExperimentControl
         private Vector3 _deltaTranslation;
         private float _deltaScale;
         
-        
-        private Trial _trial;
         private SceneDataFormat _sceneData;
         
-        internal void Enable(Trial trial, SceneDataFormat sceneData)
+        public InputActionReference debugEndTutorial;
+        
+        internal void Enable()
         {
-            _trial               = trial;
-            _sceneData           = sceneData;
-
+            debugEndTutorial.action.Enable();
+            debugEndTutorial.action.started += TutorialComplete;
             SetSpline();
         }
 
+        private void TutorialComplete(InputAction.CallbackContext callbackContext)
+        {
+            //ExperimentDataManager.Instance.TutorialComplete();
+            //seq.SetActive(true);
+            discomfortScore.SetActive(true);
+        }
+        
         public void OnEndReached()
         {
             discomfortScore.SetActive(true);

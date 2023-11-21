@@ -23,6 +23,7 @@ namespace PathNav.PathPlanning
 
         public void UpdateLogic(T entity)
         {
+            if (!_didMove) return;
             entity.ActiveSegment.MovePoint(entity.PointIndexToMove, entity.interactingController.PointerPosition);
         }
 

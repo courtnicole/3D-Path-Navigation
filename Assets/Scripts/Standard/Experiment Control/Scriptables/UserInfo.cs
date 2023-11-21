@@ -1,22 +1,22 @@
 namespace PathNav.ExperimentControl
 {
     using System;
-    using UnityEngine;
     
-    [CreateAssetMenu(fileName = "UserInfo", menuName = "Scriptables/Standard/UserInfo", order = 100)]
-    public class UserInfo : ScriptableObject
+    public struct UserInfo
     {
-        public void Initialize(int id)
+        public UserInfo(int id)
         {
-            UserId   = id;
-            BlockId  = id % 4;
-            DataFile = "User_" + UserId + "_" + DateTime.Now.ToString("yyyy_MM_dd_HH_mm_ss") + ".csv";
+            UserId     = id;
+            BlockId    = id % 4;
+            DataFile   = "User_" + UserId + "_" + DateTime.Now.ToString("yyyy_MM_dd_HH_mm") + ".csv";
+            ActionFile = "User_" + UserId + "_" + DateTime.Now.ToString("yyyy_MM_dd_HH_mm") + "_Actions.csv";
         }
-
-        public int UserId { get; private set; }
+        public int      UserId   { get; private set; }
 
         public int BlockId { get; private set; }
 
         public string DataFile { get; private set; }
+        
+        public string ActionFile { get; private set; }
     }
 }

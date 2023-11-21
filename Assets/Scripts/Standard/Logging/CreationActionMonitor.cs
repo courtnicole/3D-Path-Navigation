@@ -25,23 +25,29 @@ namespace PathNav.SceneManagement
         private static readonly CsvConfiguration Config = new(CultureInfo.InvariantCulture);
 
         #region Logic
-        public void Enable(int id, string model, int block, string method, string logDirectory, string logFilePath)
+        public void Enable()
         {
-            _taskTimerTotal   = new Stopwatch();
-            _taskTimerCreate   = new Stopwatch();
-            _editActions = 0;
-            
-            InitDataLog(logDirectory, logFilePath);
-            
-            _creationData          = new CreationDataFormat
-            {
-                ID       = id,
-                BLOCK_ID = block,
-                MODEL    = model,
-                METHOD   = method,
-            };
-            
+            _taskTimerTotal  = new Stopwatch();
+            _taskTimerEdits  = new Stopwatch();
+            _taskTimerCreate = new Stopwatch();
+            _totalActions    = 0;
+            _editActions     = 0;
+
+            InitializeDataLogging();
             SubscribeToEvents();
+        }
+
+        public void InitializeDataLogging()
+        {
+            InitDataLog(ExperimentDataManager.Instance.GetLogDirectory(), ExperimentDataManager.Instance.GetActionLogFilePath());
+            
+            _creationData = new CreationDataFormat
+            {
+                ID       = ExperimentDataManager.Instance.GetId(),
+                BLOCK_ID = ExperimentDataManager.Instance.GetBlock(),
+                MODEL    = ExperimentDataManager.Instance.GetModel(),
+                METHOD   = ExperimentDataManager.Instance.GetCreationMethodString(),
+            };
         }
 
         private static void InitDataLog(string logDirectory, string filePath)
@@ -77,24 +83,24 @@ namespace PathNav.SceneManagement
 
         private void StartActionTimer()
         {
-            _taskTimerEdits.Start();
+            _taskTimerTotal.Start();
         }
 
         private void StopActionTimer()
         {
-            _taskTimerEdits.Stop();
+            _taskTimerTotal.Stop();
         }
 
         private void StartEditTimer()
         {
-            _taskTimerCreate.Start();
+            _taskTimerCreate.Stop();
             _taskTimerEdits.Start();
         }
 
         private void StopEditTimer()
         {
-            _taskTimerCreate.Stop();
             _taskTimerEdits.Stop();
+            _taskTimerCreate.Start();
         }
         public void RecordAction(string action, DateTime timestamp)
         {

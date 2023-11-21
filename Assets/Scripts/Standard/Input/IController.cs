@@ -28,7 +28,7 @@ namespace PathNav.Input
         public Vector2 JoystickPoseDelta { get; }
 
         public Transform AttachmentPoint { get; }
-        
+
         public Bounds CollisionBounds { get; }
 
         public InputDevice InputDevice { get; }

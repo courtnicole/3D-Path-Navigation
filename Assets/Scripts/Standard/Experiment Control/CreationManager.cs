@@ -7,7 +7,8 @@ namespace PathNav.ExperimentControl
     using System.Collections.Generic;
     using System.Threading.Tasks;
     using UnityEngine;
-    
+    using UnityEngine.InputSystem;
+
     public class CreationManager : MonoBehaviour
     {
         [SerializeField] private List<AudioClipMap> audioMap;
@@ -17,12 +18,14 @@ namespace PathNav.ExperimentControl
 
         private bool _enableTeleportation;
         
-        private Trial _trial;
+        public InputActionReference debugEndTutorial;
 
-        internal void Enable(Trial trial, SceneDataFormat sceneData)
+        internal void Enable()
         {
-            _trial           = trial;
-            _enableTeleportation = CheckTeleportation();
+            //debugEndTutorial.action.Enable();
+            //debugEndTutorial.action.started += TutorialComplete;
+            
+            _enableTeleportation            =  CheckTeleportation();
             SubscribeToEvents();
             StartCreation();
         }
@@ -48,6 +51,12 @@ namespace PathNav.ExperimentControl
             }
 
             return (teleporter is not null) && (teleportLocation is not null);
+        }
+        
+        private void TutorialComplete(InputAction.CallbackContext callbackContext)
+        {
+            //ExperimentDataManager.Instance.TutorialComplete();
+            seq.SetActive(true);
         }
         
         private void SeqComplete(object sender, SceneControlEventArgs args)

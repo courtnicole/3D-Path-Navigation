@@ -20,15 +20,12 @@ namespace PathNav.ExperimentControl
         public InputActionReference debugEndTutorial;
 
         private bool _enableTeleportation;
-        
-        private Trial _trial;
 
-        internal void Enable(Trial trial)
+        internal void Enable()
         {
             debugEndTutorial.action.Enable();
             debugEndTutorial.action.started += TutorialComplete;
             
-            _trial                       =  trial;
             _enableTeleportation         =  CheckTeleportation();
             
             StartTutorial();
@@ -60,7 +57,7 @@ namespace PathNav.ExperimentControl
 
         private void ShowExample(bool show)
         {
-            switch (_trial.pathStrategy)
+            switch (ExperimentDataManager.Instance.GetCreationMethod())
             {
                 case PathStrategy.Bulldozer:
                     drawingExample?.SetActive(show);

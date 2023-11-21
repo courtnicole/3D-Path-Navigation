@@ -122,16 +122,27 @@ namespace PathNav.Input
 
         private void DisableActions()
         {
-            triggerClick.action.performed  -= TriggerDown;
+            triggerClick.action.started  -= TriggerDown;
+            triggerClick.action.canceled -= TriggerUp;
+            
             systemClick.action.performed   -= SystemClick;
+            
             buttonAClick.action.performed  -= ButtonAPress;
+            
             buttonBClick.action.performed  -= ButtonBPress;
+            
             touchpadPose.action.performed  -= TouchpadTouchUpdate;
-            trackpadTouch.action.performed -= TouchpadTouchStart;
+            
+            trackpadTouch.action.started -= TouchpadTouchStart;
             trackpadTouch.action.canceled  -= TouchpadTouchEnd;
+            
             gripClick.action.performed     -= GripClick;
+            
             joystickPose.action.performed  -= JoystickPoseUpdate;
-            joystickTouch.action.performed -= JoystickTouchStart;
+            
+            joystickTouch.action.started  -= JoystickTouchStart;
+            joystickTouch.action.canceled -= JoystickTouchEnd;
+            
             joystickClick.action.performed -= JoystickClick;
 
             triggerClick.action.Disable();
