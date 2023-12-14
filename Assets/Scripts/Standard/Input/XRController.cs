@@ -90,7 +90,8 @@ namespace PathNav.Input
             systemClick.action.performed += SystemClick;
 
             buttonAClick.action.Enable();
-            buttonAClick.action.performed += ButtonAPress;
+            buttonAClick.action.started  += ButtonAPressDown;
+            buttonAClick.action.canceled += ButtonAPressUp;
 
             buttonBClick.action.Enable();
             buttonBClick.action.performed += ButtonBPress;
@@ -127,7 +128,8 @@ namespace PathNav.Input
             
             systemClick.action.performed   -= SystemClick;
             
-            buttonAClick.action.performed  -= ButtonAPress;
+            buttonAClick.action.started  -= ButtonAPressDown;
+            buttonAClick.action.canceled -= ButtonAPressUp;
             
             buttonBClick.action.performed  -= ButtonBPress;
             
@@ -198,9 +200,14 @@ namespace PathNav.Input
             EventManager.Publish(EventId.GripClick, this, ControllerEventArgs);
         }
 
-        private void ButtonAPress(InputAction.CallbackContext callbackContext)
+        private void ButtonAPressDown(InputAction.CallbackContext callbackContext)
         {
-            EventManager.Publish(EventId.ButtonAClick, this, ControllerEventArgs);
+            EventManager.Publish(EventId.ButtonAClickDown, this, ControllerEventArgs);
+        }
+        
+        private void ButtonAPressUp(InputAction.CallbackContext callbackContext)
+        {
+            EventManager.Publish(EventId.ButtonAClickUp, this, ControllerEventArgs);
         }
 
         private void ButtonBPress(InputAction.CallbackContext callbackContext)

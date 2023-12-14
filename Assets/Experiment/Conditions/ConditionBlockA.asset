@@ -19,4 +19,13 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 5c63e0b382348d041a24c3de1b4a12f3, type: 2}
   models:
   - {fileID: 11400000, guid: 272c3f34e98b9ed4cbba0c986fb2015e, type: 2}
+  - {fileID: 11400000, guid: 272c3f34e98b9ed4cbba0c986fb2015e, type: 2}
+  - {fileID: 11400000, guid: 272c3f34e98b9ed4cbba0c986fb2015e, type: 2}
+  - {fileID: 11400000, guid: 272c3f34e98b9ed4cbba0c986fb2015e, type: 2}
+  modelOrder:
+  - {fileID: 11400000, guid: 4b6a293492bc26e4b8ae9aaed66d80a6, type: 2}
+  - {fileID: 11400000, guid: b8782fa80d47285438956d51fb2dbf96, type: 2}
+  - {fileID: 11400000, guid: b126cee9ba20f0d4ebc1d8b252d2a206, type: 2}
+  - {fileID: 11400000, guid: cbe3384e8430fbc4590ee420d30ce245, type: 2}
+  scenes: []
   conditionId: ConditionA

@@ -100,13 +100,13 @@ MonoBehaviour:
   m_activateUnityNativeVRModule: 1
   m_activateUnityXRModule: 1
   m_preferUnityXRPointerPose: 0
-  m_activateWaveVRModule: 1
+  m_activateWaveVRModule: 0
   m_simulateWaveVR6DoFController: 0
-  m_waveVRAddVirtualArmTo3DoFController: 1
+  m_waveVRAddVirtualArmTo3DoFController: 0
   m_waveVRVirtualNeckPosition: {x: 0, y: -0.15, z: 0}
   m_waveVRVirtualElbowRestPosition: {x: 0.195, y: -0.5, z: 0.005}
   m_waveVRVirtualArmExtensionOffset: {x: -0.13, y: 0.14, z: 0.08}
   m_waveVRVirtualWristRestPosition: {x: 0, y: 0, z: 0.35}
   m_waveVRVirtualHandRestPosition: {x: 0, y: 0, z: 0.05}
   m_waveVRAndroidManifestPath: 
-  m_enableWaveXRRenderModel: 1
+  m_enableWaveXRRenderModel: 0

@@ -7,7 +7,7 @@ namespace PathNav.Interaction
         
         internal bool Raycast(LayerMask mask)
         {
-            bool result = Physics.Raycast(RayOrigin, RayDirection, out RaycastHit hitResult, MaxRaycastDistance, mask);
+            bool result  = Physics.Raycast(RayOrigin, RayDirection, out RaycastHit hitResult, MaxRaycastDistance, mask.value);
             HitResult = hitResult;
             RayHitPoint = result ? hitResult.point : RayOrigin + RayDirection * MaxRaycastDistance;
             return result;

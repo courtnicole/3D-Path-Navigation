@@ -3,22 +3,20 @@ using UnityEngine;
 
 namespace PathNav.ExperimentControl
 {
+    using Input;
+
     public class Test : MonoBehaviour
     {
-        // Start is called before the first frame update
-        async void Start()
+        public XRController PointerRight;
+        public XRController ControllerRight;
+        public Transform pointer;
+        public Transform controller;
+        private void Update()
         {
-            string path = Application.dataPath              + "/Data/test_01.csv";
-            await CsvLogger.InitSceneDataLog(Application.dataPath + "/Data/", path);
-            SceneDataFormat data = new SceneDataFormat
-            {
-                ID     = 22,
-                METHOD = "Tester",
-            };
-
-            await CsvLogger.LogSceneData(data);
-            
-            Debug.Log(path);
+            pointer.position    = PointerRight.PointerPosition;
+            pointer.rotation    = PointerRight.PointerRotation;
+            controller.position = ControllerRight.Position;
+            controller.rotation = ControllerRight.Rotation;
         }
     }
 }

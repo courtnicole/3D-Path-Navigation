@@ -12,24 +12,6 @@ namespace PathNav.PathPlanning
 
         public void UpdateLogic(T entity)
         {
-            if (entity.ActiveSegment.CanErasePoint(ref entity.Controllers[0]))
-            {
-                if (entity.CanStartErasing)
-                {
-                    EventManager.Publish(EventId.CanErase, this, new PathStrategyEventArgs(entity));
-                }
-            }
-            else if (entity.ActiveSegment.CanErasePoint(ref entity.Controllers[1]))
-            {
-                if (entity.CanStartErasing)
-                {
-                    EventManager.Publish(EventId.CanErase, this, new PathStrategyEventArgs(entity));
-                }
-            }
-            else
-            {
-                EventManager.Publish(EventId.CannotErase, this, new PathStrategyEventArgs(entity));
-            }
         }
 
         public void UpdatePhysics(T entity)

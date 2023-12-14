@@ -51,18 +51,22 @@ namespace PathNav.Interaction
         {
             EventManager.Subscribe<SceneControlEventArgs>(EventId.SetPathStrategy, SetPathStrategy);
             EventManager.Subscribe<PlacementEventArgs>(EventId.StartPointPlaced, StartPointPlaced);
-            EventManager.Subscribe<ControllerEventArgs>(EventId.TriggerDown,  EvaluateTriggerInputDown);
-            EventManager.Subscribe<ControllerEventArgs>(EventId.TriggerUp,    EvaluateTriggerInputUp);
-            EventManager.Subscribe<ControllerEventArgs>(EventId.ButtonAClick, EvaluateButtonAInput);
+            EventManager.Subscribe<ControllerEventArgs>(EventId.TriggerDown,      EvaluateTriggerInputDown);
+            EventManager.Subscribe<ControllerEventArgs>(EventId.TriggerUp,        EvaluateTriggerInputUp);
+            EventManager.Subscribe<ControllerEventArgs>(EventId.ButtonAClickDown, EvaluateButtonAInputDown);
+            EventManager.Subscribe<ControllerEventArgs>(EventId.ButtonAClickUp, EvaluateButtonAInputUp);
+            EventManager.Subscribe<ControllerEventArgs>(EventId.ButtonBClick,     EvaluateButtonBInput);
         }
 
         private void UnsubscribeToEvents()
         {
             EventManager.Unsubscribe<SceneControlEventArgs>(EventId.SetPathStrategy, SetPathStrategy);
             EventManager.Unsubscribe<PlacementEventArgs>(EventId.StartPointPlaced, StartPointPlaced);
-            EventManager.Unsubscribe<ControllerEventArgs>(EventId.TriggerDown,  EvaluateTriggerInputDown);
-            EventManager.Unsubscribe<ControllerEventArgs>(EventId.TriggerUp,    EvaluateTriggerInputUp);
-            EventManager.Unsubscribe<ControllerEventArgs>(EventId.ButtonAClick, EvaluateButtonAInput);
+            EventManager.Unsubscribe<ControllerEventArgs>(EventId.TriggerDown,      EvaluateTriggerInputDown);
+            EventManager.Unsubscribe<ControllerEventArgs>(EventId.TriggerUp,        EvaluateTriggerInputUp);
+            EventManager.Unsubscribe<ControllerEventArgs>(EventId.ButtonAClickDown, EvaluateButtonAInputDown);
+            EventManager.Unsubscribe<ControllerEventArgs>(EventId.ButtonAClickUp,   EvaluateButtonAInputUp);
+            EventManager.Unsubscribe<ControllerEventArgs>(EventId.ButtonBClick,     EvaluateButtonBInput);
         }
         #endregion
 
@@ -100,7 +104,7 @@ namespace PathNav.Interaction
                 switch (_pathStrategy)
                 {
                     case PathStrategy.Bulldozer:
-                        OnControllerEvaluatorEvent(EventId.StartDrawOrErasePath, GetControllerEvaluatorEventArgs(args.Controller));
+                        OnControllerEvaluatorEvent(EventId.StartDrawPath, GetControllerEvaluatorEventArgs(args.Controller));
                         break;
                     case PathStrategy.Spatula:
                         OnControllerEvaluatorEvent(EventId.StartPlaceOrMovePoint, GetControllerEvaluatorEventArgs(args.Controller));
@@ -122,7 +126,7 @@ namespace PathNav.Interaction
                 switch (_pathStrategy)
                 {
                     case PathStrategy.Bulldozer:
-                        OnControllerEvaluatorEvent(EventId.StopDrawOrErasePath, GetControllerEvaluatorEventArgs(args.Controller));
+                        OnControllerEvaluatorEvent(EventId.StopDrawPath, GetControllerEvaluatorEventArgs(args.Controller));
                         break;
                     case PathStrategy.Spatula:
                         OnControllerEvaluatorEvent(EventId.StopPlaceOrMovePoint, GetControllerEvaluatorEventArgs(args.Controller));
@@ -133,7 +137,46 @@ namespace PathNav.Interaction
             }
         }
 
-        private void EvaluateButtonAInput(object sender, ControllerEventArgs args)
+        private void EvaluateButtonAInputDown(object sender, ControllerEventArgs args)
+        {
+            if (!_pathStrategySet) return;
+            if (!_startPointPlaced) return;
+            switch (_pathStrategy)
+            {
+                case PathStrategy.Bulldozer:
+                    OnControllerEvaluatorEvent(EventId.StartErasePath, GetControllerEvaluatorEventArgs(args.Controller));
+                    break;
+                case PathStrategy.Spatula:
+                    OnControllerEvaluatorEvent(EventId.RemovePoint, GetControllerEvaluatorEventArgs(args.Controller));
+                    break;
+                case PathStrategy.None:
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+            
+        }
+        
+        private void EvaluateButtonAInputUp(object sender, ControllerEventArgs args)
+        {
+            if (!_pathStrategySet) return;
+            if (!_startPointPlaced) return;
+            switch (_pathStrategy)
+            {
+                case PathStrategy.Bulldozer:
+                    OnControllerEvaluatorEvent(EventId.StopErasePath, GetControllerEvaluatorEventArgs(args.Controller));
+                    break;
+                case PathStrategy.Spatula:
+                    break;
+                case PathStrategy.None:
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+            
+        }
+        
+        private void EvaluateButtonBInput(object sender, ControllerEventArgs args)
         {
             OnControllerEvaluatorEvent(EventId.PathCreationComplete, GetControllerEvaluatorEventArgs(args.Controller));
         }

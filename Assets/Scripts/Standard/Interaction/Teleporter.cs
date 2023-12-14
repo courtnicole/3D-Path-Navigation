@@ -72,10 +72,9 @@ namespace PathNav.Interaction
 
         private IEnumerator TeleportPlayer(Transform teleportMarker)
         {
-            yield return new WaitForSeconds(_currentFadeTime);
-
+            yield return null;
             TeleportAndRotatePlayer(teleportMarker);
-            yield return new WaitForSeconds(_currentFadeTime);
+            yield return null;
         }
 
         private void MovePlayer(Vector3 targetPoint)

@@ -21,6 +21,11 @@ namespace PathNav.PathPlanning
             gameObject.SetActive(false);
         }
 
+        private void OnDisable()
+        {
+            IsActive = false;
+        }
+
         public void OnTriggerEntered()
         {
             if(!IsActive) return;

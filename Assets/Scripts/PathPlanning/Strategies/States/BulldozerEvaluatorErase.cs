@@ -10,7 +10,7 @@ namespace PathNav.PathPlanning
         #region Implementation of IState<T>
         public void Enter(T entity)
         {
-            EventManager.Publish(EventId.EraseStarted, this, new PathStrategyEventArgs(entity));
+            EventManager.Publish(EventId.EraseToggleOn, this, new PathStrategyEventArgs(entity));
         }
 
         public void UpdateLogic(T entity)
@@ -23,7 +23,7 @@ namespace PathNav.PathPlanning
 
         public void Exit(T entity)
         {
-            EventManager.Publish(EventId.EraseEnded, this, new PathStrategyEventArgs(entity));
+            EventManager.Publish(EventId.EraseToggleOff, this, new PathStrategyEventArgs(entity));
         }
         #endregion
     }

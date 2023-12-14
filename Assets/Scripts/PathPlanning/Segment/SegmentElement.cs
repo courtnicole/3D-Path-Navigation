@@ -58,6 +58,8 @@ namespace PathNav.PathPlanning
         public UniqueId Id => Data.Id;
         public int Index => Data.Index;
 
+        private const float _width = 0.005f;
+
         public IData Data { get; private set; }
 
         public int CurrentPointCount => Spline.pointCount;
@@ -81,7 +83,7 @@ namespace PathNav.PathPlanning
                 type     = SplinePoint.Type.SmoothMirrored,
                 color    = Color.white,
                 normal   = Vector3.up,
-                size     = 0.01f,
+                size     = _width,
                 tangent  = Vector3.forward,
                 position = newPosition,
             };
@@ -91,7 +93,7 @@ namespace PathNav.PathPlanning
                 type     = SplinePoint.Type.SmoothMirrored,
                 color    = Color.white,
                 normal   = Vector3.up,
-                size     = 0.01f,
+                size     = _width,
                 tangent  = Vector3.forward,
                 position = end,
             };
@@ -114,7 +116,7 @@ namespace PathNav.PathPlanning
             }
 
             newPoints[^1]      = new SplinePoint(position);
-            newPoints[^1].size = 0.01f;
+            newPoints[^1].size = _width;
             CurrentPoints      = newPoints;
 
             if (!_useNodeVisuals) return;
@@ -135,40 +137,41 @@ namespace PathNav.PathPlanning
 
         public void RemovePoint(int index)
         {
+            if (_useNodeVisuals)
+            {
+                RemovePointVisual(index);
+            }
+            
             SplinePoint[] oldPoints = CurrentPoints;
             var           newPoints = new SplinePoint[CurrentPointCount - 1];
 
-            for (int i = 0; i < newPoints.Length; i++)
+            for (int i = 0, j=0; i < oldPoints.Length; i++)
             {
                 if (i == index) continue;
 
-                newPoints[i] = oldPoints[i];
+                newPoints[j] = oldPoints[i];
+                j++;
             }
 
             CurrentPoints = newPoints;
-
-            Debug.Log("Removing Point");
-
-            if (!_useNodeVisuals) return;
-
-            RemovePointVisual(index);
         }
 
         public void RemovePoint()
         {
+            if (_useNodeVisuals)
+            {
+                RemovePointVisual(CurrentPointCount - 1);
+            }
+            
             SplinePoint[] oldPoints = CurrentPoints;
             var           newPoints = new SplinePoint[CurrentPointCount - 1];
-
+            
             for (int i = 0; i < newPoints.Length; i++)
             {
                 newPoints[i] = oldPoints[i];
             }
 
             CurrentPoints = newPoints;
-
-            if (!_useNodeVisuals) return;
-
-            RemovePointVisual(oldPoints.Length - 1);
         }
         #endregion
 
@@ -254,6 +257,8 @@ namespace PathNav.PathPlanning
         private const string _key = "NodeVisual";
         private GameObject _pointPrefab;
 
+        private int _selectedId;
+
         private async void EnablePointVisuals()
         {
             Task<bool> task = LoadPrefab();
@@ -297,24 +302,32 @@ namespace PathNav.PathPlanning
             _pointVisualsIdIndexMap.Add(element.Id.ID, index);
         }
 
-        private void RemovePointVisual(int id)
+        private void RemovePointVisual(int index)
         {
-            bool result = _pointVisualsIdIndexMap.TryGetValue(id, out int index);
+            bool result = _pointVisualsIdIndexMap.TryGetValue(_selectedId, out int selectedIndex);
             if (!result) return;
-
-            _pointVisualsIdIndexMap.Remove(id);
-            Destroy(_pointVisuals[index]);
+            if (selectedIndex != index) return;
+            
+            GameObject selectedVisual = _pointVisuals[index].gameObject;
+            Destroy(selectedVisual);
+            _pointVisualsIdIndexMap.Remove(_selectedId);
             _pointVisuals.RemoveAt(index);
+            
+            
+            _selectedId              = -1;
+            SelectedPointVisualIndex = -1;
 
             UpdateIdIndexMap();
         }
 
         private void UpdateIdIndexMap()
         {
-            foreach (PointVisualElement element in _pointVisuals)
+            for (int index = 0; index < _pointVisuals.Count; index++)
             {
-                int id = element.Id.ID;
-
+                PointVisualElement element = _pointVisuals[index];
+                int                id      = element.Id.ID;
+                element.UpdateIndex(index);
+                
                 if (_pointVisualsIdIndexMap.ContainsKey(id))
                 {
                     _pointVisualsIdIndexMap[id] = element.Index;
@@ -332,11 +345,13 @@ namespace PathNav.PathPlanning
             int id = args.Id.ID;
             if (!_pointVisualsIdIndexMap.TryGetValue(id, out int index)) return;
 
+            _selectedId              = id;
             SelectedPointVisualIndex = index;
         }
 
         private void PointVisualUntriggered(object sender, PointVisualEventArgs args)
         {
+            _selectedId              = -1;
             SelectedPointVisualIndex = -1;
         }
 

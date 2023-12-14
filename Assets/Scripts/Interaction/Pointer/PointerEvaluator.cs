@@ -16,6 +16,7 @@ namespace PathNav.Interaction
 
         private IRayCast _rayCast;
         private bool _result;
+        private bool _enabled;
         private Vector3 LineOrigin => Controller.Position;
         
         private Vector3 _previousHitPoint;
@@ -45,23 +46,25 @@ namespace PathNav.Interaction
         #endregion
         private void Awake()
         {
-            _rayCast = this;
+            _rayCast             = this;
+            _enabled             = false;
+            lineRenderer.enabled = false;
         }
         
-        private void OnEnable()
+        public void Enable()
         {
+            _enabled = true;
             EnableLineRenderer();
         }
 
         private void EnableLineRenderer()
         {
             lineRenderer.enabled = true;
-            //lineRenderer.startWidth = 0.01f;
-            //lineRenderer.endWidth = 0.01f;
         }
 
         private void LateUpdate()
         {
+            if (!_enabled) return;
             _previousHitPoint = RayHitPoint;
             _previousOrigin = RayOrigin;
             
@@ -71,6 +74,7 @@ namespace PathNav.Interaction
 
         private void UpdateVisual()
         {
+            if (!_enabled) return;
             if (Vector3.Distance(_previousHitPoint, RayHitPoint) < 0.005f &&
                 Vector3.Distance(_previousOrigin,   RayOrigin)   < 0.005f)  return;
             

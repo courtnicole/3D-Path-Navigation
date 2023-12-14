@@ -7,11 +7,11 @@ namespace PathNav.ExperimentControl
         public CreationDataFormatMap()
         {
             Map(m => m.ID).Index(0).Name("ID");
-            Map(m => m.ID).Index(1).Name("BLOCK_ID");
-            Map(m => m.ID).Index(2).Name("MODEL");
-            Map(m => m.ID).Index(3).Name("METHOD");
-            Map(m => m.ID).Index(4).Name("ACTION");
-            Map(m => m.ID).Index(5).Name("TIMESTAMP");
+            Map(m => m.BLOCK_ID).Index(1).Name("BLOCK_ID");
+            Map(m => m.MODEL).Index(2).Name("MODEL");
+            Map(m => m.METHOD).Index(3).Name("METHOD");
+            Map(m => m.ACTION).Index(4).Name("ACTION");
+            Map(m => m.TIMESTAMP).Index(5).Name("TIMESTAMP");
         }
     }
 }

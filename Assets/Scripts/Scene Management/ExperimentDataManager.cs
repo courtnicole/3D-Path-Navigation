@@ -1,7 +1,6 @@
 namespace PathNav.ExperimentControl
 {
     #region Imports
-    using DataLogging;
     using Dreamteck.Splines;
     using Events;
     using Interaction;
@@ -9,7 +8,6 @@ namespace PathNav.ExperimentControl
     using SceneManagement;
     using System;
     using System.Collections;
-    using System.Collections.Generic;
     using UnityEngine;
     using UnityEngine.SceneManagement;
     #endregion
@@ -39,9 +37,6 @@ namespace PathNav.ExperimentControl
         private static SplineComputer _savedSpline;
         private static Model _savedModel;
 
-        private static Dictionary<string, int> _savedSeqScores = new();
-        private static Dictionary<string, int> _savedDiscomfortScores = new();
-
         private static int _userId;
         private static TrialState _trialState;
         private static Trial _currentTrial;
@@ -51,12 +46,16 @@ namespace PathNav.ExperimentControl
         private static string _logDirectory;
         private static string _logFilePath;
         private static string _logFilePathActions;
+        private static string _logFilePathNavigation;
 
-        private static int _trialIndex = 0;
-        private static int _modelIndex = 0;
-        private static int _sceneIndex = 0;
+        private static int _trialIndex;
+        private static int _modelIndex;
+        private static int _stageIndex;
 
         private static string _activeSceneName;
+
+        private const int _trialCount = 1;
+        private const int _stageCount = 2;
 
         protected void Awake()
         {
@@ -66,14 +65,14 @@ namespace PathNav.ExperimentControl
                 DontDestroyOnLoad(this);
             }
             else
+            {
                 Destroy(gameObject);
-
-            _logDirectory = Application.dataPath + "/Data/";
-
+                return;
+            }
+            
+            _logDirectory                   =  Application.dataPath + "/Data/";
             SceneManager.activeSceneChanged += OnActiveSceneChanged;
         }
-        
-        protected void OnDestroy(){}
 
         public void RecordUserId(int id)
         {
@@ -84,8 +83,9 @@ namespace PathNav.ExperimentControl
 
         public async void BeginSession()
         {
-            _logFilePath        = _logDirectory + _userInfo.DataFile;
-            _logFilePathActions = _logDirectory + _userInfo.ActionFile;
+            _logFilePath           = _logDirectory + _userInfo.DataFile;
+            _logFilePathActions    = _logDirectory + _userInfo.ActionFile;
+            _logFilePathNavigation = _logDirectory + _userInfo.NavigationFile;
 
             _sceneData = new SceneDataFormat
             {
@@ -95,26 +95,44 @@ namespace PathNav.ExperimentControl
 
             await CsvLogger.InitSceneDataLog(_logDirectory, _logFilePath);
 
-            _sceneIndex = 0;
+            _stageIndex = 0;
+            _trialIndex = 0;
+            _modelIndex = 0;
 
-            _currentTrial = _conditionBlock.GetCurrentTrial(_trialIndex);
+            _currentTrial = _conditionBlock.GetCurrentTrial(_stageIndex);
 
             _trialState = TrialState.Tutorial;
-            
+
             LoadNextScene();
         }
 
         #region Data Recording
         public void RecordSeqScore(int value)
         {
-            _savedSeqScores.Add(GetSceneId(), value);
             _sceneData.SEQ_SCORE = value;
         }
 
         public void RecordDiscomfortScore(int value)
         {
-            _savedDiscomfortScores.Add(GetSceneId(), value);
             _sceneData.DISCOMFORT_SCORE = value;
+        }
+
+        private void InitSceneData()
+        {
+            _sceneData.TRIAL_TYPE = _currentTrial.GetTrialTypeString();
+            _sceneData.TRIAL_ID   = _trialIndex;
+            _sceneData.SCENE_ID   = GetSceneId();
+            _sceneData.METHOD = _currentTrial.trialType == TrialType.PathCreation
+                ? _currentTrial.GetPathStrategyString()
+                : _currentTrial.GetLocomotionDofString();
+            _sceneData.MODEL            = _conditionBlock.GetCurrentModel(_stageIndex, _modelIndex).Id;
+            _sceneData.ACTIONS_TOTAL    = -99;
+            _sceneData.ACTIONS_EDIT     = -99;
+            _sceneData.TASK_TIME_TOTAL  = -99;
+            _sceneData.TASK_TIME_EDIT   = -99;
+            _sceneData.TASK_TIME_CREATE = -99;
+            _sceneData.SEQ_SCORE        = -99;
+            _sceneData.DISCOMFORT_SCORE = -99;
         }
 
         public void RecordActionData(int totalActions, int editActions, TimeSpan taskTimeTotal, TimeSpan taskTimeEdit, TimeSpan taskTimeCreate)
@@ -125,13 +143,17 @@ namespace PathNav.ExperimentControl
             _sceneData.TASK_TIME_EDIT   = taskTimeEdit.Seconds;
             _sceneData.TASK_TIME_CREATE = taskTimeCreate.Seconds;
         }
-        
+
+        public void RecordNavigationData(TimeSpan taskTimeTotal)
+        {
+            _sceneData.TASK_TIME_TOTAL = taskTimeTotal.Seconds;
+        }
         #endregion
 
         #region Spline
         public void SaveSplineComputer(SplineComputer splineToSave)
         {
-            switch (_conditionBlock.GetCurrentModel(_modelIndex).Id)
+            switch (_conditionBlock.GetCurrentModel(_stageIndex, _modelIndex).Id)
             {
                 case "Model_A":
                     switch (_currentTrial.pathStrategy)
@@ -198,9 +220,9 @@ namespace PathNav.ExperimentControl
 
         public SplineComputer GetSavedSplineComputer()
         {
-            _savedModel = _conditionBlock.GetCurrentModel(_modelIndex);
+            _savedModel = _conditionBlock.GetCurrentModel(_stageIndex, _modelIndex);
 
-            _savedSpline = _conditionBlock.GetCurrentModel(_modelIndex).Id switch
+            _savedSpline = _savedModel.Id switch
                            {
                                "Model_A" => _trialIndex % 2 == 0 ? _drawingModelASpline : _interpolationModelASpline,
                                "Model_B" => _trialIndex % 2 == 0 ? _drawingModelBSpline : _interpolationModelBSpline,
@@ -216,15 +238,18 @@ namespace PathNav.ExperimentControl
         #endregion
 
         #region Public Getters
-        public int           GetId()                   => _userId;
-        public int           GetBlock()                => _userInfo.BlockId;
-        public PathStrategy  GetCreationMethod()       => _currentTrial.pathStrategy;
-        public string        GetCreationMethodString() => _currentTrial.GetPathStrategyString();
-        public LocomotionDof GetNavigationMethod()     => _currentTrial.locomotionDof;
-        public string        GetModel()                => _conditionBlock.GetCurrentModel(_modelIndex).Id;
-        public string        GetLogDirectory()         => _logDirectory;
-        public string        GetActionLogFilePath()    => _logFilePathActions;
-        public string        GetLogFilePath()          => _logFilePath;
+        public int           GetId()                     => _userId;
+        public int           GetBlock()                  => _userInfo.BlockId;
+        public PathStrategy  GetCreationMethod()         => _currentTrial.pathStrategy;
+        public string        GetCreationMethodString()   => _currentTrial.GetPathStrategyString();
+        public LocomotionDof GetNavigationMethod()       => _currentTrial.locomotionDof;
+        public string        GetNavigationMethodString() => _currentTrial.GetLocomotionDofString();
+        public string        GetModel()                  => _conditionBlock.GetCurrentModel(_stageIndex, _modelIndex).Id;
+        public string        GetLogDirectory()           => _logDirectory;
+        public string        GetActionLogFilePath()      => _logFilePathActions;
+
+        public string GetNavigationLogFilePath() => _logFilePathNavigation;
+        public string GetLogFilePath()           => _logFilePath;
         #endregion
 
         #region Scene Control
@@ -239,14 +264,10 @@ namespace PathNav.ExperimentControl
 
         private void SetupCreation()
         {
-            _sceneData.TRIAL_TYPE = _currentTrial.GetTrialTypeString();
-            _sceneData.TRIAL_ID   = _trialIndex;
-            _sceneData.SCENE_ID   = GetSceneId();
-            _sceneData.MODEL      = _conditionBlock.GetCurrentModel(_modelIndex).Id;
-            _sceneData.METHOD     = _currentTrial.GetPathStrategyString();
+            InitSceneData();
 
-            GameObject holder = new ();
-            
+            GameObject holder = new();
+
             CreationActionMonitor creationActionMonitor = holder.AddComponent<CreationActionMonitor>();
             creationActionMonitor.Enable();
 
@@ -259,11 +280,7 @@ namespace PathNav.ExperimentControl
 
         private void SetupNavigation()
         {
-            _sceneData.TRIAL_TYPE = _currentTrial.GetTrialTypeString();
-            _sceneData.TRIAL_ID   = _trialIndex;
-            _sceneData.SCENE_ID   = GetSceneId();
-            _sceneData.MODEL      = _conditionBlock.GetCurrentModel(_modelIndex).name;
-            _sceneData.METHOD     = _currentTrial.GetLocomotionDofString();
+            InitSceneData();
 
             NavigationManager navigationManager = FindObjectOfType<NavigationManager>();
             navigationManager.Enable();
@@ -276,7 +293,6 @@ namespace PathNav.ExperimentControl
 
         internal void TutorialComplete()
         {
-            _sceneIndex++;
             _trialState = TrialState.Trial;
             _trialIndex = 0;
             _modelIndex = 0;
@@ -286,31 +302,55 @@ namespace PathNav.ExperimentControl
         internal async void CreationComplete()
         {
             await CsvLogger.LogSceneData(_sceneData);
-            _trialIndex++;
-            _modelIndex++;
-            LoadNextScene();
+            IncrementTrial();
         }
 
         internal async void NavigationComplete()
         {
             await CsvLogger.LogSceneData(_sceneData);
+            IncrementTrial();
+            
+        }
+
+        private void IncrementTrial()
+        {
             _trialIndex++;
-            _modelIndex++;
+
+            if (_trialIndex < _trialCount)
+            {
+                _modelIndex++;
+            }
+            else
+            {
+                _stageIndex++;
+
+                if (_stageIndex < _stageCount)
+                {
+                    _trialIndex   = 0;
+                    _modelIndex   = 0;
+                    _currentTrial = _conditionBlock.GetCurrentTrial(_stageIndex);
+                    _trialState   = TrialState.Tutorial;
+                }
+                else
+                {
+                    EndExperiment();
+                    return;
+                }
+            }
+            
             LoadNextScene();
         }
 
         private string GetSceneId()
         {
             string trial = _currentTrial.GetTrialTypeString();
-            string model = _conditionBlock.GetCurrentModel(_modelIndex).Id;
+            string model = _conditionBlock.GetCurrentModel(_stageIndex, _modelIndex).Id;
 
             return $"{trial}_{model}";
         }
 
         private void LoadNextScene()
         {
-            //Check if trialCount > Max trials
-            //If so, increment condition????????
             string sceneId = _currentTrial.trialType switch
                              {
                                  TrialType.PathCreation   => _trialState == TrialState.Tutorial ? "Tutorial" : GetSceneId(),
@@ -323,27 +363,25 @@ namespace PathNav.ExperimentControl
 
         private void OnActiveSceneChanged(Scene replaced, Scene next)
         {
-            if (_activeSceneName == next.name) return;
             _activeSceneName = next.name;
 
             if (_activeSceneName.Contains("Loading")) return;
-            
+
             if (_activeSceneName.Contains("Tutorial"))
             {
                 SetupTutorial();
                 return;
             }
-            
+
             if (_activeSceneName.Contains("Creation"))
             {
                 SetupCreation();
                 return;
             }
-            
+
             if (_activeSceneName.Contains("Navigation"))
             {
                 SetupNavigation();
-                return;
             }
         }
 
@@ -352,16 +390,18 @@ namespace PathNav.ExperimentControl
             SceneManager.LoadScene("Loading");
 
             yield return new WaitUntil(() => _activeSceneName == "Loading");
-            yield return new WaitForSeconds(0.8f);
-
-            // Set the current Scene to be able to unload it later
-            //Scene          currentScene = SceneManager.GetActiveScene();
+            yield return new WaitForSeconds(0.9f);
+            
             AsyncOperation asyncLoad    = SceneManager.LoadSceneAsync(scene);
-           
             while (!asyncLoad.isDone)
             {
                 yield return null;
             }
+        }
+
+        private void EndExperiment()
+        {
+            Debug.LogError("ExperimentEnded");
         }
         #endregion
 

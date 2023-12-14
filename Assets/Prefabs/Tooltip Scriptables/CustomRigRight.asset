@@ -1,0 +1,47 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2a1992a9d48a9b242a859e077b4275c0, type: 3}
+  m_Name: CustomRigRight
+  m_EditorClassIdentifier: 
+  m_rigEntries:
+  - button: 12
+    tooltipRig:
+      buttonPosition: {x: -0.0187, y: -0.0095, z: 0.0663}
+      buttonNormal: {x: -0.0016496181, y: 0.856037, z: 0.516912}
+      labelPosition: {x: -0.0568, y: -0.0044, z: 0.0662}
+      labelNormal: {x: 0, y: -0.85013276, z: -0.52656865}
+      labelUp: {x: 0, y: -0.52656865, z: 0.85013276}
+      labelAnchor: 5
+  - button: 4
+    tooltipRig:
+      buttonPosition: {x: -0.0214, y: -0.0149, z: 0.0788}
+      buttonNormal: {x: -0.0016496181, y: 0.856037, z: 0.516912}
+      labelPosition: {x: -0.0737, y: -0.0239, z: 0.0976}
+      labelNormal: {x: 0, y: -0.84175056, z: -0.5398669}
+      labelUp: {x: 0, y: -0.5398669, z: 0.84175056}
+      labelAnchor: 5
+  - button: 47
+    tooltipRig:
+      buttonPosition: {x: 0.0133, y: -0.0175, z: 0.0815}
+      buttonNormal: {x: 0, y: 0.87806046, z: 0.4785499}
+      labelPosition: {x: 0.0387, y: -0.0474, z: 0.1359}
+      labelNormal: {x: 0, y: -0.8585335, z: -0.5127573}
+      labelUp: {x: 0, y: -0.5127573, z: 0.8585335}
+      labelAnchor: 3
+  - button: 0
+    tooltipRig:
+      buttonPosition: {x: 0.006, y: -0.0409, z: 0.071}
+      buttonNormal: {x: 0.13672012, y: -0.79573846, z: 0.59000677}
+      labelPosition: {x: 0.0363, y: -0.0648, z: 0.1296}
+      labelNormal: {x: 0, y: -0.8660253, z: -0.5000001}
+      labelUp: {x: 0, y: -0.5000001, z: 0.8660253}
+      labelAnchor: 4

@@ -7,7 +7,6 @@ namespace PathNav.ExperimentControl
     using System.Collections.Generic;
     using System.Threading.Tasks;
     using UnityEngine;
-    using UnityEngine.InputSystem;
 
     public class CreationManager : MonoBehaviour
     {
@@ -15,16 +14,13 @@ namespace PathNav.ExperimentControl
         [SerializeField] private GameObject seq;
         [SerializeField] private Transform teleportLocation;
         [SerializeField] private Teleporter teleporter;
+        [SerializeField] private Overlay overlay;
+        [SerializeField] private PointerEvaluator pointerLeft;
+        [SerializeField] private PointerEvaluator pointerRight;
 
         private bool _enableTeleportation;
-        
-        public InputActionReference debugEndTutorial;
-
         internal void Enable()
         {
-            //debugEndTutorial.action.Enable();
-            //debugEndTutorial.action.started += TutorialComplete;
-            
             _enableTeleportation            =  CheckTeleportation();
             SubscribeToEvents();
             StartCreation();
@@ -53,16 +49,10 @@ namespace PathNav.ExperimentControl
             return (teleporter is not null) && (teleportLocation is not null);
         }
         
-        private void TutorialComplete(InputAction.CallbackContext callbackContext)
-        {
-            //ExperimentDataManager.Instance.TutorialComplete();
-            seq.SetActive(true);
-        }
-        
         private void SeqComplete(object sender, SceneControlEventArgs args)
         {
             seq.SetActive(false);
-            ExperimentDataManager.Instance.CreationComplete();
+            EndCreation();
         }
         
         private void SubscribeToEvents()
@@ -80,6 +70,19 @@ namespace PathNav.ExperimentControl
         private void SplineComplete(object sender, SegmentEventArgs args)
         {
             seq.SetActive(true);
+            pointerLeft.Enable();
+            pointerRight.Enable();
+        }
+
+        private async void EndCreation()
+        {
+            await Task.Delay(100);
+            
+            overlay.FadeToBlack();
+            
+            await Task.Delay(1500);
+            
+            ExperimentDataManager.Instance.CreationComplete();
         }
 
         private async void StartCreation()
@@ -89,8 +92,9 @@ namespace PathNav.ExperimentControl
                 teleporter.Teleport(teleportLocation);
             }
             
-            await Task.Delay(3000);
+            await Task.Delay(500);
             
+            overlay.FadeToClear();
         }
     }
 }

@@ -1,5 +1,6 @@
 namespace PathNav.ExperimentControl
 {
+    using HTC.UnityPlugin.Vive;
     using Interaction;
     using PathPlanning;
     using SceneManagement;
@@ -16,7 +17,12 @@ namespace PathNav.ExperimentControl
         [SerializeField] private GameObject drawingExample;
         [SerializeField] private Transform teleportLocation;
         [SerializeField] private Teleporter teleporter;
-        
+        [SerializeField] private Overlay overlay;
+        [SerializeField] private DefaultTooltipRenderer tooltipRendererLeft;
+        [SerializeField] private DefaultTooltipRenderer tooltipRendererRight;
+        [SerializeField] private DefaultTooltipRenderDataAsset drawingTooltip;
+        [SerializeField] private DefaultTooltipRenderDataAsset interpolationTooltip;
+
         public InputActionReference debugEndTutorial;
 
         private bool _enableTeleportation;
@@ -25,12 +31,12 @@ namespace PathNav.ExperimentControl
         {
             debugEndTutorial.action.Enable();
             debugEndTutorial.action.started += TutorialComplete;
-            
-            _enableTeleportation         =  CheckTeleportation();
-            
+
+            _enableTeleportation = CheckTeleportation();
+
             StartTutorial();
         }
-        
+
         private void OnDisable()
         {
             debugEndTutorial.action.Disable();
@@ -61,9 +67,13 @@ namespace PathNav.ExperimentControl
             {
                 case PathStrategy.Bulldozer:
                     drawingExample?.SetActive(show);
+                    tooltipRendererLeft.SetTooltipData(drawingTooltip);
+                    tooltipRendererRight.SetTooltipData(drawingTooltip);
                     break;
                 case PathStrategy.Spatula:
                     interpolationExample?.SetActive(show);
+                    tooltipRendererLeft.SetTooltipData(interpolationTooltip);
+                    tooltipRendererRight.SetTooltipData(interpolationTooltip);
                     break;
                 case PathStrategy.None:
                 default:
@@ -73,21 +83,36 @@ namespace PathNav.ExperimentControl
 
         private void TutorialComplete(InputAction.CallbackContext callbackContext)
         {
+            EndTutorial();
+        }
+
+        private async void EndTutorial()
+        {
+            await Task.Delay(100);
+
+            overlay.FadeToBlack();
+
+            await Task.Delay(1500);
+
             ExperimentDataManager.Instance.TutorialComplete();
         }
 
         private async void StartTutorial()
         {
-            await Task.Delay(1000);
-            
+            await Task.Delay(500);
+
             ShowExample(true);
-            
-            await Task.Delay(1000);
-            
+
+            await Task.Delay(500);
+
             if (_enableTeleportation)
             {
                 teleporter.Teleport(teleportLocation);
             }
+
+            await Task.Delay(500);
+
+            overlay.FadeToClear();
         }
     }
 }

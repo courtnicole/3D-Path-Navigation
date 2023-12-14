@@ -158,7 +158,7 @@ namespace PathNav.PathPlanning
         private void ClearStrategy()
         {
             if(!_strategySet) return;
-            _activeStrategy.UnsubscribeToEvents();
+            _activeStrategy.Disable();
             _activeStrategy = null;
         }
         #endregion

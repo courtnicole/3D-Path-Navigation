@@ -34,7 +34,9 @@ namespace PathNav.Events
         SystemClick,
 
         [EventId(typeof(ControllerEventArgs))]
-        ButtonAClick,
+        ButtonAClickDown,
+        [EventId(typeof(ControllerEventArgs))]
+        ButtonAClickUp,
 
         [EventId(typeof(ControllerEventArgs))]
         ButtonBClick,
@@ -88,9 +90,17 @@ namespace PathNav.Events
         FinishPlacingStartPoint,
 
         [EventId(typeof(ControllerEvaluatorEventArgs))]
-        StartDrawOrErasePath,
+        StartErasePath,
         [EventId(typeof(ControllerEvaluatorEventArgs))]
-        StopDrawOrErasePath,
+        StopErasePath,
+        
+        [EventId(typeof(ControllerEvaluatorEventArgs))]
+        RemovePoint,
+        
+        [EventId(typeof(ControllerEvaluatorEventArgs))]
+        StartDrawPath,
+        [EventId(typeof(ControllerEvaluatorEventArgs))]
+        StopDrawPath,
         
         [EventId(typeof(ControllerEvaluatorEventArgs))]
         PathCreationComplete,
@@ -109,13 +119,11 @@ namespace PathNav.Events
         [EventId(typeof(PathStrategyEventArgs))]
         PointPlaced,
         [EventId(typeof(PathStrategyEventArgs))]
-        EraseStarted,
+        PointDeleted,
         [EventId(typeof(PathStrategyEventArgs))]
-        EraseEnded, 
+        EraseToggleOn,
         [EventId(typeof(PathStrategyEventArgs))]
-        CanErase, 
-        [EventId(typeof(PathStrategyEventArgs))]
-        CannotErase, 
+        EraseToggleOff,
         [EventId(typeof(PathStrategyEventArgs))]
         MoveStarted,
         [EventId(typeof(PathStrategyEventArgs))]
@@ -159,7 +167,9 @@ namespace PathNav.Events
         [EventId(typeof(SceneControlEventArgs))]
         SetLocomotionStrategy,
         [EventId(typeof(SceneControlEventArgs))]
-        EndReached,
+        SplineNavigationComplete,
+        [EventId(typeof(SceneControlEventArgs))]
+        EndImmediately,
         #endregion
 
         #region FollowerEvaluatorEventArgs

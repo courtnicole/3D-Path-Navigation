@@ -35,7 +35,7 @@ namespace PathNav.PathPlanning
         internal IController[] Controllers => ControllerManagement.controllers;
         internal IController interactingController;
         private void SetController(IController controller) => interactingController = controller;
-        private void ClearController() => interactingController = null;
+        private void ClearController()                     => interactingController = null;
         #endregion
 
         #region Segment and Path Variables
@@ -45,16 +45,16 @@ namespace PathNav.PathPlanning
 
         private bool HasSegment => ActiveSegment != null;
 
-        private bool HasFirstSegmentPoint => ActiveSegment.CurrentPointCount     > 1;
+        private bool HasFirstSegmentPoint     => ActiveSegment.CurrentPointCount > 1;
         private bool HasMultipleSegmentPoints => ActiveSegment.CurrentPointCount > 2;
 
-        private bool HasValidEraseTarget => ActiveSegment.SelectedSegmentIndex != -1;  //== ActiveSegment.CurrentPointCount - 1;
+        private bool HasValidEraseTarget => ActiveSegment.SelectedSegmentIndex != -1; //== ActiveSegment.CurrentPointCount - 1;
         #endregion
 
         #region Implementation of IPathStrategy
         public ISegment ActiveSegment { get; set; }
-        public Vector3 StartPosition { get; set; }
-        public Vector3 StartHeading { get; set; }
+        public Vector3  StartPosition { get; set; }
+        public Vector3  StartHeading  { get; set; }
 
         public void Enable()
         {
@@ -78,6 +78,8 @@ namespace PathNav.PathPlanning
             if (_state.CurrentState == _drawState) _state.ChangeState(_idleState);
 
             if (_state.CurrentState == _idleState) _state.ChangeState(_disabledState);
+            
+            UnsubscribeToEvents();
         }
 
         private void FinishPath(object obj, ControllerEvaluatorEventArgs args)
@@ -92,54 +94,57 @@ namespace PathNav.PathPlanning
             }
 
             ActiveSegment.SaveSpline();
+
+            Disable();
         }
         #endregion
 
         #region Events
         public void SubscribeToEvents()
         {
-            EventManager.Subscribe<ControllerEvaluatorEventArgs>(EventId.StartDrawOrErasePath, EvaluateStartDrawOrErasePath);
-            EventManager.Subscribe<ControllerEvaluatorEventArgs>(EventId.StopDrawOrErasePath,  EvaluateStopDrawOrErasePath);
+            EventManager.Subscribe<ControllerEvaluatorEventArgs>(EventId.StartDrawPath,        EvaluateStartDrawPath);
+            EventManager.Subscribe<ControllerEvaluatorEventArgs>(EventId.StopDrawPath,         EvaluateStopDrawPath);
+            EventManager.Subscribe<ControllerEvaluatorEventArgs>(EventId.StartErasePath,       EvaluateStartErasePath);
+            EventManager.Subscribe<ControllerEvaluatorEventArgs>(EventId.StopErasePath,        EvaluateStopErasePath);
             EventManager.Subscribe<ControllerEvaluatorEventArgs>(EventId.PathCreationComplete, FinishPath);
         }
 
         public void UnsubscribeToEvents()
         {
-            EventManager.Unsubscribe<ControllerEvaluatorEventArgs>(EventId.StartDrawOrErasePath, EvaluateStartDrawOrErasePath);
-            EventManager.Unsubscribe<ControllerEvaluatorEventArgs>(EventId.StopDrawOrErasePath,  EvaluateStopDrawOrErasePath);
+            EventManager.Unsubscribe<ControllerEvaluatorEventArgs>(EventId.StartDrawPath,        EvaluateStartDrawPath);
+            EventManager.Unsubscribe<ControllerEvaluatorEventArgs>(EventId.StopDrawPath,         EvaluateStopDrawPath);
+            EventManager.Unsubscribe<ControllerEvaluatorEventArgs>(EventId.StartErasePath,       EvaluateStartErasePath);
+            EventManager.Unsubscribe<ControllerEvaluatorEventArgs>(EventId.StopErasePath,        EvaluateStopErasePath);
             EventManager.Unsubscribe<ControllerEvaluatorEventArgs>(EventId.PathCreationComplete, FinishPath);
         }
         #endregion
 
         #region Logic
-        private void EvaluateStartDrawOrErasePath(object obj, ControllerEvaluatorEventArgs args)
+        private void EvaluateStartErasePath(object obj, ControllerEvaluatorEventArgs args)
         {
             SetController(args.Controller);
+            if (!ActiveSegment.CanErasePoint(ref interactingController)) return;
+            if (!CanStartErasing) return;
 
-            if (ActiveSegment.CanErasePoint(ref interactingController))
-            {
-                if (!CanStartErasing) return;
-                StartErase();
-            }
-            else
-            {
-                if (!CanStartDrawing) return;
-
-                StartDraw();
-            }
+            StartErase();
         }
 
-        private void EvaluateStopDrawOrErasePath(object obj, ControllerEvaluatorEventArgs args)
+        private void EvaluateStopErasePath(object obj, ControllerEvaluatorEventArgs args)
         {
-            if (_state.CurrentState == _eraseState)
-            {
-                StopErase();
-            }
-            else if (_state.CurrentState == _drawState)
-            {
-                StopDraw();
-            }
+            StopErase();
+            ClearController();
+        }
 
+        private void EvaluateStartDrawPath(object obj, ControllerEvaluatorEventArgs args)
+        {
+            SetController(args.Controller);
+            if (!CanStartDrawing) return;
+            StartDraw();
+        }
+
+        private void EvaluateStopDrawPath(object obj, ControllerEvaluatorEventArgs args)
+        {
+            StopDraw();
             ClearController();
         }
         #endregion

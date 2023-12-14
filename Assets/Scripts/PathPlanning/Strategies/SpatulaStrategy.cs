@@ -19,8 +19,9 @@ namespace PathNav.PathPlanning
         private SpatulaStrategyIdle<SpatulaStrategy> _idleState = new();
         private SpatulaStrategyCreatePoints<SpatulaStrategy> _createPointState = new();
         private SpatulaStrategyMovePoints<SpatulaStrategy> _movePointState = new();
+        private SpatulaStrategyDeletePoint<SpatulaStrategy> _deletePointState = new();
 
-        private bool CanMovePoint => HasSegment  && HasMultipleSegmentPoints;
+        private bool CanMoveOrDeletePoint  => HasSegment && HasFirstSegmentPoint;
         private bool CanPlacePoint => HasSegment && HasFirstSegmentPoint && HasValidPlane;
         #endregion
 
@@ -35,7 +36,7 @@ namespace PathNav.PathPlanning
         internal Vector3 lastHandPosition;
         internal const float minimumDelta = 0.025f;
 
-        internal int PointIndexToMove => ActiveSegment.SelectedPointVisualIndex;
+        internal int PointIndexToMoveOrDelete => ActiveSegment.SelectedPointVisualIndex;
         private IPlacementPlane _placementPlane;
 
         private bool HasController => interactingController                      != null;
@@ -56,6 +57,7 @@ namespace PathNav.PathPlanning
         public void Enable()
         {
             if (!_state.IsConfigured) _state.Configure(this, _idleState);
+            _placementPlane.Enable();
             if (_state.CurrentState == _disabledState) _state.ChangeState(_idleState);
         }
 
@@ -68,19 +70,22 @@ namespace PathNav.PathPlanning
 
         public void Disable()
         {
-            if (_state.CurrentState == _disabledState) return;
-
             if (_state.CurrentState == _createPointState) _state.ChangeState(_idleState);
 
             if (_state.CurrentState == _movePointState) _state.ChangeState(_idleState);
 
             if (_state.CurrentState == _idleState) _state.ChangeState(_disabledState);
+
+            if(_placementPlane.IsActive) _placementPlane?.Disable();
+            
+            UnsubscribeToEvents();
         }
 
         public void SubscribeToEvents()
         {
             EventManager.Subscribe<ControllerEvaluatorEventArgs>(EventId.StartPlaceOrMovePoint, EvaluateStartPlaceOrMovePoint);
             EventManager.Subscribe<ControllerEvaluatorEventArgs>(EventId.StopPlaceOrMovePoint,  EvaluateStopPlaceOrMovePoint);
+            EventManager.Subscribe<ControllerEvaluatorEventArgs>(EventId.RemovePoint,           EvaluateRemovePoint);
             EventManager.Subscribe<ControllerEvaluatorEventArgs>(EventId.PathCreationComplete,  FinishPath);
         }
 
@@ -88,22 +93,11 @@ namespace PathNav.PathPlanning
         {
             EventManager.Unsubscribe<ControllerEvaluatorEventArgs>(EventId.StartPlaceOrMovePoint, EvaluateStartPlaceOrMovePoint);
             EventManager.Unsubscribe<ControllerEvaluatorEventArgs>(EventId.StopPlaceOrMovePoint,  EvaluateStopPlaceOrMovePoint);
+            EventManager.Unsubscribe<ControllerEvaluatorEventArgs>(EventId.RemovePoint,           EvaluateRemovePoint);
             EventManager.Unsubscribe<ControllerEvaluatorEventArgs>(EventId.PathCreationComplete,  FinishPath);
         }
 
-        private void FinishPath(object obj, ControllerEvaluatorEventArgs args)
-        {
-            if (_state.CurrentState == _createPointState) _state.ChangeState(_idleState);
-
-            if (_state.CurrentState == _movePointState) _state.ChangeState(_idleState);
-
-            if (_state.CurrentState != _idleState)
-            {
-                throw new System.Exception("SpatulaStrategy: FinishPath called while not in idle state");
-            }
-
-            ActiveSegment.SaveSpline();
-        }
+        
         #endregion
 
         #region Received Events
@@ -113,7 +107,7 @@ namespace PathNav.PathPlanning
 
             if (HasValidPointTarget)
             {
-                if (!CanMovePoint) return;
+                if (!CanMoveOrDeletePoint) return;
 
                 StartMovePoint();
             }
@@ -133,6 +127,32 @@ namespace PathNav.PathPlanning
 
             StopMovePoint();
         }
+        
+        private void FinishPath(object obj, ControllerEvaluatorEventArgs args)
+        {
+            if (_state.CurrentState == _disabledState) return;
+            
+            if (_state.CurrentState == _createPointState) _state.ChangeState(_idleState);
+
+            if (_state.CurrentState == _movePointState) _state.ChangeState(_idleState);
+
+            if (_state.CurrentState != _idleState)
+            {
+                throw new System.Exception("SpatulaStrategy: FinishPath called while not in idle state");
+            }
+
+            ActiveSegment.SaveSpline();
+            ClearController();
+            Disable();
+        }
+        private void EvaluateRemovePoint(object sender, ControllerEvaluatorEventArgs args)
+        {
+            SetController(args.Controller);
+            if (!HasValidPointTarget) return;
+            if (!CanMoveOrDeletePoint) return;
+
+            StartDeletePoint();
+        }
         #endregion
 
         #region Logic
@@ -149,6 +169,22 @@ namespace PathNav.PathPlanning
 
             _state.ChangeState(_idleState);
         }
+        
+        private void StartDeletePoint()
+        {
+            if (_state.CurrentState == _disabledState) return;
+
+            _state.ChangeState(_deletePointState);
+        }
+
+        internal void StopDeletePoint()
+        {
+            if (_state.CurrentState != _deletePointState) return;
+
+            _state.ChangeState(_idleState);
+            ClearController();
+        }
+
 
         private void StartMovePoint()
         {
@@ -163,6 +199,8 @@ namespace PathNav.PathPlanning
 
             _state.ChangeState(_idleState);
         }
+        
+        
         #endregion
     }
 }

@@ -37,10 +37,10 @@ namespace PathNav.SceneManagement
             SubscribeToEvents();
         }
 
-        public void InitializeDataLogging()
+        private void InitializeDataLogging()
         {
             InitDataLog(ExperimentDataManager.Instance.GetLogDirectory(), ExperimentDataManager.Instance.GetActionLogFilePath());
-            
+
             _creationData = new CreationDataFormat
             {
                 ID       = ExperimentDataManager.Instance.GetId(),
@@ -56,10 +56,12 @@ namespace PathNav.SceneManagement
             {
                 Directory.CreateDirectory(logDirectory);
             }
+
             _logFile = filePath;
             if (File.Exists(_logFile)) return;
-            using StreamWriter    streamWriter = new (_logFile);
-            using CsvWriter csvWriter    = new (streamWriter, Config);
+
+            using StreamWriter streamWriter = new(_logFile);
+            using CsvWriter    csvWriter    = new(streamWriter, Config);
             csvWriter.Context.RegisterClassMap<CreationDataFormatMap>();
             csvWriter.WriteHeader<CreationDataFormat>();
             csvWriter.NextRecord();
@@ -81,14 +83,14 @@ namespace PathNav.SceneManagement
             _totalActions++;
         }
 
-        private void StartActionTimer()
+        private void StartCreateTimer()
         {
-            _taskTimerTotal.Start();
+            _taskTimerCreate.Start();
         }
 
-        private void StopActionTimer()
+        private void StopCreateTimer()
         {
-            _taskTimerTotal.Stop();
+            _taskTimerCreate.Stop();
         }
 
         private void StartEditTimer()
@@ -102,12 +104,13 @@ namespace PathNav.SceneManagement
             _taskTimerEdits.Stop();
             _taskTimerCreate.Start();
         }
+
         public void RecordAction(string action, DateTime timestamp)
         {
             _creationData.ACTION    = action;
             _creationData.TIMESTAMP = timestamp;
-            using StreamWriter streamWriter = new (_logFile, true);
-            using CsvWriter    csvWriter    = new (streamWriter, Config);
+            using StreamWriter streamWriter = new(_logFile, true);
+            using CsvWriter    csvWriter    = new(streamWriter, Config);
             csvWriter.Context.RegisterClassMap<SceneDataFormatMap>();
             csvWriter.WriteRecord(_creationData);
             csvWriter.NextRecord();
@@ -115,9 +118,12 @@ namespace PathNav.SceneManagement
 
         public void RecordAllActions()
         {
-            ExperimentDataManager.Instance.RecordActionData(_totalActions, _editActions, _taskTimerTotal.Elapsed, _taskTimerEdits.Elapsed, _taskTimerCreate.Elapsed);
+            ExperimentDataManager.Instance.RecordActionData(_totalActions,
+                                                            _editActions,
+                                                            _taskTimerTotal.Elapsed,
+                                                            _taskTimerEdits.Elapsed,
+                                                            _taskTimerCreate.Elapsed);
         }
-        
         #endregion
 
         #region Event Subscription Management
@@ -129,12 +135,14 @@ namespace PathNav.SceneManagement
             EventManager.Subscribe<PathStrategyEventArgs>(EventId.DrawStarted, DrawStarted);
             EventManager.Subscribe<PathStrategyEventArgs>(EventId.DrawEnded,   DrawEnded);
 
-            EventManager.Subscribe<PathStrategyEventArgs>(EventId.PointPlaced, PointPlaced);
+            EventManager.Subscribe<PathStrategyEventArgs>(EventId.PointPlaced,  PointPlaced);
+            EventManager.Subscribe<PathStrategyEventArgs>(EventId.PointDeleted, PointDeleted);
 
-            EventManager.Subscribe<PathStrategyEventArgs>(EventId.EraseStarted, EraseStarted);
-            EventManager.Subscribe<PathStrategyEventArgs>(EventId.MoveStarted,  MoveStarted);
-            EventManager.Subscribe<PathStrategyEventArgs>(EventId.EraseEnded,   EraseEnded);
-            EventManager.Subscribe<PathStrategyEventArgs>(EventId.MoveEnded,    MoveEnded);
+            EventManager.Subscribe<PathStrategyEventArgs>(EventId.EraseToggleOn, EraseStarted);
+            EventManager.Subscribe<PathStrategyEventArgs>(EventId.EraseToggleOff,   EraseEnded);
+
+            EventManager.Subscribe<PathStrategyEventArgs>(EventId.MoveStarted, MoveStarted);
+            EventManager.Subscribe<PathStrategyEventArgs>(EventId.MoveEnded,   MoveEnded);
 
             EventManager.Subscribe<ControllerEvaluatorEventArgs>(EventId.PathCreationComplete, FinishPath);
         }
@@ -147,12 +155,14 @@ namespace PathNav.SceneManagement
             EventManager.Unsubscribe<PathStrategyEventArgs>(EventId.DrawStarted, DrawStarted);
             EventManager.Unsubscribe<PathStrategyEventArgs>(EventId.DrawEnded,   DrawEnded);
 
-            EventManager.Unsubscribe<PathStrategyEventArgs>(EventId.PointPlaced, PointPlaced);
+            EventManager.Unsubscribe<PathStrategyEventArgs>(EventId.PointPlaced,  PointPlaced);
+            EventManager.Unsubscribe<PathStrategyEventArgs>(EventId.PointDeleted, PointDeleted);
 
-            EventManager.Unsubscribe<PathStrategyEventArgs>(EventId.EraseStarted, EraseStarted);
-            EventManager.Unsubscribe<PathStrategyEventArgs>(EventId.MoveStarted,  MoveStarted);
-            EventManager.Unsubscribe<PathStrategyEventArgs>(EventId.EraseEnded,   EraseEnded);
-            EventManager.Unsubscribe<PathStrategyEventArgs>(EventId.MoveEnded,    MoveEnded);
+            EventManager.Unsubscribe<PathStrategyEventArgs>(EventId.EraseToggleOn, EraseStarted);
+            EventManager.Unsubscribe<PathStrategyEventArgs>(EventId.EraseToggleOff,   EraseEnded);
+
+            EventManager.Unsubscribe<PathStrategyEventArgs>(EventId.MoveStarted, MoveStarted);
+            EventManager.Unsubscribe<PathStrategyEventArgs>(EventId.MoveEnded,   MoveEnded);
 
             EventManager.Unsubscribe<ControllerEvaluatorEventArgs>(EventId.PathCreationComplete, FinishPath);
         }
@@ -189,7 +199,7 @@ namespace PathNav.SceneManagement
 
         private void DrawStarted(object sender, PathStrategyEventArgs args)
         {
-            StartActionTimer();
+            StartCreateTimer();
             IncrementTotalActions();
             RecordAction("DrawStart", DateTime.Now);
         }
@@ -205,17 +215,23 @@ namespace PathNav.SceneManagement
             RecordAction("PointPlaced", DateTime.Now);
         }
 
+        private void PointDeleted(object sender, PathStrategyEventArgs args)
+        {
+            IncrementTotalActions();
+            RecordAction("PointDeleted", DateTime.Now);
+        }
+
         private void BeginPlacingStartPoint(object sender, ControllerEvaluatorEventArgs args)
         {
             _taskTimerTotal.Start();
-            StartActionTimer();
+            StartCreateTimer();
             IncrementTotalActions();
             RecordAction("BeginStartPointPlacement", DateTime.Now);
         }
 
         private void FinishPlacingStartPoint(object sender, ControllerEvaluatorEventArgs args)
         {
-            StopActionTimer();
+            StopCreateTimer();
             RecordAction("FinishStartPointPlacement", DateTime.Now);
         }
 

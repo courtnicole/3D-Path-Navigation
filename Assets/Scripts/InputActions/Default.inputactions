@@ -207,7 +207,7 @@
             "actions": [
                 {
                     "name": "TriggerTouch",
-                    "type": "Button",
+                    "type": "PassThrough",
                     "id": "91a9b57f-ce8a-4088-a191-20a1f6731911",
                     "expectedControlType": "Button",
                     "processors": "",
@@ -335,6 +335,15 @@
                     "name": "MenuClick",
                     "type": "Button",
                     "id": "025ed91b-4802-45b3-ab2c-3d315c07fbc6",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "TriggerClickButtonA",
+                    "type": "Button",
+                    "id": "95f5c234-68f8-4f74-af10-1fe7ceb3e8fc",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
@@ -517,6 +526,39 @@
                     "action": "GripClick",
                     "isComposite": false,
                     "isPartOfComposite": false
+                },
+                {
+                    "name": "One Modifier",
+                    "id": "4af81561-c425-4169-a637-df2002cedcd5",
+                    "path": "OneModifier",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "TriggerClickButtonA",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "modifier",
+                    "id": "8aea9e2f-c786-4cd4-bae5-83776577de4d",
+                    "path": "<XRController>{LeftHand}/primaryButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "XR",
+                    "action": "TriggerClickButtonA",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "binding",
+                    "id": "3fdcb9d3-0ee3-4134-b870-5cf12fcf32e7",
+                    "path": "<XRController>{LeftHand}/triggerPressed",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "XR",
+                    "action": "TriggerClickButtonA",
+                    "isComposite": false,
+                    "isPartOfComposite": true
                 }
             ]
         },
@@ -647,6 +689,15 @@
                     "name": "TriggerTouch",
                     "type": "Button",
                     "id": "dbd248b3-d0d2-4e25-bf10-830a712d0e49",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "TriggerClickButtonA",
+                    "type": "PassThrough",
+                    "id": "0cbcc22a-7cc0-4383-a04d-39c7b8b7e7ed",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
@@ -955,6 +1006,39 @@
                     "action": "GripClick",
                     "isComposite": false,
                     "isPartOfComposite": false
+                },
+                {
+                    "name": "One Modifier",
+                    "id": "26492111-940e-4f54-9f51-5a2ebcef3cbf",
+                    "path": "OneModifier",
+                    "interactions": "Hold",
+                    "processors": "",
+                    "groups": "",
+                    "action": "TriggerClickButtonA",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "modifier",
+                    "id": "a8619e43-45a1-4efa-94d1-b313b3f20115",
+                    "path": "<XRController>{RightHand}/primaryButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "XR",
+                    "action": "TriggerClickButtonA",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "binding",
+                    "id": "f75d1bf8-8e44-465d-aa91-e3149f21631c",
+                    "path": "<XRController>{RightHand}/triggerPressed",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "XR",
+                    "action": "TriggerClickButtonA",
+                    "isComposite": false,
+                    "isPartOfComposite": true
                 }
             ]
         },

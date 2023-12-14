@@ -21,18 +21,14 @@ namespace PathNav.PathPlanning
 
         private void SubscribeToEvents()
         {
-            EventManager.Subscribe<PathStrategyEventArgs>(EventId.CanErase,     ShowEraser);
-            EventManager.Subscribe<PathStrategyEventArgs>(EventId.EraseStarted, ShowEraser);
-            EventManager.Subscribe<PathStrategyEventArgs>(EventId.EraseEnded,   HideEraser);
-            EventManager.Subscribe<PathStrategyEventArgs>(EventId.CannotErase,  HideEraser);
+            EventManager.Subscribe<PathStrategyEventArgs>(EventId.EraseToggleOn, ShowEraser);
+            EventManager.Subscribe<PathStrategyEventArgs>(EventId.EraseToggleOff,   HideEraser);
         }
 
         private void UnsubscribeToEvents()
         {
-            EventManager.Unsubscribe<PathStrategyEventArgs>(EventId.CanErase,     ShowEraser);
-            EventManager.Unsubscribe<PathStrategyEventArgs>(EventId.EraseStarted, ShowEraser);
-            EventManager.Unsubscribe<PathStrategyEventArgs>(EventId.EraseEnded,   HideEraser);
-            EventManager.Unsubscribe<PathStrategyEventArgs>(EventId.CannotErase,  HideEraser);
+            EventManager.Unsubscribe<PathStrategyEventArgs>(EventId.EraseToggleOn, ShowEraser);
+            EventManager.Unsubscribe<PathStrategyEventArgs>(EventId.EraseToggleOff,   HideEraser);
         }
 
         private void ShowEraser(object sender, PathStrategyEventArgs args)

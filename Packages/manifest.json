@@ -1,10 +1,9 @@
 {
   "dependencies": {
     "com.github-glitchenzo.nugetforunity": "https://github.com/GlitchEnzo/NuGetForUnity.git?path=/src/NuGetForUnity",
-    "com.htc.upm.vive-input-utility": "1.18.3",
     "com.unity.addressables": "1.19.19",
     "com.unity.cinemachine": "2.8.9",
-    "com.unity.ide.rider": "3.0.26",
+    "com.unity.ide.rider": "3.0.27",
     "com.unity.inputsystem": "1.5.1",
     "com.unity.render-pipelines.universal": "12.1.10",
     "com.unity.shadergraph": "12.1.10",

@@ -44,6 +44,11 @@ namespace PathNav.Interaction
             return true;
         }
 
+        public void UpdateIndex(int index)
+        {
+            Data.UpdateIndex(index);
+        }
+
         public void Move(Vector3 position)
         {
             transform.position = position;
