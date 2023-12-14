@@ -71,9 +71,13 @@ crashlytics-build.properties
 /[Aa]ssets/[Ss]treamingAssets/aa.meta
 /[Aa]ssets/[Ss]treamingAssets/aa/*
 
-Assets/Scenes/Castle/LightingData.asset
-Assets/Scenes/Castle/LightingData.asset.meta
-Assets/Scenes/Tabletop/LightingData.asset
-Assets/Scenes/Tabletop/LightingData.asset.meta
-Assets/Scenes_Development/Castle/LightingData.asset
-Assets/Scenes_Development/Castle/LightingData.asset.meta
+
+/[Aa]ssets/Scenes/*/LightingData.asset
+/[Aa]ssets/Scenes/*/LightingData.asset.meta
+/[Aa]ssets/Scenes_Development/*/LightingData.asset
+/[Aa]ssets/Scenes_Development/*/LightingData.asset.meta
+/[Aa]ssets/Scenes_Experiment/*/LightingData.asset
+/[Aa]ssets/Scenes_Experiment/*/LightingData.asset.meta
+
+
+Assets/Models/guri e amir/guri_e_amir_90.fbx
