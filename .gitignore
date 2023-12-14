@@ -79,6 +79,7 @@ crashlytics-build.properties
 /[Aa]ssets/Scenes_Experiment/*/LightingData.asset
 /[Aa]ssets/Scenes_Experiment/*/LightingData.asset.meta
 
-/[Aa]ssets/Data/User_106_[*].csv
+/[Aa]ssets/Data/*.csv
+/[Aa]ssets/Data/*.csv.meta
 
 Assets/Models/guri e amir/guri_e_amir_90.fbx
