@@ -11,10 +11,10 @@ GameObject:
   - component: {fileID: 8403250873714614413}
   - component: {fileID: 8403250873714614410}
   - component: {fileID: 8403250873714614411}
-  - component: {fileID: 8403250873714614412}
   - component: {fileID: 8403250873714614408}
   - component: {fileID: 8403250873714614409}
   - component: {fileID: 8403250873714614407}
+  - component: {fileID: 4588045769657317543}
   m_Layer: 15
   m_Name: PlacementVisual
   m_TagString: Untagged
@@ -29,14 +29,14 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8403250873714614414}
-  m_LocalRotation: {x: 0.91990304, y: 0.032568045, z: -0.078248136, w: 0.38287723}
-  m_LocalPosition: {x: 0.0265, y: -0.1074, z: 0.0608}
-  m_LocalScale: {x: 0.25, y: 0.25, z: 0.25}
+  m_LocalRotation: {x: 0.7038514, y: -0.067773156, z: 0.067773156, w: 0.7038514}
+  m_LocalPosition: {x: 0.0601, y: -0.0356, z: 0.2337}
+  m_LocalScale: {x: 0.25, y: 0.25, z: 0.0001}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 8403250874738640342}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 134.804, y: 9.723999, z: 0}
+  m_LocalEulerAnglesHint: {x: 90, y: -11, z: 0}
 --- !u!33 &8403250873714614410
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -44,7 +44,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8403250873714614414}
-  m_Mesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
+  m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
 --- !u!23 &8403250873714614411
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -87,20 +87,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!64 &8403250873714614412
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8403250873714614414}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 1
-  m_Enabled: 1
-  serializedVersion: 4
-  m_Convex: 1
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
 --- !u!114 &8403250873714614408
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -147,6 +133,19 @@ MonoBehaviour:
   interactable: {fileID: 8403250873714614408}
   placementPlaneElement: {fileID: 8403250874738640341}
   ghostPointVisualPrefab: {fileID: 1093380273500698431, guid: be7533b77275d5d4990821d08dc4033e, type: 3}
+--- !u!65 &4588045769657317543
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8403250873714614414}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1, y: 1.0000001, z: 1.0000001}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &8403250874738640343
 GameObject:
   m_ObjectHideFlags: 0
@@ -163,7 +162,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &8403250874738640342
 Transform:
   m_ObjectHideFlags: 0
@@ -171,7 +170,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8403250874738640343}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0

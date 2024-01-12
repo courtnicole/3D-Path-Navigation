@@ -25,9 +25,9 @@ namespace PathNav.Interaction
         #endregion
 
         #region Implementation of IRayCast
-        public Vector3 RayOrigin => Controller.PointerPosition;
-        public Vector3 RayDirection => Controller.PointerForward;
-        public float MaxRaycastDistance => maxRaycastDistance;
+        public Vector3 RayOrigin          => Controller.PointerPosition;
+        public Vector3 RayDirection       => Controller.PointerRotation * Vector3.forward;
+        public float   MaxRaycastDistance => maxRaycastDistance;
         private RaycastHit _hitResult;
 
         public RaycastHit HitResult
@@ -69,10 +69,10 @@ namespace PathNav.Interaction
             _previousOrigin = RayOrigin;
             
             _result = _rayCast.Raycast(mask);
-            UpdateVisual();
+            UpdateVisualRaycast();
         }
 
-        private void UpdateVisual()
+        private void UpdateVisualRaycast()
         {
             if (!_enabled) return;
             if (Vector3.Distance(_previousHitPoint, RayHitPoint) < 0.005f &&

@@ -10,7 +10,6 @@ namespace PathNav.ExperimentControl
         [SerializeField] private Trial[] trials;
         [SerializeField] private Model[] models;
         [SerializeField] private ModelOrder[] modelOrder;
-        [SerializeField] private Scene[] scenes;
 
         public string conditionId;
         public Trial GetCurrentTrial(int index) => trials[index];

@@ -254,7 +254,7 @@ namespace PathNav.PathPlanning
         private Dictionary<int, int> _pointVisualsIdIndexMap = new();
         private Factory _factory = new();
 
-        private const string _key = "NodeVisual";
+        private const string _nodeKey = "NodeVisual";
         private GameObject _pointPrefab;
 
         private int _selectedId;
@@ -357,7 +357,7 @@ namespace PathNav.PathPlanning
 
         private async Task<bool> LoadPrefab()
         {
-            Task<GameObject> task = _factory.LoadFromStringAsync<GameObject>(_key);
+            Task<GameObject> task = _factory.LoadFromStringAsync<GameObject>(_nodeKey);
             _pointPrefab = await task;
             return _pointPrefab is not null;
         }

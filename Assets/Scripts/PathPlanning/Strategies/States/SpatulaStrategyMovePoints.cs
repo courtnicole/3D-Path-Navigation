@@ -6,6 +6,7 @@ namespace PathNav.PathPlanning
     public class SpatulaStrategyMovePoints<T> : IState<T> where T : SpatulaStrategy
     {
         private bool _didMove;
+        private int _lockedIndex;
         #region Implementation of IState<T>
         public void Enter(T entity)
         {
@@ -16,7 +17,8 @@ namespace PathNav.PathPlanning
             }
             else
             {
-                _didMove = true;
+                _didMove     = true;
+                _lockedIndex = entity.PointIndexToMoveOrDelete;
                 EventManager.Publish(EventId.MoveStarted, this, new PathStrategyEventArgs(entity));
             }
         }
@@ -24,8 +26,8 @@ namespace PathNav.PathPlanning
         public void UpdateLogic(T entity)
         {
             if (!_didMove) return;
-            if (entity.PointIndexToMoveOrDelete < 0) return;
-            entity.ActiveSegment.MovePoint(entity.PointIndexToMoveOrDelete, entity.interactingController.PointerPosition);
+            //if (entity.PointIndexToMoveOrDelete < 0) return;
+            entity.ActiveSegment.MovePoint(_lockedIndex, entity.interactingController.PointerPosition);
         }
 
         public void UpdatePhysics(T entity) { }

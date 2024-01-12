@@ -168,7 +168,16 @@ namespace PathNav.ExperimentControl
 
         public void StopImmediately()
         {
+            _recordData = false;
+            overlay.FadeToBlackImmediate();
+            _taskTimerTotal.Stop();
             
+            EventManager.Publish(EventId.SplineNavigationComplete, this, GetSceneControlEventArgs());
+            UnsubscribeToEvents();
+            
+            ExperimentDataManager.Instance.RecordNavigationData(_taskTimerTotal.Elapsed);
+            ExperimentDataManager.Instance.RecordDiscomfortScore(10);
+            ExperimentDataManager.Instance.EndExperimentImmediately();
         }
         #endregion
 

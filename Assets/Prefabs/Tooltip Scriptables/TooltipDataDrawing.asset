@@ -15,5 +15,5 @@ MonoBehaviour:
   m_buttonList: 000000000c00000004000000
   m_dataList:
   - labelText: 'Place & Draw '
-  - labelText: Toggle Erase
+  - labelText: Erase
   - labelText: Finish Path

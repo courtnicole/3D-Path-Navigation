@@ -441,7 +441,6 @@ Transform:
   - {fileID: 419358285}
   - {fileID: 383033879}
   - {fileID: 873739333}
-  - {fileID: 1255013598}
   - {fileID: 1801213296}
   m_Father: {fileID: 0}
   m_RootOrder: 1
@@ -479,6 +478,11 @@ Transform:
   m_Father: {fileID: 1081827738804116718}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!20 &283865335 stripped
+Camera:
+  m_CorrespondingSourceObject: {fileID: 7953667286321268371, guid: 3ace0d1676ed36e46909ad35b3a04fc8, type: 3}
+  m_PrefabInstance: {fileID: 33873753}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &296378576
 GameObject:
   m_ObjectHideFlags: 0
@@ -562,7 +566,7 @@ MonoBehaviour:
   m_SendPointerHoverToParent: 1
   m_MoveRepeatDelay: 0.5
   m_MoveRepeatRate: 0.1
-  m_XRTrackingOrigin: {fileID: 0}
+  m_XRTrackingOrigin: {fileID: 33873756}
   m_ActionsAsset: {fileID: -944628639613478452, guid: ee35e82046ad68046b8d163c1260e4dd, type: 3}
   m_PointAction: {fileID: 0}
   m_MoveAction: {fileID: 0}
@@ -644,7 +648,8 @@ MonoBehaviour:
     m_SubObjectType: 
     m_EditorAssetChanged: 0
   startPointPrefab: {fileID: 7899649366801217082, guid: c03603e8114cb0f46b2babbbf6b33eed, type: 3}
-  placementPlane: {fileID: 0}
+  placementPlaneLeft: {fileID: 544100216}
+  placementPlaneRight: {fileID: 544100215}
 --- !u!114 &419358287
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -671,6 +676,28 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   controllerLeftHand: {fileID: 33873755}
   controllerRightHand: {fileID: 33873754}
+--- !u!114 &544100215 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5052731366274949185, guid: 3ace0d1676ed36e46909ad35b3a04fc8, type: 3}
+  m_PrefabInstance: {fileID: 33873753}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f1a46ce58b9b86241b8b58fc38cd72ed, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &544100216 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2370192614867457608, guid: 3ace0d1676ed36e46909ad35b3a04fc8, type: 3}
+  m_PrefabInstance: {fileID: 33873753}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f1a46ce58b9b86241b8b58fc38cd72ed, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &574444388
 GameObject:
   m_ObjectHideFlags: 0
@@ -1051,37 +1078,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   trackingOriginTransform: {fileID: 33873756}
   cameraTransform: {fileID: 33873757}
---- !u!1 &1255013597
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1255013598}
-  m_Layer: 0
-  m_Name: AudioManager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1255013598
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1255013597}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 238862747}
-  m_RootOrder: 3
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1328382792
 GameObject:
   m_ObjectHideFlags: 0
@@ -1364,7 +1360,7 @@ PrefabInstance:
     - target: {fileID: 871255347840406952, guid: b959cff37854d004c917681c1ab65f07, type: 3}
       propertyPath: m_Camera
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 283865335}
     - target: {fileID: 871255347880658302, guid: b959cff37854d004c917681c1ab65f07, type: 3}
       propertyPath: m_AnchorMax.y
       value: 1
@@ -1486,7 +1482,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 238862747}
-  m_RootOrder: 4
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1801213297
 MonoBehaviour:

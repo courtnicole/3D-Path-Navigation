@@ -258,7 +258,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c2fadf230d1919748a9aa21d40f74619, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_TrackingType: 0
+  m_TrackingType: 1
   m_UpdateType: 0
   m_IgnoreTrackingState: 0
   m_PositionInput:
@@ -429,16 +429,16 @@ MonoBehaviour:
     useClippedPercent: 0
     keys: []
   _clipFromSample:
-    position: {x: 0, y: 0, z: 0}
+    position: {x: -7.4639006, y: 11.092108, z: -22.26726}
     up: {x: 0, y: 1, z: 0}
-    forward: {x: 0, y: 0, z: 0}
+    forward: {x: 0.96932113, y: 0.027178219, z: 0.24429063}
     color: {r: 1, g: 1, b: 1, a: 1}
     size: 0.05
     percent: 0
   _clipToSample:
-    position: {x: 0, y: 0, z: 0}
-    up: {x: 0, y: 1, z: 0}
-    forward: {x: 0, y: 0, z: 0}
+    position: {x: -2.1673021, y: 26.299765, z: 8.686347}
+    up: {x: 0.41220063, y: 0.90619075, z: -0.09438735}
+    forward: {x: 0.82165337, y: 0.005385658, z: 0.5699621}
     color: {r: 1, g: 1, b: 1, a: 1}
     size: 0.05
     percent: 1
@@ -448,8 +448,8 @@ MonoBehaviour:
   animClipFrom: 0
   animClipTo: 1
   multithreaded: 0
-  buildOnAwake: 1
-  buildOnEnable: 0
+  buildOnAwake: 0
+  buildOnEnable: 1
   applyDirectionRotation: 0
   useTriggers: 0
   triggerGroup: 0
@@ -483,26 +483,26 @@ MonoBehaviour:
   targetRigidbody2D: {fileID: 0}
   targetTransform: {fileID: 1223527901986485809}
   _result:
-    position: {x: 0, y: 0, z: 0}
+    position: {x: -11.84675, y: 11.68464, z: 1.84382}
     up: {x: 0, y: 1, z: 0}
-    forward: {x: 0, y: 0, z: 0}
+    forward: {x: -0.100820646, y: 0.03797097, z: -0.9941798}
     color: {r: 1, g: 1, b: 1, a: 1}
     size: 0.05
-    percent: 0
+    percent: 0.5796026931868659
   _finalResult:
-    position: {x: 0, y: 0, z: 0}
+    position: {x: -11.84675, y: 11.68464, z: 1.84382}
     up: {x: 0, y: 1, z: 0}
-    forward: {x: 0, y: 0, z: 0}
+    forward: {x: -0.100820646, y: 0.03797097, z: -0.9941798}
     color: {r: 1, g: 1, b: 1, a: 1}
     size: 0.05
-    percent: 0
+    percent: 0.5796026931868659
   wrapMode: 0
   followMode: 0
-  autoStartPosition: 0
+  autoStartPosition: 1
   _follow: 1
   _startPosition: 0
   preserveUniformSpeedWithOffset: 0
-  _followSpeed: 1
+  _followSpeed: 0
   _followDuration: 1
   _speedModifier:
     blend: 1
@@ -1995,7 +1995,7 @@ PrefabInstance:
     - target: {fileID: 3266234089705316247, guid: dbfbda3c6401252498ee58cb4f8c9c3f, type: 3}
       propertyPath: m_Camera
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 2418399576968329451}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: dbfbda3c6401252498ee58cb4f8c9c3f, type: 3}
 --- !u!114 &5445400717979184864 stripped
@@ -2152,7 +2152,7 @@ PrefabInstance:
     - target: {fileID: 871255347840406952, guid: b959cff37854d004c917681c1ab65f07, type: 3}
       propertyPath: m_Camera
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 2418399576968329451}
     - target: {fileID: 871255347880658302, guid: b959cff37854d004c917681c1ab65f07, type: 3}
       propertyPath: m_AnchorMax.y
       value: 1

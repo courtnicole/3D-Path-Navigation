@@ -37,8 +37,6 @@ namespace PathNav.Patterns.FSM
                 default:
                     throw new ArgumentOutOfRangeException();
             }
-
-            entity.OnLocomotionUpdate();
         }
 
         public void UpdatePhysics(T entity)
@@ -54,6 +52,7 @@ namespace PathNav.Patterns.FSM
                 default:
                     throw new ArgumentOutOfRangeException();
             }
+            entity.OnLocomotionUpdate();
         }
 
         public void Exit(T entity)
@@ -69,9 +68,7 @@ namespace PathNav.Patterns.FSM
         private void Update4DoF(T entity)
         {
             _elapsedTime     += Time.deltaTime;
-            //_travelDirection =  new Vector3(entity.InputPose.x, 0, entity.InputPose.y).normalized;
             _currentVelocity =  Mathf.Lerp(entity.MinVelocity, entity.MaxVelocity, entity.Acceleration * _elapsedTime);
-            //_shift           =  _travelDirection * (_currentVelocity * Time.deltaTime);
         }
 
         private void Update6DoF(T entity)

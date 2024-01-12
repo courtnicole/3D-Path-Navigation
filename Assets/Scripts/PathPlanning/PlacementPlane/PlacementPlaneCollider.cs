@@ -54,7 +54,6 @@ namespace PathNav.PathPlanning
         private void OnTriggerEnter(Collider other)
         {
             if (!other.gameObject.CompareTag($"Hand")) return;
-            
             _interactingController = other.gameObject.GetComponent<ControllerCollider>().Controller;
             _hasValidCollision     = true;
             PlacementPlane.OnTriggerEntered();

@@ -1,0 +1,80 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: Audio
+  m_EditorClassIdentifier: 
+  m_GroupName: Audio
+  m_Data:
+    m_SerializedData: []
+  m_GUID: 04feb8eda238d8f43970c5abff0b12eb
+  m_SerializeEntries:
+  - m_GUID: 33f85dad749de914ca04d80d564858c5
+    m_Address: delete_point
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Audio_Tutorial_Creation
+  - m_GUID: 2b8e0dc27e080fe46b8ccc9be24b454d
+    m_Address: draw_path
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Audio_Tutorial_Creation
+  - m_GUID: 282156f694dd7ea4db4180e535e078fd
+    m_Address: erase_path
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Audio_Tutorial_Creation
+  - m_GUID: 6176f693baff40e4f8a24dd4b33c1176
+    m_Address: finish_path
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Audio_Tutorial_Creation
+  - m_GUID: 6c0206c9260ae2c4cbc5bcc824443efe
+    m_Address: move_point
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Audio_Tutorial_Creation
+  - m_GUID: 6c9b3d628541fce4f91afa066cebca2e
+    m_Address: place_point
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Audio_Tutorial_Creation
+  - m_GUID: 4a4ed48f381e4254eb8b6852e0fc6ab5
+    m_Address: place_start
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Audio_Tutorial_Creation
+  - m_GUID: 9f825ccbf5e4ca349bfe84d42ad78031
+    m_Address: finish_navigation
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Audio_Tutorial_Navigation
+  - m_GUID: c329d1fb16021ea49ba9d38bf169698a
+    m_Address: forward_backward_4dof
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Audio_Tutorial_Navigation
+  - m_GUID: 4925dd7ee16cb254b9f4f0a3f3142b6f
+    m_Address: forward_backward_6dof
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Audio_Tutorial_Navigation
+  - m_GUID: f2d672fdf1f406b4dbe92b25ae30bf95
+    m_Address: up_down_6dof
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Audio_Tutorial_Navigation
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: 2a19ebdba0b390b43b6dc97fa047bcb6, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 5a1b075df5d328a478bf7a60ee97c470, type: 2}
+    - {fileID: 11400000, guid: 5ae1d146afe7df045af3faaa17c0cdd6, type: 2}

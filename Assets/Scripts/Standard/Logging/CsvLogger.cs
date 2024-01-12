@@ -13,6 +13,8 @@ namespace PathNav.ExperimentControl
         {
             HasHeaderRecord = true,
         };
+        private const string _endOfFile = "###################################################";
+        private const string _endOfFileEarly = "***************************************************";
 
         public static async Task InitSceneDataLog(string logDirectory, string filePath)
         {
@@ -24,19 +26,38 @@ namespace PathNav.ExperimentControl
             _logFile = filePath;
             if (File.Exists(_logFile)) return;
             await using StreamWriter streamWriter = new (_logFile);
-            await using CsvWriter    csvWriter    = new (streamWriter, Config);
+            await using CsvWriter csvWriter = new(streamWriter, Config);
             csvWriter.Context.RegisterClassMap<SceneDataFormatMap>();
             csvWriter.WriteHeader<SceneDataFormat>();
             await csvWriter.NextRecordAsync();
         }
 
-        public static async Task LogSceneData(SceneDataFormat data)
+        public static async Task<bool> LogSceneData(SceneDataFormat data)
         {
             await using StreamWriter streamWriter = new (_logFile, true);
             await using CsvWriter    csvWriter    = new (streamWriter, Config);
             csvWriter.Context.RegisterClassMap<SceneDataFormatMap>();
             csvWriter.WriteRecord(data);
             await csvWriter.NextRecordAsync();
+            return true;
+        }
+        
+        public static async Task<bool> RecordEarlyTermination()
+        {
+            await using StreamWriter streamWriter = new (_logFile, true);
+            await using CsvWriter    csvWriter    = new (streamWriter, Config);
+            csvWriter.WriteComment(_endOfFileEarly);
+            await csvWriter.NextRecordAsync();
+            return true;
+        }
+
+        public static async Task<bool> FinalizeDataLog()
+        {
+            await using StreamWriter streamWriter = new (_logFile, true);
+            await using CsvWriter    csvWriter    = new (streamWriter, Config);
+            csvWriter.WriteComment(_endOfFile);
+            await csvWriter.NextRecordAsync();
+            return true;
         }
     }
 }

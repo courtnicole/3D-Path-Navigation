@@ -18,7 +18,7 @@ MonoBehaviour:
   m_GUID: 12d4f9c57df6dd04e973c991ea0f5c11
   m_SerializeEntries:
   - m_GUID: c03603e8114cb0f46b2babbbf6b33eed
-    m_Address: PathStartPointPrefab
+    m_Address: StartPointVisual
     m_ReadOnly: 0
     m_SerializedLabels:
     - PathCreation
@@ -38,12 +38,37 @@ MonoBehaviour:
     m_SerializedLabels:
     - Model
   - m_GUID: 5ca72f8923331b34588cde0a94c12bdc
-    m_Address: Castle
+    m_Address: Model F
     m_ReadOnly: 0
     m_SerializedLabels:
     - Model
   - m_GUID: a755f283dd5776943be0935ccd6c4c50
     m_Address: Model A
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Model
+  - m_GUID: 2b7fe1a3367e0bc40a8f665dccd47b62
+    m_Address: Model B
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Model
+  - m_GUID: 0be4d80dc4768a644b744ad4d9a2acb8
+    m_Address: Model C
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Model
+  - m_GUID: 0db17e3a92e18e444ac79f544439aa4c
+    m_Address: Model D
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Model
+  - m_GUID: 44db7ad891a3b034ca868a7c523d2199
+    m_Address: Model E
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Model
+  - m_GUID: 5d8ba40a40b0e1b48a26edf59d865a3c
+    m_Address: Tutorial Model
     m_ReadOnly: 0
     m_SerializedLabels: []
   m_ReadOnly: 0

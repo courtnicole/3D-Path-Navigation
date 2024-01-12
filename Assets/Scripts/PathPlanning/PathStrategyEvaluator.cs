@@ -3,6 +3,7 @@ namespace PathNav.PathPlanning
     using Events;
     using ExperimentControl;
     using Extensions;
+    using global::ExperimentControl;
     using Input;
     using Interaction;
     using Patterns.Factory;
@@ -22,7 +23,8 @@ namespace PathNav.PathPlanning
     {
         [SerializeField] private AssetReferenceGameObject segmentKey;
         [SerializeField] private GameObject startPointPrefab;
-        [SerializeField] private PlacementPlaneElement placementPlane;
+        [SerializeField] private PlacementPlaneElement placementPlaneLeft;
+        [SerializeField] private PlacementPlaneElement placementPlaneRight;
 
         #region Factory Variables
         private ISegment _activeSegment;
@@ -48,6 +50,7 @@ namespace PathNav.PathPlanning
         private IPathStrategy _activeStrategy;
         private IPathStrategy _bulldozerStrategy;
         private IPathStrategy _spatulaStrategy; 
+        private PlacementPlaneElement _placementPlane;
         #endregion
 
         #region Unity Events
@@ -58,6 +61,7 @@ namespace PathNav.PathPlanning
 
         private void OnDisable()
         {
+            _activeStrategy?.Disable();
             Disable();
         }
 
@@ -70,6 +74,8 @@ namespace PathNav.PathPlanning
         #region Initialization
         private void Enable()
         {
+            placementPlaneLeft.Disable();
+            placementPlaneRight.Disable();
             SubscribeToEvents();
         }
 
@@ -110,7 +116,9 @@ namespace PathNav.PathPlanning
 
         private void SetPathStrategy(object sender, SceneControlEventArgs args)
         {
-            _strategy = args.Strategy;
+            _strategy       = args.Strategy;
+            _placementPlane = args.Handedness == Handedness.Left ? placementPlaneRight : placementPlaneLeft;
+            
             switch (_strategy)
             {
                 case PathStrategy.Bulldozer:
@@ -118,9 +126,11 @@ namespace PathNav.PathPlanning
                     SetStrategy(_bulldozerStrategy);
                     break;
                 case PathStrategy.Spatula:
-                    _spatulaStrategy = new SpatulaStrategy(placementPlane);
+                    _spatulaStrategy = new SpatulaStrategy(_placementPlane);
                     InitializeSpatulaStrategy();
                     SetStrategy(_spatulaStrategy);
+                    break;
+                case PathStrategy.None:
                     break;
                 default:
                     _bulldozerStrategy = new BulldozerStrategy();
@@ -135,12 +145,12 @@ namespace PathNav.PathPlanning
 
         private void InitializeSpatulaStrategy()
         {
-            placementPlane.Enable();
+            _placementPlane.Enable();
         }
 
         private void InitializeBulldozerStrategy()
         {
-            placementPlane.Disable();
+            _placementPlane.Disable();
         }
         
         private void SetStrategy(IPathStrategy strategy)

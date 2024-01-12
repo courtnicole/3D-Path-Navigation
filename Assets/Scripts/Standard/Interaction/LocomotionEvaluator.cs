@@ -1,16 +1,11 @@
 namespace PathNav.Interaction
 {
-    using CsvHelper;
-    using CsvHelper.Configuration;
     using Dreamteck.Splines;
     using System;
     using Events;
     using ExperimentControl;
     using Input;
     using Patterns.FSM;
-    using System.Diagnostics;
-    using System.Globalization;
-    using System.IO;
     using UnityEngine;
 
     public enum LocomotionDof

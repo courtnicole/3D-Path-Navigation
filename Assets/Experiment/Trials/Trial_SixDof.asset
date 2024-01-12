@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: Trial_SixDof
   m_EditorClassIdentifier: 
   trialId: SixDof
-  trialType: 0
+  trialType: 1
   pathStrategy: 0
   locomotionDof: 2

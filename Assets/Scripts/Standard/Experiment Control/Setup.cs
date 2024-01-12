@@ -8,25 +8,42 @@ namespace  PathNav.ExperimentControl
         [SerializeField] private TMP_Text userIdText;
         [SerializeField] private GameObject idButtons;
         [SerializeField] private GameObject beginButton;    
+        [SerializeField] private GameObject handednessButtons;   
         [SerializeField] private string fileName = "test.json";
         private string _filePath = Application.streamingAssetsPath + "/";
         private string File => _filePath + fileName;
         
         public async void GetRecentId()
         {
-            int id = await FileParser.GetNewUserIdAsync(File);
+            int id = await FileParser.GetMostRecentUserIdAsync(File);
             ExperimentDataManager.Instance.RecordUserId(id);
             userIdText.text = "User ID: " + id;
-            idButtons.SetActive(false);
-            beginButton.SetActive(true);
+            ToggleHandedness();
         }
         
         public async void GetNewId()
         {
+#if UNITY_EDITOR
             int id = await FileParser.GetMostRecentUserIdAsync(File);
+#else
+            int id = await FileParser.GetNewUserIdAsync(File);
+#endif            
             ExperimentDataManager.Instance.RecordUserId(id);
             userIdText.text = "User ID: " + id;
+            ToggleHandedness();
+        }
+
+        private void ToggleHandedness()
+        {
+            userIdText.gameObject.SetActive(true);
             idButtons.SetActive(false);
+            handednessButtons.SetActive(true);
+        }
+        
+        public void SetLeftHand(bool useLeft)
+        {
+            ExperimentDataManager.Instance.RecordHandedness(useLeft);
+            handednessButtons.SetActive(false);
             beginButton.SetActive(true);
         }
 

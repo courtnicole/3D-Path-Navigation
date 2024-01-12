@@ -96,5 +96,15 @@ namespace PathNav.ExperimentControl
             
             overlay.FadeToClear();
         }
+        
+        public void StopImmediately()
+        {
+            overlay.FadeToBlackImmediate();
+            
+            EventManager.Publish(EventId.PathCreationComplete, this, new ControllerEvaluatorEventArgs(null));
+            UnsubscribeToEvents();
+            
+            ExperimentDataManager.Instance.CreationComplete();
+        }
     }
 }

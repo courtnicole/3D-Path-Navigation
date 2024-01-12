@@ -12,5 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 50c3114128a71ad4a80e400cfa3188fa, type: 3}
   m_Name: TooltipData4Dof
   m_EditorClassIdentifier: 
-  m_buttonList: 
-  m_dataList: []
+  m_buttonList: 2f000000
+  m_dataList:
+  - labelText: Forward/Backward

@@ -1,5 +1,6 @@
 namespace PathNav.PathPlanning
 {
+    using Input;
     using Interaction;
     using UnityEngine;
     using Patterns.Strategy;
@@ -36,7 +37,8 @@ namespace PathNav.PathPlanning
     public class PathStrategyEventArgs : EventArgs
     {
         public PathStrategyEventArgs(IPathStrategy strategy) => Strategy = strategy;
-
-        public IPathStrategy Strategy { get; }
+        public PathStrategyEventArgs(IController   controller) => Controller = controller;
+        public IPathStrategy Strategy   { get; }
+        public IController   Controller { get; }
     }
 }

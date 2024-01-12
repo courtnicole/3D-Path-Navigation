@@ -1,7 +1,7 @@
 namespace PathNav.SceneManagement
 {
-    using System.Collections;
     using System.Collections.Generic;
+    using System.Threading.Tasks;
     using UnityEngine;
     using UnityEngine.AddressableAssets;
     using UnityEngine.ResourceManagement.AsyncOperations;
@@ -9,78 +9,97 @@ namespace PathNav.SceneManagement
     public class AudioManager : MonoBehaviour
     {
         private static AudioSource _audioSource;
-        private static AudioManager _instance;
-
         private AsyncOperationHandle<IList<AudioClip>> _loadHandle;
-        private List<string> _keys = new() { "audio", "fx", };
         private Dictionary<string, AudioClip> _audioClips = new();
+        internal static bool IsPlaying => _audioSource.isPlaying;
 
         private void Awake()
         {
-            _audioSource = GetComponent<AudioSource>();
+            TryGetComponent(out _audioSource);
             _audioSource.Stop();
-            _instance = this;
-            StartCoroutine(LoadAudioClips());
         }
 
         private void OnDestroy()
         {
+            _audioClips.Clear();
             Addressables.Release(_loadHandle);
         }
 
+        public void LoadAudio(List<string> keys)
+        {
+            LoadAudioClips(keys);
+        }
         public void PlayOneShot(Audio.Fx id)
         {
             string address = id.ToString();
-            _instance.StartCoroutine(LoadPlayOneShot(address));
+            LoadPlayOneShot(address);
+        }
+
+        public void PlayClip(string id, float delay = 0)
+        {
+            LoadPlayAudioClip(id, delay);
         }
 
         public void PlayClip(Audio.Id id, float delay = 0)
         {
             string address = id.ToString();
-            _instance.StartCoroutine(LoadPlayAudioClip(address, delay));
+            LoadPlayAudioClip(address, delay);
+        }
+        
+        #region Addressable & Audio Methods
+        private async void LoadAudioClips(IEnumerable<string> keys)
+        {
+            _loadHandle = Addressables.LoadAssetsAsync<AudioClip>(keys,
+                                                                  addressable => { _audioClips.Add(addressable.name, addressable); },
+                                                                  Addressables.MergeMode.UseFirst,
+                                                                  false);
+
+            await _loadHandle.Task;
         }
 
-        private IEnumerator LoadPlayAudioClip(string address, float delay = 0)
+        private static async void LoadPlayOneShot(string address)
+        {
+            AsyncOperationHandle<AudioClip> loadHandle = Addressables.LoadAssetAsync<AudioClip>(address);
+
+            await loadHandle.Task;
+
+            if (loadHandle.Status != AsyncOperationStatus.Succeeded)
+            {
+                Addressables.Release(loadHandle);
+                return;
+            };
+            
+            _audioSource.PlayOneShot(loadHandle.Result, 1f);
+
+            while (_audioSource.isPlaying)
+            {
+                await Task.Yield();
+            }
+            
+            _audioSource.clip = null;
+            
+            Addressables.Release(loadHandle);
+        }
+        
+        private async void LoadPlayAudioClip(string address, float delay = 0)
         {
             bool success = _audioClips.TryGetValue(address, out AudioClip clip);
-            if (!success) yield break;
+            if (!success) return;
 
-            yield return new WaitUntil(() => !_audioSource.isPlaying);
+            while (_audioSource.isPlaying)
+            {
+                await Task.Yield();
+            }
 
             _audioSource.clip = clip;
             _audioSource.PlayDelayed(delay);
 
-            yield return new WaitUntil(() => !_audioSource.isPlaying);
+            while (_audioSource.isPlaying)
+            {
+                await Task.Yield();
+            }
 
             _audioSource.clip = null;
-        }
-
-        #region Addressable Methods
-        private IEnumerator LoadAudioClips()
-        {
-            _loadHandle = Addressables.LoadAssetsAsync<AudioClip>(_keys,
-                                                                  addressable => { _audioClips.Add(addressable.name, addressable); },
-                                                                  Addressables.MergeMode.Union,
-                                                                  false);
-
-            yield return _loadHandle;
-        }
-
-        private static IEnumerator LoadPlayOneShot(string address)
-        {
-            AsyncOperationHandle<AudioClip> clip = Addressables.LoadAssetAsync<AudioClip>(address);
-
-            if (!clip.IsDone)
-                yield return clip;
-
-            if (clip.Status != AsyncOperationStatus.Succeeded) yield break;
-
-            _audioSource.PlayOneShot(clip.Result, 1f);
-
-            yield return new WaitUntil(() => !_audioSource.isPlaying);
-
-            _audioSource.clip = null;
-            Addressables.Release(clip);
         }
         #endregion
     }

@@ -328,7 +328,7 @@
                     "id": "0a5f51e4-356e-4a94-a8a7-e330eab77974",
                     "expectedControlType": "Button",
                     "processors": "",
-                    "interactions": "",
+                    "interactions": "Press(behavior=2)",
                     "initialStateCheck": false
                 },
                 {
@@ -619,18 +619,7 @@
                     "path": "<XRController>{RightHand}/haptic",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Generic XR Controller",
-                    "action": "Haptic",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "1f8d396e-d625-4dc7-ac26-ef1577543d18",
-                    "path": "<XRController>{RightHand}/haptic",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "XR",
+                    "groups": "Generic XR Controller;XR",
                     "action": "Haptic",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -691,7 +680,7 @@
                     "id": "dbd248b3-d0d2-4e25-bf10-830a712d0e49",
                     "expectedControlType": "Button",
                     "processors": "",
-                    "interactions": "",
+                    "interactions": "Press(behavior=2)",
                     "initialStateCheck": false
                 },
                 {

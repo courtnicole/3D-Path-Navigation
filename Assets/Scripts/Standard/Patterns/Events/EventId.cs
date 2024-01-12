@@ -170,6 +170,8 @@ namespace PathNav.Events
         SplineNavigationComplete,
         [EventId(typeof(SceneControlEventArgs))]
         EndImmediately,
+        [EventId(typeof(SceneControlEventArgs))]
+        AllowPathCompletion,
         #endregion
 
         #region FollowerEvaluatorEventArgs

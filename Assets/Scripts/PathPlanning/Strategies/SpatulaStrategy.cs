@@ -1,6 +1,7 @@
 namespace PathNav.PathPlanning
 {
     using Events;
+    using ExperimentControl;
     using Input;
     using Interaction;
     using Patterns.FSM;
@@ -38,7 +39,7 @@ namespace PathNav.PathPlanning
 
         internal int PointIndexToMoveOrDelete => ActiveSegment.SelectedPointVisualIndex;
         private IPlacementPlane _placementPlane;
-
+        private bool _canFinishPath;
         private bool HasController => interactingController                      != null;
         private bool HasSegment => ActiveSegment                                 != null;
         private bool HasValidPlane => _placementPlane?.HasCollidingController    == true;
@@ -87,6 +88,10 @@ namespace PathNav.PathPlanning
             EventManager.Subscribe<ControllerEvaluatorEventArgs>(EventId.StopPlaceOrMovePoint,  EvaluateStopPlaceOrMovePoint);
             EventManager.Subscribe<ControllerEvaluatorEventArgs>(EventId.RemovePoint,           EvaluateRemovePoint);
             EventManager.Subscribe<ControllerEvaluatorEventArgs>(EventId.PathCreationComplete,  FinishPath);
+            if (!ExperimentDataManager.Instance.CreationTutorialActive()) return;
+
+            _canFinishPath = false;
+            EventManager.Subscribe<SceneControlEventArgs>(EventId.AllowPathCompletion, AllowPathCompletion);
         }
 
         public void UnsubscribeToEvents()
@@ -95,9 +100,9 @@ namespace PathNav.PathPlanning
             EventManager.Unsubscribe<ControllerEvaluatorEventArgs>(EventId.StopPlaceOrMovePoint,  EvaluateStopPlaceOrMovePoint);
             EventManager.Unsubscribe<ControllerEvaluatorEventArgs>(EventId.RemovePoint,           EvaluateRemovePoint);
             EventManager.Unsubscribe<ControllerEvaluatorEventArgs>(EventId.PathCreationComplete,  FinishPath);
+            if (!ExperimentDataManager.Instance.CreationTutorialActive()) return;
+            EventManager.Unsubscribe<SceneControlEventArgs>(EventId.AllowPathCompletion, AllowPathCompletion);
         }
-
-        
         #endregion
 
         #region Received Events
@@ -132,6 +137,12 @@ namespace PathNav.PathPlanning
         {
             if (_state.CurrentState == _disabledState) return;
             
+            if(ExperimentDataManager.Instance.CreationTutorialActive())
+            {
+                if (!_canFinishPath)
+                    return;
+            }
+            
             if (_state.CurrentState == _createPointState) _state.ChangeState(_idleState);
 
             if (_state.CurrentState == _movePointState) _state.ChangeState(_idleState);
@@ -152,6 +163,11 @@ namespace PathNav.PathPlanning
             if (!CanMoveOrDeletePoint) return;
 
             StartDeletePoint();
+        }
+        
+        private void AllowPathCompletion(object obj, SceneControlEventArgs args)
+        {
+            _canFinishPath = true;
         }
         #endregion
 

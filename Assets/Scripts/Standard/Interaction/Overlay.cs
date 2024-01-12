@@ -12,6 +12,7 @@ namespace PathNav
         private Color _colorBlack = Color.black;
         private Color _colorClear = Color.clear;
         private const float _fadeTime = 1.5f;
+        private const float _fadeTimeImmediate = 0.1f;
 
         private void Awake()
         {
@@ -21,17 +22,22 @@ namespace PathNav
         }
         public void FadeToClear()
         {
-            StartCoroutine(Fade(_colorBlack, _colorClear));
+            StartCoroutine(Fade(_colorBlack, _colorClear, _fadeTime));
         }
         public void FadeToBlack()
         {
-            StartCoroutine(Fade(_colorClear, _colorBlack));
+            StartCoroutine(Fade(_colorClear, _colorBlack, _fadeTime));
+        }
+        
+        public void FadeToBlackImmediate()
+        {
+            StartCoroutine(Fade(_colorClear, _colorBlack, _fadeTimeImmediate));
         }
 
-        private IEnumerator Fade(Color start, Color end)
+        private IEnumerator Fade(Color start, Color end, float fadeTime)
         {
             float elapsedTime = 0.0f;
-            while (elapsedTime < _fadeTime) {
+            while (elapsedTime < fadeTime) {
                 elapsedTime     += Time.deltaTime;
                 _material.color = Color.Lerp(start, end, (elapsedTime / _fadeTime));
                 yield return null;

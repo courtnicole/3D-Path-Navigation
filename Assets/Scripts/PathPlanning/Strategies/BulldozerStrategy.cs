@@ -1,9 +1,11 @@
 namespace PathNav.PathPlanning
 {
     using Events;
+    using ExperimentControl;
     using Input;
     using Interaction;
     using Patterns.FSM;
+    using System;
     using UnityEngine;
 
     public class BulldozerStrategy : IPathStrategy
@@ -24,7 +26,7 @@ namespace PathNav.PathPlanning
             {
                 if (_state.CurrentState != _idleState) return false;
 
-                return HasSegment && HasMultipleSegmentPoints && HasValidEraseTarget;
+                return HasSegment && HasMultipleSegmentPoints;
             }
         }
 
@@ -41,14 +43,14 @@ namespace PathNav.PathPlanning
         #region Segment and Path Variables
         internal Vector3 lastHandPosition;
         internal const float minimumDelta = 0.025f;
-        internal int TargetPointIndex => ActiveSegment.SelectedPointVisualIndex;
-
         private bool HasSegment => ActiveSegment != null;
+
+        private bool _canFinishPath;
 
         private bool HasFirstSegmentPoint     => ActiveSegment.CurrentPointCount > 1;
         private bool HasMultipleSegmentPoints => ActiveSegment.CurrentPointCount > 2;
 
-        private bool HasValidEraseTarget => ActiveSegment.SelectedSegmentIndex != -1; //== ActiveSegment.CurrentPointCount - 1;
+        internal bool HasValidEraseTarget => ActiveSegment.SelectedSegmentIndex != -1; //== ActiveSegment.CurrentPointCount - 1;
         #endregion
 
         #region Implementation of IPathStrategy
@@ -84,6 +86,14 @@ namespace PathNav.PathPlanning
 
         private void FinishPath(object obj, ControllerEvaluatorEventArgs args)
         {
+            if (_state.CurrentState == _disabledState) return;
+            
+            if(ExperimentDataManager.Instance.CreationTutorialActive())
+            {
+                if (!_canFinishPath)
+                    return;
+            }
+
             if (_state.CurrentState == _eraseState) _state.ChangeState(_idleState);
 
             if (_state.CurrentState == _drawState) _state.ChangeState(_idleState);
@@ -92,9 +102,9 @@ namespace PathNav.PathPlanning
             {
                 throw new System.Exception("BulldozerStrategy: FinishPath called while not in idle state");
             }
-
+            
             ActiveSegment.SaveSpline();
-
+            ClearController();
             Disable();
         }
         #endregion
@@ -107,6 +117,11 @@ namespace PathNav.PathPlanning
             EventManager.Subscribe<ControllerEvaluatorEventArgs>(EventId.StartErasePath,       EvaluateStartErasePath);
             EventManager.Subscribe<ControllerEvaluatorEventArgs>(EventId.StopErasePath,        EvaluateStopErasePath);
             EventManager.Subscribe<ControllerEvaluatorEventArgs>(EventId.PathCreationComplete, FinishPath);
+
+            if (!ExperimentDataManager.Instance.CreationTutorialActive()) return;
+
+            _canFinishPath = false;
+            EventManager.Subscribe<SceneControlEventArgs>(EventId.AllowPathCompletion, AllowPathCompletion);
         }
 
         public void UnsubscribeToEvents()
@@ -116,6 +131,10 @@ namespace PathNav.PathPlanning
             EventManager.Unsubscribe<ControllerEvaluatorEventArgs>(EventId.StartErasePath,       EvaluateStartErasePath);
             EventManager.Unsubscribe<ControllerEvaluatorEventArgs>(EventId.StopErasePath,        EvaluateStopErasePath);
             EventManager.Unsubscribe<ControllerEvaluatorEventArgs>(EventId.PathCreationComplete, FinishPath);
+            if (ExperimentDataManager.Instance.CreationTutorialActive())
+            {
+                EventManager.Unsubscribe<SceneControlEventArgs>(EventId.AllowPathCompletion, AllowPathCompletion);
+            }
         }
         #endregion
 
@@ -123,9 +142,7 @@ namespace PathNav.PathPlanning
         private void EvaluateStartErasePath(object obj, ControllerEvaluatorEventArgs args)
         {
             SetController(args.Controller);
-            if (!ActiveSegment.CanErasePoint(ref interactingController)) return;
             if (!CanStartErasing) return;
-
             StartErase();
         }
 
@@ -146,6 +163,11 @@ namespace PathNav.PathPlanning
         {
             StopDraw();
             ClearController();
+        }
+
+        private void AllowPathCompletion(object obj, SceneControlEventArgs args)
+        {
+            _canFinishPath = true;
         }
         #endregion
 

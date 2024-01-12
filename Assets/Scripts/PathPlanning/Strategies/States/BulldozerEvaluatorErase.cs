@@ -1,16 +1,14 @@
 namespace PathNav.PathPlanning
 {
     using Events;
-    using Interaction;
     using Patterns.FSM;
-    using UnityEngine;
 
     public class BulldozerEvaluatorErase<T> : IState<T> where T : BulldozerStrategy
     {
         #region Implementation of IState<T>
         public void Enter(T entity)
         {
-            EventManager.Publish(EventId.EraseToggleOn, this, new PathStrategyEventArgs(entity));
+            EventManager.Publish(EventId.EraseToggleOn, this, new PathStrategyEventArgs(entity.interactingController));
         }
 
         public void UpdateLogic(T entity)
@@ -23,7 +21,7 @@ namespace PathNav.PathPlanning
 
         public void Exit(T entity)
         {
-            EventManager.Publish(EventId.EraseToggleOff, this, new PathStrategyEventArgs(entity));
+            EventManager.Publish(EventId.EraseToggleOff, this, new PathStrategyEventArgs(entity.interactingController));
         }
         #endregion
     }

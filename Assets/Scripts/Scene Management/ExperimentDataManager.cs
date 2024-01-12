@@ -3,11 +3,13 @@ namespace PathNav.ExperimentControl
     #region Imports
     using Dreamteck.Splines;
     using Events;
+    using global::ExperimentControl;
     using Interaction;
     using PathPlanning;
     using SceneManagement;
     using System;
     using System.Collections;
+    using System.Threading.Tasks;
     using UnityEngine;
     using UnityEngine.SceneManagement;
     #endregion
@@ -38,6 +40,8 @@ namespace PathNav.ExperimentControl
         private static Model _savedModel;
 
         private static int _userId;
+        private static Handedness _handedness;
+
         private static TrialState _trialState;
         private static Trial _currentTrial;
         private static ConditionBlock _conditionBlock;
@@ -48,14 +52,15 @@ namespace PathNav.ExperimentControl
         private static string _logFilePathActions;
         private static string _logFilePathNavigation;
 
-        private static int _trialIndex;
+        //trialCount
+        private static int _currentTrialCount;
         private static int _modelIndex;
-        private static int _stageIndex;
+        //trialIndex
+        private static int _currentTrialStageIndex;
 
         private static string _activeSceneName;
-
-        private const int _trialCount = 1;
-        private const int _stageCount = 2;
+        private const int _totalTrialCount = 1;
+        private const int _totalTrialStages = 4;
 
         protected void Awake()
         {
@@ -69,7 +74,7 @@ namespace PathNav.ExperimentControl
                 Destroy(gameObject);
                 return;
             }
-            
+
             _logDirectory                   =  Application.dataPath + "/Data/";
             SceneManager.activeSceneChanged += OnActiveSceneChanged;
         }
@@ -79,6 +84,11 @@ namespace PathNav.ExperimentControl
             _userInfo       = new UserInfo(id);
             _userId         = _userInfo.UserId;
             _conditionBlock = conditionBlocks[_userInfo.BlockId];
+        }
+
+        public void RecordHandedness(bool useLeftHand)
+        {
+            _handedness = useLeftHand ? Handedness.Left : Handedness.Right;
         }
 
         public async void BeginSession()
@@ -95,11 +105,11 @@ namespace PathNav.ExperimentControl
 
             await CsvLogger.InitSceneDataLog(_logDirectory, _logFilePath);
 
-            _stageIndex = 0;
-            _trialIndex = 0;
+            _currentTrialStageIndex = 0;
+            _currentTrialCount = 0;
             _modelIndex = 0;
 
-            _currentTrial = _conditionBlock.GetCurrentTrial(_stageIndex);
+            _currentTrial = _conditionBlock.GetCurrentTrial(_currentTrialStageIndex);
 
             _trialState = TrialState.Tutorial;
 
@@ -120,12 +130,13 @@ namespace PathNav.ExperimentControl
         private void InitSceneData()
         {
             _sceneData.TRIAL_TYPE = _currentTrial.GetTrialTypeString();
-            _sceneData.TRIAL_ID   = _trialIndex;
+            _sceneData.TRIAL_ID   = _currentTrialCount;
             _sceneData.SCENE_ID   = GetSceneId();
+
             _sceneData.METHOD = _currentTrial.trialType == TrialType.PathCreation
                 ? _currentTrial.GetPathStrategyString()
                 : _currentTrial.GetLocomotionDofString();
-            _sceneData.MODEL            = _conditionBlock.GetCurrentModel(_stageIndex, _modelIndex).Id;
+            _sceneData.MODEL            = _conditionBlock.GetCurrentModel(_currentTrialStageIndex, _modelIndex).Id;
             _sceneData.ACTIONS_TOTAL    = -99;
             _sceneData.ACTIONS_EDIT     = -99;
             _sceneData.TASK_TIME_TOTAL  = -99;
@@ -153,7 +164,7 @@ namespace PathNav.ExperimentControl
         #region Spline
         public void SaveSplineComputer(SplineComputer splineToSave)
         {
-            switch (_conditionBlock.GetCurrentModel(_stageIndex, _modelIndex).Id)
+            switch (_conditionBlock.GetCurrentModel(_currentTrialStageIndex, _modelIndex).Id)
             {
                 case "Model_A":
                     switch (_currentTrial.pathStrategy)
@@ -220,14 +231,14 @@ namespace PathNav.ExperimentControl
 
         public SplineComputer GetSavedSplineComputer()
         {
-            _savedModel = _conditionBlock.GetCurrentModel(_stageIndex, _modelIndex);
+            _savedModel = _conditionBlock.GetCurrentModel(_currentTrialStageIndex, _modelIndex);
 
             _savedSpline = _savedModel.Id switch
                            {
-                               "Model_A" => _trialIndex % 2 == 0 ? _drawingModelASpline : _interpolationModelASpline,
-                               "Model_B" => _trialIndex % 2 == 0 ? _drawingModelBSpline : _interpolationModelBSpline,
-                               "Model_C" => _trialIndex % 2 == 0 ? _drawingModelCSpline : _interpolationModelCSpline,
-                               "Model_D" => _trialIndex % 2 == 0 ? _drawingModelDSpline : _interpolationModelDSpline,
+                               "Model_A" => _currentTrialCount % 2 == 0 ? _drawingModelASpline : _interpolationModelASpline,
+                               "Model_B" => _currentTrialCount % 2 == 0 ? _drawingModelBSpline : _interpolationModelBSpline,
+                               "Model_C" => _currentTrialCount % 2 == 0 ? _drawingModelCSpline : _interpolationModelCSpline,
+                               "Model_D" => _currentTrialCount % 2 == 0 ? _drawingModelDSpline : _interpolationModelDSpline,
                                _         => throw new ArgumentOutOfRangeException(),
                            };
 
@@ -244,22 +255,36 @@ namespace PathNav.ExperimentControl
         public string        GetCreationMethodString()   => _currentTrial.GetPathStrategyString();
         public LocomotionDof GetNavigationMethod()       => _currentTrial.locomotionDof;
         public string        GetNavigationMethodString() => _currentTrial.GetLocomotionDofString();
-        public string        GetModel()                  => _conditionBlock.GetCurrentModel(_stageIndex, _modelIndex).Id;
+        public string        GetModel()                  => _conditionBlock.GetCurrentModel(_currentTrialStageIndex, _modelIndex).Id;
         public string        GetLogDirectory()           => _logDirectory;
         public string        GetActionLogFilePath()      => _logFilePathActions;
+        public Handedness    GetHandedness()             => _handedness;
+
+        public bool CreationTutorialActive()
+        {
+            if (_currentTrial.trialType != TrialType.PathCreation) return false;
+
+            return _trialState == TrialState.Tutorial;
+        }
 
         public string GetNavigationLogFilePath() => _logFilePathNavigation;
-        public string GetLogFilePath()           => _logFilePath;
         #endregion
 
         #region Scene Control
-        private void SetupTutorial()
+        private void SetupTutorialCreation()
         {
-            TutorialManager tutorialManager = FindObjectOfType<TutorialManager>();
-            tutorialManager.Enable();
+            TutorialCreation tutorialCreation = FindObjectOfType<TutorialCreation>();
+            tutorialCreation.Enable();
 
-            PathStrategy pathStrategy = _currentTrial.pathStrategy;
-            EventManager.Publish(EventId.SetPathStrategy, this, new SceneControlEventArgs(pathStrategy));
+            EventManager.Publish(EventId.SetPathStrategy, this, new SceneControlEventArgs(_currentTrial.pathStrategy, _handedness));
+        }
+
+        private void SetupTutorialNavigation()
+        {
+            TutorialNavigation tutorialNavigation = FindObjectOfType<TutorialNavigation>();
+            tutorialNavigation.Enable();
+
+            EventManager.Publish(EventId.SetLocomotionStrategy, this, new SceneControlEventArgs(_currentTrial.locomotionDof, _handedness));
         }
 
         private void SetupCreation()
@@ -274,8 +299,7 @@ namespace PathNav.ExperimentControl
             CreationManager creationManager = FindObjectOfType<CreationManager>();
             creationManager.Enable();
 
-            PathStrategy pathStrategy = _currentTrial.pathStrategy;
-            EventManager.Publish(EventId.SetPathStrategy, this, new SceneControlEventArgs(pathStrategy));
+            EventManager.Publish(EventId.SetPathStrategy, this, new SceneControlEventArgs(_currentTrial.pathStrategy, _handedness));
         }
 
         private void SetupNavigation()
@@ -285,8 +309,7 @@ namespace PathNav.ExperimentControl
             NavigationManager navigationManager = FindObjectOfType<NavigationManager>();
             navigationManager.Enable();
 
-            LocomotionDof locomotionDof = _currentTrial.locomotionDof;
-            EventManager.Publish(EventId.SetLocomotionStrategy, this, new SceneControlEventArgs(locomotionDof));
+            EventManager.Publish(EventId.SetLocomotionStrategy, this, new SceneControlEventArgs(_currentTrial.locomotionDof, _handedness));
 
             EventManager.Publish(EventId.EnableLocomotion, this, EventArgs.Empty);
         }
@@ -294,7 +317,7 @@ namespace PathNav.ExperimentControl
         internal void TutorialComplete()
         {
             _trialState = TrialState.Trial;
-            _trialIndex = 0;
+            _currentTrialCount = 0;
             _modelIndex = 0;
             LoadNextScene();
         }
@@ -309,26 +332,44 @@ namespace PathNav.ExperimentControl
         {
             await CsvLogger.LogSceneData(_sceneData);
             IncrementTrial();
-            
+        }
+
+        internal async void EndExperimentImmediately()
+        {
+            Task<bool> writeData = CsvLogger.LogSceneData(_sceneData);
+            bool       result    = await writeData;
+
+            if (!result) return;
+
+            Task<bool> endLog = CsvLogger.FinalizeDataLog();
+            result = await endLog;
+
+            if (!result) return;
+
+#if UNITY_EDITOR
+            UnityEditor.EditorApplication.isPlaying = false;
+#else
+            Application.Quit();
+#endif
         }
 
         private void IncrementTrial()
         {
-            _trialIndex++;
+            _currentTrialCount++;
 
-            if (_trialIndex < _trialCount)
+            if (_currentTrialCount < _totalTrialCount)
             {
                 _modelIndex++;
             }
             else
             {
-                _stageIndex++;
+                _currentTrialStageIndex++;
 
-                if (_stageIndex < _stageCount)
+                if (_currentTrialStageIndex < _totalTrialStages)
                 {
-                    _trialIndex   = 0;
+                    _currentTrialCount   = 0;
                     _modelIndex   = 0;
-                    _currentTrial = _conditionBlock.GetCurrentTrial(_stageIndex);
+                    _currentTrial = _conditionBlock.GetCurrentTrial(_currentTrialStageIndex);
                     _trialState   = TrialState.Tutorial;
                 }
                 else
@@ -337,14 +378,14 @@ namespace PathNav.ExperimentControl
                     return;
                 }
             }
-            
+
             LoadNextScene();
         }
 
         private string GetSceneId()
         {
             string trial = _currentTrial.GetTrialTypeString();
-            string model = _conditionBlock.GetCurrentModel(_stageIndex, _modelIndex).Id;
+            string model = _conditionBlock.GetCurrentModel(_currentTrialStageIndex, _modelIndex).Id;
 
             return $"{trial}_{model}";
         }
@@ -353,8 +394,8 @@ namespace PathNav.ExperimentControl
         {
             string sceneId = _currentTrial.trialType switch
                              {
-                                 TrialType.PathCreation   => _trialState == TrialState.Tutorial ? "Tutorial" : GetSceneId(),
-                                 TrialType.PathNavigation => _trialState == TrialState.Tutorial ? "TutorialNavigation" : GetSceneId(),
+                                 TrialType.PathCreation   => _trialState == TrialState.Tutorial ? "Creation_Tutorial" : GetSceneId(),
+                                 TrialType.PathNavigation => _trialState == TrialState.Tutorial ? "Navigation_Tutorial" : GetSceneId(),
                                  _                        => throw new ArgumentOutOfRangeException()
                              };
 
@@ -367,9 +408,15 @@ namespace PathNav.ExperimentControl
 
             if (_activeSceneName.Contains("Loading")) return;
 
-            if (_activeSceneName.Contains("Tutorial"))
+            if (_activeSceneName.Contains("Creation_Tutorial"))
             {
-                SetupTutorial();
+                SetupTutorialCreation();
+                return;
+            }
+
+            if (_activeSceneName.Contains("Navigation_Tutorial"))
+            {
+                SetupTutorialNavigation();
                 return;
             }
 
@@ -391,17 +438,26 @@ namespace PathNav.ExperimentControl
 
             yield return new WaitUntil(() => _activeSceneName == "Loading");
             yield return new WaitForSeconds(0.9f);
-            
-            AsyncOperation asyncLoad    = SceneManager.LoadSceneAsync(scene);
+
+            AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(scene);
+
             while (!asyncLoad.isDone)
             {
                 yield return null;
             }
         }
 
-        private void EndExperiment()
+        private async void EndExperiment()
         {
-            Debug.LogError("ExperimentEnded");
+            Task<bool> writeData = CsvLogger.FinalizeDataLog();
+            bool       result    = await writeData;
+
+            if (!result) return;
+#if UNITY_EDITOR
+            UnityEditor.EditorApplication.isPlaying = false;
+#else
+            Application.Quit();
+#endif
         }
         #endregion
 
@@ -418,9 +474,20 @@ namespace PathNav.ExperimentControl
     public class SceneControlEventArgs : EventArgs
     {
         public SceneControlEventArgs() { }
-        public SceneControlEventArgs(PathStrategy  strategy) => Strategy = strategy;
-        public SceneControlEventArgs(LocomotionDof locomotionDof) => LocomotionDof = locomotionDof;
 
+        public SceneControlEventArgs(PathStrategy strategy, Handedness handedness)
+        {
+            Handedness = handedness;
+            Strategy   = strategy;
+        }
+
+        public SceneControlEventArgs(LocomotionDof locomotionDof, Handedness handedness)
+        {
+            Handedness    = handedness;
+            LocomotionDof = locomotionDof;
+        }
+
+        public Handedness    Handedness    { get; }
         public LocomotionDof LocomotionDof { get; }
         public PathStrategy  Strategy      { get; }
     }

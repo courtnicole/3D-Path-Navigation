@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: Trial_FourDof
   m_EditorClassIdentifier: 
   trialId: FourDof
-  trialType: 0
+  trialType: 1
   pathStrategy: 0
   locomotionDof: 1
