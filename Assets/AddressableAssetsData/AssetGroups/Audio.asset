@@ -17,18 +17,13 @@ MonoBehaviour:
     m_SerializedData: []
   m_GUID: 04feb8eda238d8f43970c5abff0b12eb
   m_SerializeEntries:
-  - m_GUID: 33f85dad749de914ca04d80d564858c5
-    m_Address: delete_point
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - Audio_Tutorial_Creation
-  - m_GUID: 2b8e0dc27e080fe46b8ccc9be24b454d
-    m_Address: draw_path
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - Audio_Tutorial_Creation
   - m_GUID: 282156f694dd7ea4db4180e535e078fd
     m_Address: erase_path
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Audio_Tutorial_Creation
+  - m_GUID: 4a4ed48f381e4254eb8b6852e0fc6ab5
+    m_Address: place_start
     m_ReadOnly: 0
     m_SerializedLabels:
     - Audio_Tutorial_Creation
@@ -37,18 +32,23 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels:
     - Audio_Tutorial_Creation
-  - m_GUID: 6c0206c9260ae2c4cbc5bcc824443efe
-    m_Address: move_point
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - Audio_Tutorial_Creation
   - m_GUID: 6c9b3d628541fce4f91afa066cebca2e
     m_Address: place_point
     m_ReadOnly: 0
     m_SerializedLabels:
     - Audio_Tutorial_Creation
-  - m_GUID: 4a4ed48f381e4254eb8b6852e0fc6ab5
-    m_Address: place_start
+  - m_GUID: 6c0206c9260ae2c4cbc5bcc824443efe
+    m_Address: move_point
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Audio_Tutorial_Creation
+  - m_GUID: 2b8e0dc27e080fe46b8ccc9be24b454d
+    m_Address: draw_path
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Audio_Tutorial_Creation
+  - m_GUID: 33f85dad749de914ca04d80d564858c5
+    m_Address: delete_point
     m_ReadOnly: 0
     m_SerializedLabels:
     - Audio_Tutorial_Creation

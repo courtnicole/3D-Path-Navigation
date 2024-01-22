@@ -660,6 +660,83 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5dd1978a24bae5240b716fd9aa720fba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1001 &773095032
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 4020430242837848649, guid: bbae48afe2793594b9057d7bf83dcd5d, type: 3}
+      propertyPath: m_RootOrder
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4020430242837848649, guid: bbae48afe2793594b9057d7bf83dcd5d, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4020430242837848649, guid: bbae48afe2793594b9057d7bf83dcd5d, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4020430242837848649, guid: bbae48afe2793594b9057d7bf83dcd5d, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 5.995
+      objectReference: {fileID: 0}
+    - target: {fileID: 4020430242837848649, guid: bbae48afe2793594b9057d7bf83dcd5d, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 4020430242837848649, guid: bbae48afe2793594b9057d7bf83dcd5d, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4020430242837848649, guid: bbae48afe2793594b9057d7bf83dcd5d, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 4020430242837848649, guid: bbae48afe2793594b9057d7bf83dcd5d, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4020430242837848649, guid: bbae48afe2793594b9057d7bf83dcd5d, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4020430242837848649, guid: bbae48afe2793594b9057d7bf83dcd5d, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: -90
+      objectReference: {fileID: 0}
+    - target: {fileID: 4020430242837848649, guid: bbae48afe2793594b9057d7bf83dcd5d, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4020430242837848650, guid: bbae48afe2793594b9057d7bf83dcd5d, type: 3}
+      propertyPath: m_Name
+      value: Instructions
+      objectReference: {fileID: 0}
+    - target: {fileID: 4020430243856154175, guid: bbae48afe2793594b9057d7bf83dcd5d, type: 3}
+      propertyPath: m_Color.a
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4020430243856154175, guid: bbae48afe2793594b9057d7bf83dcd5d, type: 3}
+      propertyPath: m_Color.b
+      value: 0.4117647
+      objectReference: {fileID: 0}
+    - target: {fileID: 4020430243856154175, guid: bbae48afe2793594b9057d7bf83dcd5d, type: 3}
+      propertyPath: m_Color.g
+      value: 0.27450982
+      objectReference: {fileID: 0}
+    - target: {fileID: 4020430243856154175, guid: bbae48afe2793594b9057d7bf83dcd5d, type: 3}
+      propertyPath: m_Color.r
+      value: 0.09803922
+      objectReference: {fileID: 0}
+    - target: {fileID: 4020430244088673712, guid: bbae48afe2793594b9057d7bf83dcd5d, type: 3}
+      propertyPath: m_text
+      value: 'Press and hold the trigger button to place the start point. '
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: bbae48afe2793594b9057d7bf83dcd5d, type: 3}
 --- !u!1 &773567171
 GameObject:
   m_ObjectHideFlags: 0
@@ -1222,6 +1299,7 @@ MonoBehaviour:
   tooltipRendererRight: {fileID: 1787040540}
   drawingTooltip: {fileID: 11400000, guid: 1d9057ca403da2c4db1af35122f6a971, type: 2}
   interpolationTooltip: {fileID: 11400000, guid: d838040f6842fa444a6bcc2caf327deb, type: 2}
+  textMesh: {fileID: 0}
 --- !u!114 &1801213298
 MonoBehaviour:
   m_ObjectHideFlags: 0

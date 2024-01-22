@@ -8,6 +8,7 @@ namespace PathNav.ExperimentControl
     using System;
     using System.Collections.Generic;
     using System.Threading.Tasks;
+    using TMPro;
     using UnityEngine;
 
     public class TutorialCreation : MonoBehaviour
@@ -29,6 +30,7 @@ namespace PathNav.ExperimentControl
         [SerializeField] private DefaultTooltipRenderer tooltipRendererRight;
         [SerializeField] private DefaultTooltipRenderDataAsset drawingTooltip;
         [SerializeField] private DefaultTooltipRenderDataAsset interpolationTooltip;
+        [SerializeField] private TextMeshPro textMesh;
 
         private bool _enableTeleportation;
         private List<string> _audioMap;
@@ -37,6 +39,14 @@ namespace PathNav.ExperimentControl
         private int _audioIndex;
 
         private TutorialStage _stage;
+
+        private const string _placeStart = "Press and hold the trigger button to place the start point.";
+        private const string _drawPath = "Use the trigger button to draw a path.";
+        private const string _placePoint = "Use the plane and the controller to view points. Press the trigger button to create the point.";
+        private const string _deletePoint = "Hover over a point and press the yellow button to delete it.";
+        private const string _movePoint = "Hover over a point, then press and hold the trigger button to move it to a new location.";
+        private const string _erasePath = "Press and hold the yellow button to view the eraser. Use it to remove part of your path.";
+        private const string _finishPath = "When you are finished, press the green button to complete your path.";
 
         internal void Enable()
         {
@@ -117,6 +127,8 @@ namespace PathNav.ExperimentControl
                 default:
                     throw new ArgumentOutOfRangeException();
             }
+            
+            
         }
 
         private void HandleStage()
@@ -125,36 +137,43 @@ namespace PathNav.ExperimentControl
             {
                 case TutorialStage.Start:
                     PlayAudio();
+                    textMesh.text = _placeStart;
                     EventManager.Subscribe<PlacementEventArgs>(EventId.StartPointPlaced, StartPointPlaced);
                     break;
                 case TutorialStage.Create:
                     PlayAudio(0.5f);
                     if (ExperimentDataManager.Instance.GetCreationMethod() == PathStrategy.Bulldozer)
                     {
+                        textMesh.text = _drawPath;
                         EventManager.Subscribe<PathStrategyEventArgs>(EventId.DrawEnded, DrawEnded);
                     }
                     else
                     {
+                        textMesh.text = _placePoint;
                         EventManager.Subscribe<PathStrategyEventArgs>(EventId.PointPlaced, PointPlaced);
                     }
                     break;
                 case TutorialStage.Move:
                     PlayAudio(0.5f);
+                    textMesh.text = _movePoint;
                     EventManager.Subscribe<PathStrategyEventArgs>(EventId.MoveEnded, MoveEnded);
                     break;
                 case TutorialStage.Undo:
                     PlayAudio(0.5f);
                     if (ExperimentDataManager.Instance.GetCreationMethod() == PathStrategy.Bulldozer)
                     {
+                        textMesh.text = _erasePath;
                         EventManager.Subscribe<PathStrategyEventArgs>(EventId.EraseToggleOff, EraseEnded);
                     }
                     else
                     {
+                        textMesh.text = _deletePoint;
                         EventManager.Subscribe<PathStrategyEventArgs>(EventId.PointDeleted, PointDeleted);
                     }
                     break;
                 case TutorialStage.Finish:
                     PlayAudio(0.5f);
+                    textMesh.text = _finishPath;
                     EventManager.Publish(EventId.AllowPathCompletion, this, new SceneControlEventArgs());
                     EventManager.Subscribe<SegmentEventArgs>(EventId.SegmentComplete, SplineComplete);
                     break;
