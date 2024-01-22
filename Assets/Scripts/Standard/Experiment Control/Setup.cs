@@ -3,6 +3,8 @@ namespace  PathNav.ExperimentControl
     using global::ExperimentControl;
     using TMPro;
     using UnityEngine;
+    using UnityEngine.XR.OpenXR.Samples.ControllerSample;
+
     public class Setup : MonoBehaviour
     {
         [SerializeField] private TMP_Text userIdText;

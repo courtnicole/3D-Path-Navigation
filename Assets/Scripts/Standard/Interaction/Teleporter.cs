@@ -83,7 +83,7 @@ namespace PathNav.Interaction
             trackingOriginTransform.position = targetPoint + playerOffset.FlattenY();
         }
 
-        private void TeleportAndRotatePlayer(Transform teleportPointVector)
+        private void TeleportAndRotatePlayer(Transform teleportMarker)
         {
             Vector3    cameraForward = cameraTransform.forward;
             Quaternion originRot     = trackingOriginTransform.rotation;
@@ -91,10 +91,10 @@ namespace PathNav.Interaction
             Quaternion rotateHead    = _additionalTeleportRotation;
 
             Quaternion headRotationOnGround = Quaternion.LookRotation(Vector3.ProjectOnPlane(cameraForward, originUp), originUp);
-            rotateHead = Quaternion.Inverse(headRotationOnGround) * teleportPointVector.rotation * rotateHead;
+            rotateHead = Quaternion.Inverse(headRotationOnGround) * teleportMarker.rotation * rotateHead;
 
             Vector3    headVector     = OffsetFromTrackingOrigin;
-            Vector3    targetPosition = teleportPointVector.position - (rotateHead * headVector);
+            Vector3    targetPosition = teleportMarker.position - (rotateHead * headVector);
             Quaternion targetRotation = originRot * rotateHead;
 
             trackingOriginTransform.position = targetPosition;

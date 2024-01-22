@@ -670,6 +670,13 @@ namespace Dreamteck.Splines {
                 _sampleCount = 0;
                 return;
             }
+            
+            if (spline.pointCount == 0)
+            {
+                _sampleCollection.samples = new SplineSample[0];
+                _sampleCount              = 0;
+                return;
+            }
 
             _spline.GetSamples(_sampleCollection);
             if(_clipFrom != 0.0)

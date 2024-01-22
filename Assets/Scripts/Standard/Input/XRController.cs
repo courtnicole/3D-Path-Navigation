@@ -42,22 +42,22 @@ namespace PathNav.Input
         #endregion
 
         #region Implementation of IController
-        public Transform Transform => controllerPose.transform;
-        public ControllerInfo ControllerInfo => controllerInfo;
-        public Vector3 Position => controllerPose.transform.position;
-        public Quaternion Rotation => controllerPose.transform.rotation;
-        public Vector3 Forward => Rotation * Vector3.forward;
-        public Vector3 Up => Rotation      * Vector3.up;
-        public Vector3 PointerPosition => pointerPose.transform.position;
-        public Quaternion PointerRotation => pointerPose.transform.rotation;
-        public Vector3 PointerForward => pointerPose.transform.forward;
-        public Vector3 PointerUp => PointerRotation      * Vector3.up;
-        public Vector2 TouchPose { get; private set; }
-        public Vector2 TouchPoseDelta { get; private set; }
-        public Vector2 JoystickPose { get; private set; }
-        public Vector2 JoystickPoseDelta { get; private set; }
-        public Transform AttachmentPoint => attachmentPoint.transform;
-        public Bounds CollisionBounds => eraserCollider.bounds;
+        public Transform      Transform         => controllerPose.transform;
+        public ControllerInfo ControllerInfo    => controllerInfo;
+        public Vector3        Position          => controllerPose.transform.position;
+        public Quaternion     Rotation          => controllerPose.transform.rotation;
+        public Vector3        Forward           => Rotation * Vector3.forward;
+        public Vector3        Up                => Rotation * Vector3.up;
+        public Vector3        PointerPosition   => pointerPose.transform.position;
+        public Quaternion     PointerRotation   => pointerPose.transform.rotation;
+        public Vector3        PointerForward    => PointerRotation * Vector3.forward;
+        public Vector3        PointerUp         => PointerRotation * Vector3.up;
+        public Vector2        TouchPose         { get; private set; }
+        public Vector2        TouchPoseDelta    { get; private set; }
+        public Vector2        JoystickPose      { get; private set; }
+        public Vector2        JoystickPoseDelta { get; private set; }
+        public Transform      AttachmentPoint   => attachmentPoint.transform;
+        public Bounds         CollisionBounds   => eraserCollider.bounds;
 
         public InputDevice InputDevice =>
             hand == Hand.Left ? UnityEngine.InputSystem.XR.XRController.leftHand : UnityEngine.InputSystem.XR.XRController.rightHand;

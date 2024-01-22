@@ -16,7 +16,13 @@ namespace PathNav.SceneManagement
         public void RecordValue()
         {
             IEnumerable<Toggle> toggles = toggleGroup.ActiveToggles();
-            _value = int.Parse(toggles.First().name);
+            
+            if (toggles is null) return;
+
+            toggles = toggles.ToList();
+
+            if(toggles.Any()) 
+                _value    = int.Parse(toggles.First().name);
         }
 
         public void RecordResponse()

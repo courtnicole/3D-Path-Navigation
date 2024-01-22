@@ -8,6 +8,7 @@ namespace PathNav.Patterns.FSM
     {
         private float _elapsedTime;
         private float _currentVelocity;
+        private float _direction;
 
         private Vector3 _travelDirection;
         private float _vertical;
@@ -18,7 +19,7 @@ namespace PathNav.Patterns.FSM
             entity.OnLocomotionStart();
 
             _elapsedTime     = 0;
-            _currentVelocity = entity.MinVelocity;
+            _currentVelocity = entity.dof == LocomotionDof.FourDoF ? entity.follower.followSpeed : 0;
             _travelDirection = Vector3.zero;
             _vertical        = 0;
             _shift           = Vector3.zero;
@@ -33,6 +34,8 @@ namespace PathNav.Patterns.FSM
                     break;
                 case LocomotionDof.SixDof:
                     Update6DoF(entity);
+                    break;
+                case LocomotionDof.None:
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -52,45 +55,48 @@ namespace PathNav.Patterns.FSM
                 default:
                     throw new ArgumentOutOfRangeException();
             }
+
             entity.OnLocomotionUpdate();
         }
 
         public void Exit(T entity)
         {
-            _currentVelocity = 0;
-            if (entity.dof == LocomotionDof.FourDoF)
-                entity.follower.followSpeed = entity.MinVelocity;
-
-            entity.ClearActiveController();
+            entity.ClearActiveMotionController();
+            entity.ClearActiveVerticalController();
             entity.OnLocomotionEnd();
         }
 
         private void Update4DoF(T entity)
         {
             _elapsedTime     += Time.deltaTime;
-            _currentVelocity =  Mathf.Lerp(entity.MinVelocity, entity.MaxVelocity, entity.Acceleration * _elapsedTime);
+            _direction       =  entity.InputPose.y > 0 ? 1 : -1;
+            _currentVelocity =  Mathf.Clamp(_currentVelocity + (_direction * entity.Acceleration) * Time.deltaTime, entity.MinVelocity, entity.MaxVelocity);
         }
 
         private void Update6DoF(T entity)
         {
             _elapsedTime += Time.deltaTime;
-
-            if (entity.useVerticalShift)
+            
+            if (entity.ShouldUseVertical)
             {
-                _vertical = Vector3.Angle(entity.VerticalShift, Vector3.forward);
-                _vertical = Map(0, 180, 0, 0.8f, _vertical);
-
-                if (Vector3.Cross(entity.VerticalShift, Vector3.forward).y < 0)
-                    _vertical = -_vertical;
+                _vertical = Vector3.Angle(entity.VerticalShift, Vector3.up);
+                if (_vertical is < 95 and > 85)
+                {
+                    _vertical = 0;
+                    return;
+                }
+                _vertical = Map(0.0f, 180.0f, 1.0f, -1.0f, _vertical);
             }
             else
             {
                 _vertical = 0;
             }
-
-            _travelDirection = new Vector3(entity.InputPose.x, _vertical, entity.InputPose.y).normalized;
-            _currentVelocity = Mathf.Lerp(entity.MinVelocity, entity.MaxVelocity, entity.Acceleration * _elapsedTime);
-            _shift           = _travelDirection * (_currentVelocity * Time.deltaTime);
+            
+            _travelDirection   = new Vector3(entity.InputPose.x, 0, entity.InputPose.y);
+            _travelDirection   = entity.CameraTransform.TransformDirection(_travelDirection);
+            _travelDirection.y = _vertical;
+            _currentVelocity   = Mathf.Clamp(_currentVelocity + (entity.Acceleration * Time.deltaTime), entity.MinVelocity, entity.MaxVelocity);
+            _shift             = _travelDirection * (_currentVelocity * Time.deltaTime);
         }
 
         private void Shift4DoF(T entity)
@@ -100,9 +106,10 @@ namespace PathNav.Patterns.FSM
 
         private void Shift6DoF(T entity)
         {
+            entity.follower.followSpeed     =  _currentVelocity;
             entity.PlayerTransform.position += _shift;
         }
 
-        private float Map(float a1, float a2, float b1, float b2, float s) => b1 + (s - a1) * (b2 - b1) / (a2 - a1);
+        private static float Map(float a1, float a2, float b1, float b2, float s) => b1 + (s - a1) * (b2 - b1) / (a2 - a1);
     }
 }

@@ -50,13 +50,11 @@ namespace PathNav.ExperimentControl
         #region Event Callbacks
         private void SplineComplete(object sender, SegmentEventArgs args)
         {
-            Debug.Log("Ending Finish Stage");
             EventManager.Unsubscribe<SegmentEventArgs>(EventId.SegmentComplete, SplineComplete);
             EndTutorial();
         }
         private void StartPointPlaced(object sender, PlacementEventArgs args)
         {
-            Debug.Log("Ending Start Stage");
             EventManager.Unsubscribe<PlacementEventArgs>(EventId.StartPointPlaced, StartPointPlaced);
             _stage = TutorialStage.Create;
             _audioIndex++;
@@ -64,7 +62,6 @@ namespace PathNav.ExperimentControl
         }
         private void PointPlaced(object sender, PathStrategyEventArgs args)
         {
-            Debug.Log("Ending Create Stage, Spatula");
             EventManager.Unsubscribe<PathStrategyEventArgs>(EventId.PointPlaced, PointPlaced);
             _stage = TutorialStage.Move;
             _audioIndex++;
@@ -72,7 +69,6 @@ namespace PathNav.ExperimentControl
         }
         private void DrawEnded(object sender, PathStrategyEventArgs args)
         {
-            Debug.Log("Ending Create Stage, Drawing");
             EventManager.Unsubscribe<PathStrategyEventArgs>(EventId.DrawEnded, DrawEnded);
             _stage = TutorialStage.Undo;
             _audioIndex++;
@@ -80,7 +76,6 @@ namespace PathNav.ExperimentControl
         }
         private void MoveEnded(object sender, PathStrategyEventArgs args)
         {
-            Debug.Log("Ending Move Stage");
             EventManager.Unsubscribe<PathStrategyEventArgs>(EventId.MoveEnded, MoveEnded);
             _stage = TutorialStage.Undo;
             _audioIndex++;
@@ -88,7 +83,6 @@ namespace PathNav.ExperimentControl
         }
         private void PointDeleted(object sender, PathStrategyEventArgs args)
         {
-            Debug.Log("Ending Undo Stage, Spatula");
             EventManager.Unsubscribe<PathStrategyEventArgs>(EventId.PointDeleted, PointDeleted);
             _stage = TutorialStage.Finish;
             _audioIndex++;
@@ -96,7 +90,6 @@ namespace PathNav.ExperimentControl
         }
         private void EraseEnded(object sender, PathStrategyEventArgs args)
         {
-            Debug.Log("Ending Undo Stage, Drawing");
             EventManager.Unsubscribe<PathStrategyEventArgs>(EventId.EraseToggleOff, EraseEnded);
             _stage = TutorialStage.Finish;
             _audioIndex++;
@@ -172,6 +165,11 @@ namespace PathNav.ExperimentControl
 
         private async void EndTutorial()
         {
+            while (AudioManager.IsPlaying)
+            {
+                await Task.Yield();
+            }
+            
             await Task.Delay(100);
 
             overlay.FadeToBlack();

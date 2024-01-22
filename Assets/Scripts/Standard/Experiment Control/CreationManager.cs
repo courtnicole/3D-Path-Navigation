@@ -7,6 +7,7 @@ namespace PathNav.ExperimentControl
     using System.Collections.Generic;
     using System.Threading.Tasks;
     using UnityEngine;
+    using UnityEngine.XR.OpenXR.Samples.ControllerSample;
 
     public class CreationManager : MonoBehaviour
     {
@@ -69,6 +70,8 @@ namespace PathNav.ExperimentControl
 
         private void SplineComplete(object sender, SegmentEventArgs args)
         {
+            ActionAssetEnabler actionController = FindObjectOfType<ActionAssetEnabler>();
+            actionController.EnableUiInput();
             seq.SetActive(true);
             pointerLeft.Enable();
             pointerRight.Enable();

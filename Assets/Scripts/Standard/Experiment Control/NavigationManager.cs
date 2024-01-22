@@ -13,22 +13,32 @@ namespace PathNav.ExperimentControl
     using System.IO;
     using System.Threading.Tasks;
     using UnityEngine;
+    using UnityEngine.Animations;
+    using UnityEngine.XR.OpenXR.Samples.ControllerSample;
+    using Debug = UnityEngine.Debug;
 
     public class NavigationManager : MonoBehaviour
     {
         [SerializeField] private List<AudioClipMap> audioMap;
         [SerializeField] private SplineComputer targetSpline;
         [SerializeField] private SplineFollower follower;
+        [SerializeField] private SplineProjector projector;
         [SerializeField] private Transform playerTransform;
+        [SerializeField] private Transform teleportLocation;
+        [SerializeField] private Teleporter teleporter;
+        [SerializeField] private ParentConstraint parentConstraint;
         [SerializeField] private GameObject discomfortScore;
         [SerializeField] private GameObject seq;
         [SerializeField] private Overlay overlay;
         [SerializeField] private PointerEvaluator pointerLeft;
         [SerializeField] private PointerEvaluator pointerRight;
+        [SerializeField] private NavigationEndPoint endPoint;
 
         private SplineComputer _splineComputer;
+        private SplinePoint[] _spline;
         private Vector3 _deltaTranslation;
         private float _deltaScale;
+        private LocomotionDof _locomotionDof;
 
         private Stopwatch _taskTimerTotal;
         private NavigationDataFormat _navigationData;
@@ -40,13 +50,8 @@ namespace PathNav.ExperimentControl
         internal void Enable()
         {
             _taskTimerTotal = new Stopwatch();
-            _taskTimerTotal.Start();
-
-            _recordData = true;
+            _locomotionDof  = ExperimentDataManager.Instance.GetNavigationMethod();
             
-            InitializeDataLogging();
-            SetSpline();
-            SubscribeToEvents();
             StartNavigation();
         }
 
@@ -93,9 +98,23 @@ namespace PathNav.ExperimentControl
 
         public void OnEndReached()
         {
+            if (_locomotionDof != LocomotionDof.FourDoF) return;
+            NavigationComplete();
+        }
+
+        public void OnEndCollision()
+        {
+            if (_locomotionDof != LocomotionDof.SixDof) return;
+            NavigationComplete();
+        }
+
+        private void NavigationComplete()
+        {
             _taskTimerTotal.Stop();
             EventManager.Publish(EventId.SplineNavigationComplete, this, GetSceneControlEventArgs());
             ExperimentDataManager.Instance.RecordNavigationData(_taskTimerTotal.Elapsed);
+            ActionAssetEnabler actionController = FindObjectOfType<ActionAssetEnabler>();
+            actionController.EnableUiInput();
             discomfortScore.SetActive(true);
             pointerLeft.Enable();
             pointerRight.Enable();
@@ -105,9 +124,28 @@ namespace PathNav.ExperimentControl
         #region Logic
         private async void StartNavigation()
         {
-            await Task.Delay(600);
+            InitializeDataLogging();
+            await Task.Delay(10);
+            
+            SetSpline();
+            await Task.Delay(50);
+            
+            SubscribeToEvents();
+            await Task.Delay(10);
+            
+            SetupNavigation();
+            await Task.Delay(500);
 
+            follower.followSpeed              = 0;
+            parentConstraint.constraintActive = _locomotionDof == LocomotionDof.FourDoF;
+            follower.follow                   = _locomotionDof == LocomotionDof.FourDoF;
+            
             overlay.FadeToClear();
+
+            await Task.Delay(1000);
+            
+            _taskTimerTotal.Start();
+            _recordData = true;
         }
 
         private async void EndNavigation()
@@ -125,10 +163,10 @@ namespace PathNav.ExperimentControl
         {
             if (ExperimentDataManager.Instance != null)
             {
-                _splineComputer   = ExperimentDataManager.Instance.GetSavedSplineComputer();
+                _spline           = ExperimentDataManager.Instance.GetSavedSpline();
                 _deltaTranslation = ExperimentDataManager.Instance.GetSplineModel().Translation;
                 _deltaScale       = ExperimentDataManager.Instance.GetSplineModel().Scale;
-
+                
                 SetupSpline();
             }
             else
@@ -139,7 +177,7 @@ namespace PathNav.ExperimentControl
 
         private void SetupSpline()
         {
-            SplinePoint[] points         = _splineComputer.GetPoints();
+            SplinePoint[] points         = _spline;
             var           newPoints      = new SplinePoint[points.Length];
             var           pointPositions = new Vector3[points.Length];
 
@@ -147,7 +185,7 @@ namespace PathNav.ExperimentControl
             {
                 Vector3 newPose = points[i].position;
                 newPose           += _deltaTranslation;
-                newPose           *= _deltaScale;
+                newPose           /= _deltaScale;
                 pointPositions[i] =  newPose;
 
                 SplinePoint pt = new()
@@ -179,6 +217,38 @@ namespace PathNav.ExperimentControl
             ExperimentDataManager.Instance.RecordDiscomfortScore(10);
             ExperimentDataManager.Instance.EndExperimentImmediately();
         }
+        
+        private bool CheckTeleportation()
+        {
+            if (teleportLocation is not null)
+            {
+                if (teleporter is null)
+                {
+                    teleporter = FindObjectOfType<Teleporter>();
+
+                    if (teleporter is null)
+                    {
+                        Debug.LogError("Teleporter not found in scene!");
+                    }
+                }
+            }
+
+            return (teleporter is not null) && (teleportLocation is not null);
+        }
+
+        private void SetupNavigation()
+        {
+            if (!CheckTeleportation()) return;
+
+            SplineSample sample = follower.spline.Evaluate(0);
+            teleportLocation.position = sample.position + new Vector3(0, 1.5f, 0);
+            teleportLocation.forward  = sample.forward;
+            teleporter.Teleport(teleportLocation);
+            
+            sample = follower.spline.Evaluate(follower.spline.pointCount - 1);
+            endPoint.Place(sample.position);
+        }
+
         #endregion
 
         #region Data Logging
@@ -215,8 +285,8 @@ namespace PathNav.ExperimentControl
         private void RecordData()
         {
             _navigationData.SPEED           = follower.followSpeed;
-            _navigationData.SPLINE_POSITION = follower.result.position.ToString("F3");
-            _navigationData.SPLINE_PERCENT  = follower.result.percent;
+            _navigationData.SPLINE_POSITION = _locomotionDof == LocomotionDof.FourDoF ? follower.result.position.ToString("F3") : projector.result.position.ToString("F3");
+            _navigationData.SPLINE_PERCENT  = _locomotionDof == LocomotionDof.FourDoF ? follower.result.percent : projector.result.percent;
             _navigationData.POSITION        = playerTransform.position.ToString("F3");
             _navigationData.ROTATION        = playerTransform.rotation.ToString("F3");
             _navigationData.TIMESTAMP       = DateTime.Now;

@@ -683,16 +683,16 @@ MonoBehaviour:
   m_MoveRepeatRate: 0.1
   m_XRTrackingOrigin: {fileID: 8572805119614256447}
   m_ActionsAsset: {fileID: -944628639613478452, guid: ee35e82046ad68046b8d163c1260e4dd, type: 3}
-  m_PointAction: {fileID: -1779664736396563241, guid: ee35e82046ad68046b8d163c1260e4dd, type: 3}
+  m_PointAction: {fileID: 2458308475770255700, guid: ee35e82046ad68046b8d163c1260e4dd, type: 3}
   m_MoveAction: {fileID: 0}
   m_SubmitAction: {fileID: -350286837237437779, guid: ee35e82046ad68046b8d163c1260e4dd, type: 3}
   m_CancelAction: {fileID: 0}
-  m_LeftClickAction: {fileID: -350286837237437779, guid: ee35e82046ad68046b8d163c1260e4dd, type: 3}
+  m_LeftClickAction: {fileID: -5761854198669327222, guid: ee35e82046ad68046b8d163c1260e4dd, type: 3}
   m_MiddleClickAction: {fileID: 0}
   m_RightClickAction: {fileID: 0}
   m_ScrollWheelAction: {fileID: 0}
   m_TrackedDevicePositionAction: {fileID: 0}
-  m_TrackedDeviceOrientationAction: {fileID: -8421002263114211277, guid: ee35e82046ad68046b8d163c1260e4dd, type: 3}
+  m_TrackedDeviceOrientationAction: {fileID: 0}
   m_DeselectOnBackgroundClick: 1
   m_PointerBehavior: 0
   m_CursorLockBehavior: 0
@@ -1918,10 +1918,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   conditionBlocks:
-  - {fileID: 11400000, guid: 49e9f96d1a9bc424388553081f7a43eb, type: 2}
-  - {fileID: 11400000, guid: 1e362c0f1a9c68b40899022b3d36d62c, type: 2}
-  - {fileID: 11400000, guid: ddde54d829f9dbf4db97ae52f2e2e72c, type: 2}
-  - {fileID: 11400000, guid: bc57b9ed207ea69418803b805973561c, type: 2}
+  - {fileID: 11400000, guid: fe3f9c38c00d4174aa72a3736900fd2f, type: 2}
+  - {fileID: 11400000, guid: fe3f9c38c00d4174aa72a3736900fd2f, type: 2}
+  - {fileID: 11400000, guid: fe3f9c38c00d4174aa72a3736900fd2f, type: 2}
+  - {fileID: 11400000, guid: fe3f9c38c00d4174aa72a3736900fd2f, type: 2}
 --- !u!1 &860788557
 GameObject:
   m_ObjectHideFlags: 0
@@ -3183,6 +3183,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8572805119614256447}
+  - component: {fileID: 8572805119614256448}
   m_Layer: 0
   m_Name: Rig
   m_TagString: Untagged
@@ -3395,3 +3396,16 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8572805119614256448
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3091544934497561761}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b90eaae8ee7f6bf46be1c8ad060bd48d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  actionAsset: {fileID: -944628639613478452, guid: ee35e82046ad68046b8d163c1260e4dd, type: 3}

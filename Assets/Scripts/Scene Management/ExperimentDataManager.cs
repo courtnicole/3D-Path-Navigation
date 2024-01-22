@@ -9,6 +9,7 @@ namespace PathNav.ExperimentControl
     using SceneManagement;
     using System;
     using System.Collections;
+    using System.Collections.Generic;
     using System.Threading.Tasks;
     using UnityEngine;
     using UnityEngine.SceneManagement;
@@ -26,21 +27,22 @@ namespace PathNav.ExperimentControl
         private static UserInfo _userInfo;
         public static ExperimentDataManager Instance { get; private set; }
 
-        private static SplineComputer _drawingModelASpline;
-        private static SplineComputer _drawingModelBSpline;
-        private static SplineComputer _drawingModelCSpline;
-        private static SplineComputer _drawingModelDSpline;
+        private static SplinePoint[] _drawingModelASpline;
+        private static SplinePoint[] _drawingModelBSpline;
+        private static SplinePoint[] _drawingModelCSpline;
+        private static SplinePoint[] _drawingModelDSpline;
 
-        private static SplineComputer _interpolationModelASpline;
-        private static SplineComputer _interpolationModelBSpline;
-        private static SplineComputer _interpolationModelCSpline;
-        private static SplineComputer _interpolationModelDSpline;
+        private static SplinePoint[] _interpolationModelASpline;
+        private static SplinePoint[] _interpolationModelBSpline;
+        private static SplinePoint[] _interpolationModelCSpline;
+        private static SplinePoint[] _interpolationModelDSpline;
 
-        private static SplineComputer _savedSpline;
+        private static SplinePoint[] _savedSpline;
         private static Model _savedModel;
 
         private static int _userId;
         private static Handedness _handedness;
+        private static bool _useSplineFile;
 
         private static TrialState _trialState;
         private static Trial _currentTrial;
@@ -51,6 +53,8 @@ namespace PathNav.ExperimentControl
         private static string _logFilePath;
         private static string _logFilePathActions;
         private static string _logFilePathNavigation;
+        private static string _logDirectorySpline;
+        private static string _logFilePathSpline;
 
         //trialCount
         private static int _currentTrialCount;
@@ -84,6 +88,8 @@ namespace PathNav.ExperimentControl
             _userInfo       = new UserInfo(id);
             _userId         = _userInfo.UserId;
             _conditionBlock = conditionBlocks[_userInfo.BlockId];
+
+            _logDirectorySpline = $"{_logDirectory}{_userId}_splines/";
         }
 
         public void RecordHandedness(bool useLeftHand)
@@ -164,16 +170,19 @@ namespace PathNav.ExperimentControl
         #region Spline
         public void SaveSplineComputer(SplineComputer splineToSave)
         {
+            if(_trialState != TrialState.Trial) return;
             switch (_conditionBlock.GetCurrentModel(_currentTrialStageIndex, _modelIndex).Id)
             {
                 case "Model_A":
                     switch (_currentTrial.pathStrategy)
                     {
                         case PathStrategy.Bulldozer:
-                            _drawingModelASpline = splineToSave;
+                            _drawingModelASpline = splineToSave.GetPoints();
+                            _logFilePathSpline   = $"{_logDirectorySpline}drawing_A.csv";
                             break;
                         case PathStrategy.Spatula:
-                            _interpolationModelASpline = splineToSave;
+                            _interpolationModelASpline = splineToSave.GetPoints();
+                            _logFilePathSpline         = $"{_logDirectorySpline}interpolating_A.csv";
                             break;
                         case PathStrategy.None:
                         default:
@@ -185,10 +194,12 @@ namespace PathNav.ExperimentControl
                     switch (_currentTrial.pathStrategy)
                     {
                         case PathStrategy.Bulldozer:
-                            _drawingModelBSpline = splineToSave;
+                            _drawingModelBSpline = splineToSave.GetPoints();
+                            _logFilePathSpline   = $"{_logDirectorySpline}drawing_B.csv";
                             break;
                         case PathStrategy.Spatula:
-                            _interpolationModelBSpline = splineToSave;
+                            _interpolationModelBSpline = splineToSave.GetPoints();
+                            _logFilePathSpline         = $"{_logDirectorySpline}interpolating_B.csv";
                             break;
                         case PathStrategy.None:
                         default:
@@ -200,10 +211,12 @@ namespace PathNav.ExperimentControl
                     switch (_currentTrial.pathStrategy)
                     {
                         case PathStrategy.Bulldozer:
-                            _drawingModelCSpline = splineToSave;
+                            _drawingModelCSpline = splineToSave.GetPoints();
+                            _logFilePathSpline   = $"{_logDirectorySpline}drawing_C.csv";
                             break;
                         case PathStrategy.Spatula:
-                            _interpolationModelCSpline = splineToSave;
+                            _interpolationModelCSpline = splineToSave.GetPoints();
+                            _logFilePathSpline         = $"{_logDirectorySpline}interpolating_C.csv";
                             break;
                         case PathStrategy.None:
                         default:
@@ -215,10 +228,12 @@ namespace PathNav.ExperimentControl
                     switch (_currentTrial.pathStrategy)
                     {
                         case PathStrategy.Bulldozer:
-                            _drawingModelDSpline = splineToSave;
+                            _drawingModelDSpline = splineToSave.GetPoints();
+                            _logFilePathSpline   = $"{_logDirectorySpline}drawing_D.csv";
                             break;
                         case PathStrategy.Spatula:
-                            _interpolationModelDSpline = splineToSave;
+                            _interpolationModelDSpline = splineToSave.GetPoints();
+                            _logFilePathSpline         = $"{_logDirectorySpline}interpolating_D.csv";
                             break;
                         case PathStrategy.None:
                         default:
@@ -227,20 +242,45 @@ namespace PathNav.ExperimentControl
 
                     break;
             }
+            
+            WriteSpline(splineToSave.GetPoints());
         }
 
-        public SplineComputer GetSavedSplineComputer()
+        private static async void WriteSpline(IEnumerable<SplinePoint> splinePoints)
+        {
+            await CsvLogger.LogSpline(_logDirectorySpline, _logFilePathSpline, splinePoints);
+        }
+
+        public SplinePoint[] GetSavedSpline()
         {
             _savedModel = _conditionBlock.GetCurrentModel(_currentTrialStageIndex, _modelIndex);
+            Debug.Log(_savedModel.Id);
 
-            _savedSpline = _savedModel.Id switch
-                           {
-                               "Model_A" => _currentTrialCount % 2 == 0 ? _drawingModelASpline : _interpolationModelASpline,
-                               "Model_B" => _currentTrialCount % 2 == 0 ? _drawingModelBSpline : _interpolationModelBSpline,
-                               "Model_C" => _currentTrialCount % 2 == 0 ? _drawingModelCSpline : _interpolationModelCSpline,
-                               "Model_D" => _currentTrialCount % 2 == 0 ? _drawingModelDSpline : _interpolationModelDSpline,
-                               _         => throw new ArgumentOutOfRangeException(),
-                           };
+            if (_useSplineFile)
+            {
+                string splineFile = _savedModel.Id switch
+                                    {
+                                        "Model_A" => _currentTrialCount % 2 == 0 ? $"{_logDirectorySpline}drawing_A.csv" : $"{_logDirectorySpline}interpolating_A.csv",
+                                        "Model_B" => _currentTrialCount % 2 == 0 ? $"{_logDirectorySpline}drawing_B.csv" : $"{_logDirectorySpline}interpolating_B.csv",
+                                        "Model_C" => _currentTrialCount % 2 == 0 ? $"{_logDirectorySpline}drawing_C.csv" : $"{_logDirectorySpline}interpolating_C.csv",
+                                        "Model_D" => _currentTrialCount % 2 == 0 ? $"{_logDirectorySpline}drawing_D.csv" : $"{_logDirectorySpline}interpolating_D.csv",
+                                        _         => throw new ArgumentOutOfRangeException(),
+                                    };
+                SplinePoint[] splinePoints = CsvLogger.ReadSpline(splineFile);
+                _savedSpline = splinePoints;
+            }
+            else {
+                _savedSpline = _savedModel.Id switch
+                               {
+                                   "Model_A" => _currentTrialCount % 2 == 0 ? _drawingModelASpline : _interpolationModelASpline,
+                                   "Model_B" => _currentTrialCount % 2 == 0 ? _drawingModelBSpline : _interpolationModelBSpline,
+                                   "Model_C" => _currentTrialCount % 2 == 0 ? _drawingModelCSpline : _interpolationModelCSpline,
+                                   "Model_D" => _currentTrialCount % 2 == 0 ? _drawingModelDSpline : _interpolationModelDSpline,
+                                   _         => throw new ArgumentOutOfRangeException(),
+                               };
+            }
+            
+            Debug.Log(_savedSpline.Length);
 
             return _savedSpline;
         }

@@ -1,5 +1,6 @@
 namespace PathNav.ExperimentControl
 {
+    using Dreamteck.Splines;
     using Events;
     using HTC.UnityPlugin.Vive;
     using Interaction;
@@ -8,6 +9,7 @@ namespace PathNav.ExperimentControl
     using System.Collections.Generic;
     using System.Threading.Tasks;
     using UnityEngine;
+    using UnityEngine.Animations;
 
     public class TutorialNavigation : MonoBehaviour
     {
@@ -21,10 +23,18 @@ namespace PathNav.ExperimentControl
 
         [SerializeField] private Overlay overlay;
         [SerializeField] private AudioManager audioManager;
+        
         [SerializeField] private DefaultTooltipRenderer tooltipRendererLeft;
         [SerializeField] private DefaultTooltipRenderer tooltipRendererRight;
         [SerializeField] private DefaultTooltipRenderDataAsset fourDofTooltip;
         [SerializeField] private DefaultTooltipRenderDataAsset sixDofTooltip;
+        
+        [SerializeField] private SplineFollower follower;
+        [SerializeField] private Transform teleportLocation;
+        [SerializeField] private Teleporter teleporter;
+        [SerializeField] private ParentConstraint parentConstraint;
+        
+        [SerializeField] private NavigationEndPoint endPoint;
 
         private List<string> _audioMap;
         private List<string> _fourDofAudio = new() { "forward_backward_4dof", "finish_navigation", };
@@ -43,6 +53,15 @@ namespace PathNav.ExperimentControl
         #region Event Callbacks
         public void OnEndReached()
         {
+            if (ExperimentDataManager.Instance.GetNavigationMethod() != LocomotionDof.FourDoF) return;
+            Debug.Log("END REACHED");
+            EndTutorial();
+        }
+
+        public void OnEndCollision()
+        {
+            if (ExperimentDataManager.Instance.GetNavigationMethod() != LocomotionDof.SixDof) return;
+            Debug.Log("END REACHED");
             EndTutorial();
         }
 
@@ -68,6 +87,7 @@ namespace PathNav.ExperimentControl
 
         public void StopImmediately()
         {
+            Debug.Log("STOP IMMEDIATE");
             overlay.FadeToBlackImmediate();
 
             ExperimentDataManager.Instance.EndExperimentImmediately();
@@ -81,6 +101,7 @@ namespace PathNav.ExperimentControl
             {
                 case TutorialStage.Start:
                     PlayAudio();
+                    EventManager.Publish(EventId.FollowPathReady, this, new SceneControlEventArgs());
                     break;
                 case TutorialStage.MoveForwardBackward:
                     PlayAudio(0.5f);
@@ -97,17 +118,22 @@ namespace PathNav.ExperimentControl
                     throw new ArgumentOutOfRangeException();
             }
         }
-        
+
         private async void StartTutorial()
         {
             _audioIndex = 0;
 
-            await Task.Delay(500);
+            await Task.Delay(50);
 
             SetupNavigation();
 
             await Task.Delay(500);
 
+            follower.followSpeed               = 0;
+            parentConstraint.constraintActive = ExperimentDataManager.Instance.GetNavigationMethod() == LocomotionDof.FourDoF;
+            follower.follow                   = ExperimentDataManager.Instance.GetNavigationMethod() == LocomotionDof.FourDoF;
+            await Task.Delay(100);
+            
             overlay.FadeToClear();
 
             await Task.Delay(1000);
@@ -127,6 +153,24 @@ namespace PathNav.ExperimentControl
             ExperimentDataManager.Instance.TutorialComplete();
         }
 
+        private bool CheckTeleportation()
+        {
+            if (teleportLocation is not null)
+            {
+                if (teleporter is null)
+                {
+                    teleporter = FindObjectOfType<Teleporter>();
+
+                    if (teleporter is null)
+                    {
+                        Debug.LogError("Teleporter not found in scene!");
+                    }
+                }
+            }
+
+            return (teleporter is not null) && (teleportLocation is not null);
+        }
+
         private void SetupNavigation()
         {
             switch (ExperimentDataManager.Instance.GetNavigationMethod())
@@ -136,16 +180,30 @@ namespace PathNav.ExperimentControl
                 case LocomotionDof.FourDoF:
                     tooltipRendererLeft.SetTooltipData(fourDofTooltip);
                     tooltipRendererRight.SetTooltipData(fourDofTooltip);
-                    _audioMap = _fourDofAudio;
+                    _audioMap       = _fourDofAudio;
                     break;
                 case LocomotionDof.SixDof:
                     tooltipRendererLeft.SetTooltipData(sixDofTooltip);
                     tooltipRendererRight.SetTooltipData(sixDofTooltip);
-                    _audioMap = _sixDofAudio;
+                    _audioMap       = _sixDofAudio;
+                    follower.follow = false;
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
+            
+            EventManager.Publish(EventId.EnableLocomotion, this, EventArgs.Empty);
+
+            if (!CheckTeleportation()) return;
+
+            SplineSample sample = follower.spline.Evaluate(0);
+            teleportLocation.position = sample.position + new Vector3(0, 1.5f, 0);
+            teleportLocation.forward  = sample.forward;
+            teleporter.Teleport(teleportLocation);
+
+            sample = follower.spline.Evaluate(follower.spline.pointCount - 1);
+            endPoint.Place(sample.position);
+            
         }
         #endregion
 

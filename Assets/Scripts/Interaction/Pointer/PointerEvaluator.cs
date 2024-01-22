@@ -8,7 +8,7 @@ namespace PathNav.Interaction
         #region Class Variables
         [InterfaceType(typeof(IController))] [SerializeField]
         private Object controller;
-
+        [SerializeField] private bool debug;
         [SerializeField] private LayerMask mask;
         [SerializeField] [Range(0.1f, 15f)] private float maxRaycastDistance = 15f;
         [SerializeField] private LineRenderer lineRenderer;
@@ -26,29 +26,18 @@ namespace PathNav.Interaction
 
         #region Implementation of IRayCast
         public Vector3 RayOrigin          => Controller.PointerPosition;
-        public Vector3 RayDirection       => Controller.PointerRotation * Vector3.forward;
+        public Vector3 RayDirection       => Controller.PointerForward;
         public float   MaxRaycastDistance => maxRaycastDistance;
-        private RaycastHit _hitResult;
 
-        public RaycastHit HitResult
-        {
-            get => _hitResult;
-            set => _hitResult = value;
-        }
-        
-        private Vector3 _rayHitPoint;
+        public RaycastHit HitResult { get; set; }
 
-        public Vector3 RayHitPoint
-        {
-            get => _rayHitPoint;
-            set => _rayHitPoint = value;
-        } 
+        public Vector3 RayHitPoint { get; set; }
         #endregion
         private void Awake()
         {
             _rayCast             = this;
-            _enabled             = false;
-            lineRenderer.enabled = false;
+            _enabled             = debug ? true : false;
+            lineRenderer.enabled = debug ? true : false;
         }
         
         public void Enable()

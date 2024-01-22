@@ -134,6 +134,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Rig Creation
       objectReference: {fileID: 0}
+    - target: {fileID: 5284054439545175522, guid: 3ace0d1676ed36e46909ad35b3a04fc8, type: 3}
+      propertyPath: actionAsset
+      value: 
+      objectReference: {fileID: -944628639613478452, guid: ee35e82046ad68046b8d163c1260e4dd, type: 3}
     - target: {fileID: 6851140512374261833, guid: 3ace0d1676ed36e46909ad35b3a04fc8, type: 3}
       propertyPath: m_RootOrder
       value: 2

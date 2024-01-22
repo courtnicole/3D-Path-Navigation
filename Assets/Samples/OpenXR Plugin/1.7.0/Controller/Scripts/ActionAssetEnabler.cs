@@ -2,22 +2,46 @@ using UnityEngine.InputSystem;
 
 namespace UnityEngine.XR.OpenXR.Samples.ControllerSample
 {
+    using System.Collections.Generic;
+
     public class ActionAssetEnabler : MonoBehaviour
     {
-        [SerializeField]
-        InputActionAsset m_ActionAsset;
-        public InputActionAsset actionAsset
+        [SerializeField] private InputActionAsset actionAsset;
+        private PlayerInput input;
+        public InputActionAsset ActionAsset
         {
-            get => m_ActionAsset;
-            set => m_ActionAsset = value;
+            get => actionAsset;
+            set => actionAsset = value;
         }
 
+        private const string _uiString = "UI";
+        private InputActionMap _uiMap;
+        private bool _canChangeMap;
         private void OnEnable()
         {
-            if(m_ActionAsset != null)
-            {
-                m_ActionAsset.Enable();
-            }
+            if (actionAsset == null) return;
+
+            actionAsset.Enable();
+            
+            _uiMap        = actionAsset.FindActionMap(_uiString);
+            
+            if (_uiMap == null) return;
+
+            _canChangeMap = true;
+            _uiMap.Disable();
+        }
+
+        public void EnableUiInput()
+        {
+            if (!_canChangeMap) return;
+            _uiMap.Enable();
+        }
+
+        public void DisableUiInput()
+        {
+            if (!_canChangeMap) return;
+            _uiMap.Disable();
+            
         }
 
     }
