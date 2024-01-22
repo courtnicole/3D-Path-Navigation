@@ -81,5 +81,8 @@ crashlytics-build.properties
 
 /[Aa]ssets/Data/*.csv
 /[Aa]ssets/Data/*.csv.meta
+/[Aa]ssets/Data/*/*.csv
+/[Aa]ssets/Data/*/*.csv.meta
+/[Aa]ssets/Data/*.meta
 
 Assets/Models/guri e amir/guri_e_amir_90.fbx
