@@ -9,7 +9,12 @@ namespace PathNav.PathPlanning
 
     public class SpatulaStrategy : IPathStrategy
     {
-        public SpatulaStrategy(IPlacementPlane placementPlane) => _placementPlane = placementPlane;
+        public SpatulaStrategy(IPlacementPlane placementPlane, Bounds boundary)
+        {
+            _placementPlane =  placementPlane;
+            bounds          =  boundary;
+            bounds.size     *= 1.25f;
+        } 
 
         #region State Variables
         private StateMachine<SpatulaStrategy> _state = new();
@@ -35,15 +40,14 @@ namespace PathNav.PathPlanning
 
         #region Segment and Path Variables
         internal Vector3 lastHandPosition;
-        internal const float minimumDelta = 0.025f;
-
+        internal const float minimumDelta = 0.0075f;
+        internal Bounds bounds;
         internal int PointIndexToMoveOrDelete => ActiveSegment.SelectedPointVisualIndex;
         private IPlacementPlane _placementPlane;
         private bool _canFinishPath;
         private bool HasController => interactingController                      != null;
         private bool HasSegment => ActiveSegment                                 != null;
         private bool HasValidPlane => _placementPlane?.HasCollidingController    == true;
-        private bool HasStartPosition => StartPosition                           != Vector3.zero;
         private bool HasFirstSegmentPoint => ActiveSegment.CurrentPointCount     > 0;
         private bool HasMultipleSegmentPoints => ActiveSegment.CurrentPointCount > 1;
 
@@ -89,7 +93,6 @@ namespace PathNav.PathPlanning
             EventManager.Subscribe<ControllerEvaluatorEventArgs>(EventId.RemovePoint,           EvaluateRemovePoint);
             EventManager.Subscribe<ControllerEvaluatorEventArgs>(EventId.PathCreationComplete,  FinishPath);
             if (!ExperimentDataManager.Instance.CreationTutorialActive()) return;
-
             _canFinishPath = false;
             EventManager.Subscribe<SceneControlEventArgs>(EventId.AllowPathCompletion, AllowPathCompletion);
         }

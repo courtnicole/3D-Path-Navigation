@@ -11,7 +11,7 @@ namespace PathNav.PathPlanning
 
         public void UpdateLogic(T entity)
         {
-            AddPoint(entity);
+            CheckAddPoint(entity);
 
             entity.StopCreatePoint();
         }
@@ -20,8 +20,10 @@ namespace PathNav.PathPlanning
 
         public void Exit(T entity) { }
 
-        private void AddPoint(T entity)
+        private void CheckAddPoint(T entity)
         {
+            if (!entity.bounds.Contains(entity.interactingController.PointerPosition)) return;
+
             float segmentLength = Vector3.Distance(entity.lastHandPosition, entity.interactingController.PointerPosition);
 
             if (segmentLength < SpatulaStrategy.minimumDelta) return;

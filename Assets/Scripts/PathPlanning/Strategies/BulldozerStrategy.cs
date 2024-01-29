@@ -10,9 +10,13 @@ namespace PathNav.PathPlanning
 
     public class BulldozerStrategy : IPathStrategy
     {
+        public BulldozerStrategy(Bounds boundary)
+        {
+            bounds      =  boundary;
+            bounds.size *= 1.25f;
+        }
         #region State Variables
         private StateMachine<BulldozerStrategy> _state = new();
-
         public bool IsActive => _state.CurrentState != _disabledState && _state.CurrentState != null;
 
         private Disabled<BulldozerStrategy> _disabledState = new();
@@ -42,14 +46,14 @@ namespace PathNav.PathPlanning
 
         #region Segment and Path Variables
         internal Vector3 lastHandPosition;
-        internal const float minimumDelta = 0.025f;
+        internal const float minimumDelta = 0.0075f;
         private bool HasSegment => ActiveSegment != null;
 
         private bool _canFinishPath;
 
-        private bool HasFirstSegmentPoint     => ActiveSegment.CurrentPointCount > 1;
-        private bool HasMultipleSegmentPoints => ActiveSegment.CurrentPointCount > 2;
-
+        internal Bounds bounds;
+        private bool HasFirstSegmentPoint     => ActiveSegment.CurrentPointCount > 0;
+        private bool HasMultipleSegmentPoints => ActiveSegment.CurrentPointCount > 1;
         internal bool HasValidEraseTarget => ActiveSegment.SelectedSegmentIndex != -1; //== ActiveSegment.CurrentPointCount - 1;
         #endregion
 

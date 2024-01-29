@@ -23,6 +23,7 @@ namespace PathNav.PathPlanning
     {
         [SerializeField] private AssetReferenceGameObject segmentKey;
         [SerializeField] private GameObject startPointPrefab;
+        [SerializeField] private Renderer model;
         [SerializeField] private PlacementPlaneElement placementPlaneLeft;
         [SerializeField] private PlacementPlaneElement placementPlaneRight;
 
@@ -51,6 +52,7 @@ namespace PathNav.PathPlanning
         private IPathStrategy _bulldozerStrategy;
         private IPathStrategy _spatulaStrategy; 
         private PlacementPlaneElement _placementPlane;
+        private Bounds bounds;
         #endregion
 
         #region Unity Events
@@ -76,6 +78,7 @@ namespace PathNav.PathPlanning
         {
             placementPlaneLeft.Disable();
             placementPlaneRight.Disable();
+            bounds = model.bounds;
             SubscribeToEvents();
         }
 
@@ -122,18 +125,18 @@ namespace PathNav.PathPlanning
             switch (_strategy)
             {
                 case PathStrategy.Bulldozer:
-                    _bulldozerStrategy = new BulldozerStrategy();
+                    _bulldozerStrategy = new BulldozerStrategy(bounds);
                     SetStrategy(_bulldozerStrategy);
                     break;
                 case PathStrategy.Spatula:
-                    _spatulaStrategy = new SpatulaStrategy(_placementPlane);
+                    _spatulaStrategy = new SpatulaStrategy(_placementPlane, bounds);
                     InitializeSpatulaStrategy();
                     SetStrategy(_spatulaStrategy);
                     break;
                 case PathStrategy.None:
                     break;
                 default:
-                    _bulldozerStrategy = new BulldozerStrategy();
+                    _bulldozerStrategy = new BulldozerStrategy(bounds);
                     InitializeBulldozerStrategy();
                     SetStrategy(_bulldozerStrategy);
                     break;

@@ -13,6 +13,7 @@ namespace PathNav.ExperimentControl
     {
         [SerializeField] private List<AudioClipMap> audioMap;
         [SerializeField] private GameObject seq;
+        [SerializeField] private GameObject instructions;
         [SerializeField] private Transform teleportLocation;
         [SerializeField] private Teleporter teleporter;
         [SerializeField] private Overlay overlay;
@@ -72,6 +73,7 @@ namespace PathNav.ExperimentControl
         {
             ActionAssetEnabler actionController = FindObjectOfType<ActionAssetEnabler>();
             actionController.EnableUiInput();
+            instructions.SetActive(false);
             seq.SetActive(true);
             pointerLeft.Enable();
             pointerRight.Enable();

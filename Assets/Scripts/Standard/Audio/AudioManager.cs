@@ -22,7 +22,8 @@ namespace PathNav.SceneManagement
         private void OnDestroy()
         {
             _audioClips.Clear();
-            Addressables.Release(_loadHandle);
+            if(_loadHandle.IsValid())
+                Addressables.Release(_loadHandle);
         }
 
         public void LoadAudio(List<string> keys)

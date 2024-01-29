@@ -30,7 +30,7 @@ namespace PathNav.ExperimentControl
         [SerializeField] private DefaultTooltipRenderer tooltipRendererRight;
         [SerializeField] private DefaultTooltipRenderDataAsset drawingTooltip;
         [SerializeField] private DefaultTooltipRenderDataAsset interpolationTooltip;
-        [SerializeField] private TextMeshPro textMesh;
+        [SerializeField] private TMP_Text textMesh;
 
         private bool _enableTeleportation;
         private List<string> _audioMap;

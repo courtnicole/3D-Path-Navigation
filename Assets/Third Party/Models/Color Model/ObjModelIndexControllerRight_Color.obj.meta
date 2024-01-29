@@ -3,7 +3,12 @@ guid: 98b4d94fd28fb504b9900cbbeb6dfb58
 ModelImporter:
   serializedVersion: 21300
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: knuckles_right
+    second: {fileID: 2100000, guid: 0b18f2c8b88d9d94289211aaa02db64d, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0

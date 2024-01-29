@@ -426,11 +426,14 @@ namespace Dreamteck.Splines
             {
                 if (meshCollider != null)
                 {
-                    if (Time.time - _lastUpdateTime >= colliderUpdateRate)
+                    if (filter.sharedMesh.vertexCount > 0)
                     {
-                        _lastUpdateTime = Time.time;
-                        _updateCollider = false;
-                        meshCollider.sharedMesh = filter.sharedMesh;
+                        if (Time.time - _lastUpdateTime >= colliderUpdateRate)
+                        {
+                            _lastUpdateTime         = Time.time;
+                            _updateCollider         = false;
+                            meshCollider.sharedMesh = filter.sharedMesh;
+                        }
                     }
                 }
             }

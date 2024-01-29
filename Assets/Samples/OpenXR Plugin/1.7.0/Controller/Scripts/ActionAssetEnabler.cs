@@ -33,7 +33,10 @@ namespace UnityEngine.XR.OpenXR.Samples.ControllerSample
 
         public void EnableUiInput()
         {
-            if (!_canChangeMap) return;
+            if (!_canChangeMap)
+            {
+                Debug.LogWarning("Request to change map denied");
+            };
             _uiMap.Enable();
         }
 

@@ -14,7 +14,7 @@ namespace PathNav.PathPlanning
 
         public void UpdateLogic(T entity)
         {
-            AddPoint(entity);
+            CheckAddPoint(entity);
         }
 
         public void UpdatePhysics(T entity) { }
@@ -24,8 +24,10 @@ namespace PathNav.PathPlanning
             EventManager.Publish(EventId.DrawEnded, this, new PathStrategyEventArgs(entity));
         }
 
-        private static void AddPoint(T entity)
+        private static void CheckAddPoint(T entity)
         {
+            if (!entity.bounds.Contains(entity.interactingController.PointerPosition)) return;
+            
             float segmentLength = Vector3.Distance(entity.lastHandPosition, entity.interactingController.PointerPosition);
 
             if (segmentLength < BulldozerStrategy.minimumDelta) return;

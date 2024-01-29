@@ -76,11 +76,11 @@ namespace PathNav.PathPlanning
         #region Point Addition/Removal
         public void AddFirstPoint(Vector3 newPosition, Vector3 heading)
         {
-            Vector3 end = newPosition + (heading.normalized * 0.01f);
+            //Vector3 end = newPosition + (heading.normalized * 0.01f);
 
             SplinePoint pt1 = new()
             {
-                type     = SplinePoint.Type.SmoothMirrored,
+                type     = SplinePoint.Type.SmoothFree,
                 color    = Color.white,
                 normal   = Vector3.up,
                 size     = _width,
@@ -88,19 +88,19 @@ namespace PathNav.PathPlanning
                 position = newPosition,
             };
 
-            SplinePoint pt2 = new()
-            {
-                type     = SplinePoint.Type.SmoothMirrored,
-                color    = Color.white,
-                normal   = Vector3.up,
-                size     = _width,
-                tangent  = Vector3.forward,
-                position = end,
-            };
+            // SplinePoint pt2 = new()
+            // {
+            //     type     = SplinePoint.Type.SmoothFree,
+            //     color    = Color.white,
+            //     normal   = Vector3.up,
+            //     size     = _width,
+            //     tangent  = Vector3.forward,
+            //     position = end,
+            // };
 
-            var points = new SplinePoint[2];
+            var points = new SplinePoint[1];
             points[0] = pt1;
-            points[1] = pt2;
+            //points[1] = pt2;
 
             CurrentPoints = points;
         }
