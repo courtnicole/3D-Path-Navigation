@@ -13,7 +13,7 @@ namespace PathNav.PathPlanning
         {
             _placementPlane =  placementPlane;
             bounds          =  boundary;
-            bounds.size     *= 1.25f;
+            bounds.size     *= 1.75f;
         } 
 
         #region State Variables

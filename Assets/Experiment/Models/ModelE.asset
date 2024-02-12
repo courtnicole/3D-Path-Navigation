@@ -17,7 +17,7 @@ MonoBehaviour:
     m_SubObjectName: 
     m_SubObjectType: 
     m_EditorAssetChanged: 0
-  translation: {x: 0, y: 0.965, z: 0}
+  translation: {x: 0, y: -0.965, z: 0}
   rotation: {x: 0, y: 0, z: 0}
   scale: 0.05
   id: Model_E

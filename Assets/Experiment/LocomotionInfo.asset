@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: LocomotionInfo
   m_EditorClassIdentifier: 
   maxVelocity: 3.75
-  minVelocity: -2.5
+  minVelocity: 0
   acceleration: 0.58

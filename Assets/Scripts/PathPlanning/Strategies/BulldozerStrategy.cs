@@ -13,7 +13,7 @@ namespace PathNav.PathPlanning
         public BulldozerStrategy(Bounds boundary)
         {
             bounds      =  boundary;
-            bounds.size *= 1.25f;
+            bounds.size *= 1.75f;
         }
         #region State Variables
         private StateMachine<BulldozerStrategy> _state = new();

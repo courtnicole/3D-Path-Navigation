@@ -238,7 +238,8 @@ namespace PathNav.PathPlanning
 
         public bool CanErasePoint(ref IController controller)
         {
-            if (CurrentPointCount < 3) return false;
+            if (CurrentPointCount           < 3) return false;
+            if (controller?.CollisionBounds == null) return false;
 
             bool isInsideBounds = controller.CollisionBounds.Contains(CurrentPoints[CurrentPointCount - 1].position);
             SelectedSegmentIndex = isInsideBounds ? CurrentPointCount - 1 : -1;
@@ -272,7 +273,7 @@ namespace PathNav.PathPlanning
 
         private void CalculatePointVisuals()
         {
-            if (CurrentPoints.Length < 2) return;
+            if (CurrentPoints.Length < 1) return;
 
             for (int i = 0; i < CurrentPoints.Length; i++)
             {
@@ -280,7 +281,7 @@ namespace PathNav.PathPlanning
             }
 
             _pointVisuals[0].Hide();
-            _pointVisuals[1].Hide();
+            //_pointVisuals[1].Hide();
         }
 
         private void AddPointVisual(int index)

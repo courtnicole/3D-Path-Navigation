@@ -34,12 +34,11 @@ namespace PathNav.Interaction
         #endregion
 
         #region Movement Variables
-        internal float     MaxVelocity         => locomotionInfo.MaxVelocity;
-        internal float     MinVelocity         => locomotionInfo.MinVelocity;
-        internal float     Acceleration        => locomotionInfo.Acceleration;
-        internal Vector2   InputPose           => _motionController.JoystickPose;
-        internal Vector3   VerticalShift       => _verticalController.PointerForward;
-        internal Transform VerticalControllerTransform => _verticalController.Transform;
+        internal float     MaxVelocity                 => locomotionInfo.MaxVelocity;
+        internal float     MinVelocity                 => locomotionInfo.MinVelocity;
+        internal float     Acceleration                => locomotionInfo.Acceleration;
+        internal Vector3   InputPose                   => _motionController.PointerForward;
+        internal Vector3   VerticalShift               => _verticalController.PointerForward;
         #endregion
 
         #region State Variables
@@ -52,10 +51,10 @@ namespace PathNav.Interaction
 
         private  bool HasLocomotion       => _state.CurrentState == _moveState;
         private  bool HasMotionController => _motionController   != null;
-        internal bool ShouldUseVertical   => _verticalController != null && _hasVerticalInput;
+        //internal bool ShouldUseVertical   => _verticalController != null && _hasVerticalInput;
 
         private bool _hasLocomotionInput;
-        private bool _hasVerticalInput;
+        //private bool _hasVerticalInput;
 
         private bool ShouldLocomote   => _hasLocomotionInput && HasMotionController;
         private bool ShouldUnlocomote => HasLocomotion       && !_hasLocomotionInput;
@@ -64,6 +63,11 @@ namespace PathNav.Interaction
         #region Unity Methods
         private void OnEnable()
         {
+            //check all serialized fields for null values
+            if (locomotionInfo == null) throw new NullReferenceException("LocomotionInfo is null");
+            if (playerTransform == null) throw new NullReferenceException("PlayerTransform is null");
+            if (cameraTransform == null) throw new NullReferenceException("CameraTransform is null");
+            if (follower == null) throw new NullReferenceException("Follower is null");
             SubscribeToEnableDisableEvents();
         }
 
@@ -228,13 +232,13 @@ namespace PathNav.Interaction
             if (ShouldUnlocomote) Unlocomote();
         }
 
-        private void StartVertical(object sender, ControllerEventArgs args)
-        {
-            if (ShouldUseVertical) return;
-
-            SetActiveVerticalController(args.Controller);
-            _hasVerticalInput    = true;
-        }
+        // private void StartVertical(object sender, ControllerEventArgs args)
+        // {
+        //     if (ShouldUseVertical) return;
+        //
+        //     SetActiveVerticalController(args.Controller);
+        //     _hasVerticalInput    = true;
+        // }
 
         private void StopVertical(object sender, ControllerEventArgs args)
         {

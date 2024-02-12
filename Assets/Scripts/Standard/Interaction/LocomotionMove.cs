@@ -11,7 +11,6 @@ namespace PathNav.Patterns.FSM
         private float _direction;
 
         private Vector3 _travelDirection;
-        private float _vertical;
         private Vector3 _shift;
 
         public void Enter(T entity)
@@ -19,9 +18,8 @@ namespace PathNav.Patterns.FSM
             entity.OnLocomotionStart();
 
             _elapsedTime     = 0;
-            _currentVelocity = entity.dof == LocomotionDof.FourDoF ? entity.follower.followSpeed : 0;
+            _currentVelocity = 0; //entity.dof == LocomotionDof.FourDoF ? entity.follower.followSpeed : 0;
             _travelDirection = Vector3.zero;
-            _vertical        = 0;
             _shift           = Vector3.zero;
         }
 
@@ -77,28 +75,11 @@ namespace PathNav.Patterns.FSM
         {
             _elapsedTime += Time.deltaTime;
             
-            if (entity.ShouldUseVertical)
-            {
-                _vertical = Vector3.Angle(entity.VerticalShift, Vector3.up);
-                if (_vertical is < 95 and > 85)
-                {
-                    _vertical = 0;
-                    return;
-                }
-                _vertical = Map(0.0f, 180.0f, 1.0f, -1.0f, _vertical);
-            }
-            else
-            {
-                _vertical = 0;
-            }
-            
-            _travelDirection   = new Vector3(entity.InputPose.x, 0, entity.InputPose.y);
-            _travelDirection   = entity.CameraTransform.TransformDirection(_travelDirection);
-            _travelDirection.y = _vertical;
+            _travelDirection = entity.InputPose.normalized;
             _currentVelocity   = Mathf.Clamp(_currentVelocity + (entity.Acceleration * Time.deltaTime), entity.MinVelocity, entity.MaxVelocity);
             _shift             = _travelDirection * (_currentVelocity * Time.deltaTime);
         }
-
+        
         private void Shift4DoF(T entity)
         {
             entity.follower.followSpeed = _currentVelocity;
@@ -109,7 +90,5 @@ namespace PathNav.Patterns.FSM
             entity.follower.followSpeed     =  _currentVelocity;
             entity.PlayerTransform.position += _shift;
         }
-
-        private static float Map(float a1, float a2, float b1, float b2, float s) => b1 + (s - a1) * (b2 - b1) / (a2 - a1);
     }
 }
