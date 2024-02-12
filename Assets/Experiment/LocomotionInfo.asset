@@ -14,4 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxVelocity: 3.75
   minVelocity: 0
-  acceleration: 0.58
+  acceleration: 0.95
