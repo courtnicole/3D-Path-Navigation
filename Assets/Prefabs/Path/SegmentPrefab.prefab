@@ -14,7 +14,6 @@ GameObject:
   - component: {fileID: 8647980501506276079}
   - component: {fileID: 7905707098166073567}
   - component: {fileID: 5944507959379784860}
-  - component: {fileID: 1507109146324887638}
   m_Layer: 8
   m_Name: SegmentPrefab
   m_TagString: Untagged
@@ -330,12 +329,12 @@ MonoBehaviour:
   _color: {r: 1, g: 1, b: 1, a: 1}
   _offset: {x: 0, y: 0, z: 0}
   _normalMethod: 1
-  _calculateTangents: 1
+  _calculateTangents: 0
   _useSplineSize: 1
   _useSplineColor: 1
   _rotation: 0
   _flipFaces: 0
-  _doubleSided: 1
+  _doubleSided: 0
   _uvMode: 0
   _uvScale: {x: 1, y: 1}
   _uvOffset: {x: 0, y: 0}
@@ -344,7 +343,7 @@ MonoBehaviour:
   _bakedMesh: {fileID: 0}
   colliderUpdateRate: 0.2
   _slices: 2
-  _compensateCorners: 1
+  _compensateCorners: 0
   _useShapeCurve: 0
   _shape:
     serializedVersion: 2
@@ -359,17 +358,3 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   _shapeExposure: 1
---- !u!64 &1507109146324887638
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4660966899102463591}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 4
-  m_Convex: 0
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 0}

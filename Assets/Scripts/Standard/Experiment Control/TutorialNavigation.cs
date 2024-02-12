@@ -16,13 +16,14 @@ namespace PathNav.ExperimentControl
         private enum TutorialStage
         {
             Start,
-            MoveForwardBackward,
-            MoveUpDown,
             Finish,
         }
 
         [SerializeField] private Overlay overlay;
         [SerializeField] private AudioManager audioManager;
+        
+        [SerializeField] private PointerEvaluator pointerLeft;
+        [SerializeField] private PointerEvaluator pointerRight;
         
         [SerializeField] private DefaultTooltipRenderer tooltipRendererLeft;
         [SerializeField] private DefaultTooltipRenderer tooltipRendererRight;
@@ -37,8 +38,8 @@ namespace PathNav.ExperimentControl
         [SerializeField] private NavigationEndPoint endPoint;
 
         private List<string> _audioMap;
-        private List<string> _fourDofAudio = new() { "forward_backward_4dof", "finish_navigation", };
-        private List<string> _sixDofAudio = new() { "forward_backward_6dof", "up_down_6dof", "finish_navigation", };
+        private List<string> _fourDofAudio = new() { "navigation_4dof", "finish_navigation", };
+        private List<string> _sixDofAudio = new() { "navigation_6dof", "finish_navigation", };
         private int _audioIndex;
 
         private TutorialStage _stage;
@@ -53,32 +54,23 @@ namespace PathNav.ExperimentControl
         #region Event Callbacks
         public void OnEndReached()
         {
+            if (_stage                                               != TutorialStage.Finish) return;
             if (ExperimentDataManager.Instance.GetNavigationMethod() != LocomotionDof.FourDoF) return;
-            Debug.Log("END REACHED");
             EndTutorial();
         }
 
         public void OnEndCollision()
         {
+            if (_stage != TutorialStage.Finish) return;
             if (ExperimentDataManager.Instance.GetNavigationMethod() != LocomotionDof.SixDof) return;
-            Debug.Log("END REACHED");
             EndTutorial();
         }
 
-        private void MoveForwardBackwardEnded(object sender, LocomotionEvaluatorEventArgs args)
+        private async void InitialPracticeEnded(object sender, LocomotionEvaluatorEventArgs args)
         {
-            EventManager.Unsubscribe<LocomotionEvaluatorEventArgs>(EventId.LocomotionEnded, MoveForwardBackwardEnded);
-
-            _stage = ExperimentDataManager.Instance.GetNavigationMethod() == LocomotionDof.FourDoF ? TutorialStage.Finish : TutorialStage.MoveUpDown;
-
-            _audioIndex++;
-            HandleStage();
-        }
-
-        private void MoveUpDownEnded(object sender, LocomotionEvaluatorEventArgs args)
-        {
-            EventManager.Unsubscribe<LocomotionEvaluatorEventArgs>(EventId.LocomotionEnded, MoveUpDownEnded);
-
+            EventManager.Unsubscribe<LocomotionEvaluatorEventArgs>(EventId.LocomotionStarted, InitialPracticeEnded);
+            
+            await Task.Delay(4000);
             _stage = TutorialStage.Finish;
 
             _audioIndex++;
@@ -100,16 +92,8 @@ namespace PathNav.ExperimentControl
             switch (_stage)
             {
                 case TutorialStage.Start:
-                    PlayAudio();
-                    EventManager.Publish(EventId.FollowPathReady, this, new SceneControlEventArgs());
-                    break;
-                case TutorialStage.MoveForwardBackward:
                     PlayAudio(0.5f);
-                    EventManager.Subscribe<LocomotionEvaluatorEventArgs>(EventId.LocomotionEnded, MoveForwardBackwardEnded);
-                    break;
-                case TutorialStage.MoveUpDown:
-                    PlayAudio(0.5f);
-                    EventManager.Subscribe<LocomotionEvaluatorEventArgs>(EventId.LocomotionEnded, MoveUpDownEnded);
+                    EventManager.Subscribe<LocomotionEvaluatorEventArgs>(EventId.LocomotionStarted, InitialPracticeEnded);
                     break;
                 case TutorialStage.Finish:
                     PlayAudio(0.5f);
@@ -129,15 +113,24 @@ namespace PathNav.ExperimentControl
 
             await Task.Delay(500);
 
-            follower.followSpeed               = 0;
+            follower.followSpeed              = 0;
             parentConstraint.constraintActive = ExperimentDataManager.Instance.GetNavigationMethod() == LocomotionDof.FourDoF;
-            follower.follow                   = ExperimentDataManager.Instance.GetNavigationMethod() == LocomotionDof.FourDoF;
+            follower.follow                   = true; //ExperimentDataManager.Instance.GetNavigationMethod() == LocomotionDof.FourDoF;
+            
+            if (ExperimentDataManager.Instance.GetNavigationMethod() == LocomotionDof.SixDof)
+            {
+                pointerLeft.EnableLocomotion();
+                pointerRight.EnableLocomotion();
+            }
             await Task.Delay(100);
             
             overlay.FadeToClear();
 
             await Task.Delay(1000);
-
+            
+            EventManager.Publish(EventId.FollowPathReady, this, new SceneControlEventArgs());
+            
+            await Task.Delay(200);
             _stage = TutorialStage.Start;
             HandleStage();
         }

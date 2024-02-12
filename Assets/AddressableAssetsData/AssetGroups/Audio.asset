@@ -57,18 +57,13 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels:
     - Audio_Tutorial_Navigation
-  - m_GUID: c329d1fb16021ea49ba9d38bf169698a
-    m_Address: forward_backward_4dof
+  - m_GUID: 3def470cdf51f9b46a8f391a964b0cea
+    m_Address: navigation_6dof
     m_ReadOnly: 0
     m_SerializedLabels:
     - Audio_Tutorial_Navigation
-  - m_GUID: 4925dd7ee16cb254b9f4f0a3f3142b6f
-    m_Address: forward_backward_6dof
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - Audio_Tutorial_Navigation
-  - m_GUID: f2d672fdf1f406b4dbe92b25ae30bf95
-    m_Address: up_down_6dof
+  - m_GUID: 06e82291855eef948a32337e88c46162
+    m_Address: navigation_4dof
     m_ReadOnly: 0
     m_SerializedLabels:
     - Audio_Tutorial_Navigation

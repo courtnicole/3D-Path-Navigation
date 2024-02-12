@@ -254,8 +254,6 @@ namespace PathNav.ExperimentControl
         public SplinePoint[] GetSavedSpline()
         {
             _savedModel = _conditionBlock.GetCurrentModel(_currentTrialStageIndex, _modelIndex);
-            Debug.Log(_savedModel.Id);
-
             if (_useSplineFile)
             {
                 string splineFile = _savedModel.Id switch
@@ -279,9 +277,6 @@ namespace PathNav.ExperimentControl
                                    _         => throw new ArgumentOutOfRangeException(),
                                };
             }
-            
-            Debug.Log(_savedSpline.Length);
-
             return _savedSpline;
         }
 

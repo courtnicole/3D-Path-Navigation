@@ -32,11 +32,6 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels:
     - PathCreation
-  - m_GUID: 4de44472c99692d4785d0ff9100d582d
-    m_Address: Reef
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - Model
   - m_GUID: 5ca72f8923331b34588cde0a94c12bdc
     m_Address: Model F
     m_ReadOnly: 0
@@ -70,7 +65,8 @@ MonoBehaviour:
   - m_GUID: 5d8ba40a40b0e1b48a26edf59d865a3c
     m_Address: Tutorial Model
     m_ReadOnly: 0
-    m_SerializedLabels: []
+    m_SerializedLabels:
+    - Model
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 2a19ebdba0b390b43b6dc97fa047bcb6, type: 2}
   m_SchemaSet:

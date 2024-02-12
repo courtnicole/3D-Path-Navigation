@@ -46,7 +46,7 @@ namespace PathNav.PathPlanning
 
         #region Segment and Path Variables
         internal Vector3 lastHandPosition;
-        internal const float minimumDelta = 0.0075f;
+        internal const float minimumDelta = 0.015f;
         private bool HasSegment => ActiveSegment != null;
 
         private bool _canFinishPath;

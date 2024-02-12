@@ -59,25 +59,32 @@ namespace PathNav.Patterns.FSM
 
         public void Exit(T entity)
         {
+            _elapsedTime     = 0;
+            _currentVelocity = 0; 
+            entity.follower.followSpeed = 0;
+            
             entity.ClearActiveMotionController();
-            entity.ClearActiveVerticalController();
             entity.OnLocomotionEnd();
         }
 
         private void Update4DoF(T entity)
         {
             _elapsedTime     += Time.deltaTime;
-            _direction       =  entity.InputPose.y > 0 ? 1 : -1;
-            _currentVelocity =  Mathf.Clamp(_currentVelocity + (_direction * entity.Acceleration) * Time.deltaTime, entity.MinVelocity, entity.MaxVelocity);
+            _direction       =  entity.JoystickPose.y > 0 ? 1 : -1;
+            _currentVelocity = Mathf.Clamp(_currentVelocity + (_direction * entity.Acceleration) * Time.deltaTime, entity.MaxVelocity * -1 , entity.MaxVelocity);
+            if (Mathf.Abs(_currentVelocity) < entity.MinVelocity)
+            {
+                _currentVelocity = entity.MinVelocity * _direction;
+            }
         }
 
         private void Update6DoF(T entity)
         {
-            _elapsedTime += Time.deltaTime;
-            
-            _travelDirection = entity.InputPose.normalized;
-            _currentVelocity   = Mathf.Clamp(_currentVelocity + (entity.Acceleration * Time.deltaTime), entity.MinVelocity, entity.MaxVelocity);
-            _shift             = _travelDirection * (_currentVelocity * Time.deltaTime);
+            _elapsedTime     += Time.deltaTime;
+            _direction       =  entity.JoystickPose.y > 0 ? 1 : -1;
+            _travelDirection =  entity.InputPose.normalized;
+            _currentVelocity =  Mathf.Clamp(_currentVelocity + (_direction * entity.Acceleration * Time.deltaTime), entity.MinVelocity, entity.MaxVelocity);
+            _shift           =  _travelDirection * (_currentVelocity * Time.deltaTime);
         }
         
         private void Shift4DoF(T entity)

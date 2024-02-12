@@ -11,8 +11,8 @@ GameObject:
   - component: {fileID: 5152327788023561410}
   - component: {fileID: 7642559315331477186}
   - component: {fileID: 5736230856007084047}
-  - component: {fileID: 7404495595173301525}
   - component: {fileID: 7404495595173301527}
+  - component: {fileID: 7707385467133575081}
   m_Layer: 0
   m_Name: Foot Marker
   m_TagString: Player
@@ -32,7 +32,7 @@ Transform:
   m_LocalScale: {x: 0.5, y: 0.01, z: 0.5}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 7350544131670940045}
+  m_Father: {fileID: 496705103957837504}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 180, z: -21.642}
 --- !u!33 &7642559315331477186
@@ -85,32 +85,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!1773428102 &7404495595173301525
-ParentConstraint:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 237374927571351488}
-  m_Enabled: 1
-  m_Weight: 1
-  m_TranslationAtRest: {x: 0, y: -1.5, z: 0}
-  m_RotationAtRest: {x: 0, y: 180, z: 0}
-  m_TranslationOffsets:
-  - {x: 0, y: -1.5, z: 0}
-  m_RotationOffsets:
-  - {x: 0, y: 180, z: 0}
-  m_AffectTranslationX: 1
-  m_AffectTranslationY: 1
-  m_AffectTranslationZ: 1
-  m_AffectRotationX: 1
-  m_AffectRotationY: 0
-  m_AffectRotationZ: 0
-  m_IsContraintActive: 1
-  m_IsLocked: 1
-  m_Sources:
-  - sourceTransform: {fileID: 2433871860921553073}
-    weight: 1
 --- !u!136 &7404495595173301527
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -121,10 +95,26 @@ CapsuleCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 1
   m_Enabled: 1
-  m_Radius: 0.5
-  m_Height: 175
+  m_Radius: 0.55
+  m_Height: 200
   m_Direction: 1
-  m_Center: {x: 0, y: 50, z: 0}
+  m_Center: {x: 0, y: 82.5, z: 0}
+--- !u!54 &7707385467133575081
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 237374927571351488}
+  serializedVersion: 2
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0
+  m_UseGravity: 0
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
 --- !u!1 &2434455574003397637
 GameObject:
   m_ObjectHideFlags: 0
@@ -473,6 +463,52 @@ MonoBehaviour:
       m_Flags: 0
     m_Flags: 0
   m_HasMigratedActions: 1
+--- !u!1 &3573516203907475845
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 496705103957837504}
+  - component: {fileID: 7404495595173301525}
+  m_Layer: 0
+  m_Name: Feet
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &496705103957837504
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3573516203907475845}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 5152327788023561410}
+  m_Father: {fileID: 7350544131670940045}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7404495595173301525
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3573516203907475845}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0e8c199ff32f0024ea975409c2917003, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  parent: {fileID: 2433871860921553073}
 --- !u!1 &5540904520286887855
 GameObject:
   m_ObjectHideFlags: 0
@@ -977,9 +1013,9 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 5152327788023561410}
   - {fileID: 4358945194993997602}
   - {fileID: 5445400717979184865}
+  - {fileID: 496705103957837504}
   - {fileID: 2433871860921553073}
   m_Father: {fileID: 1223527901986485809}
   m_RootOrder: 2
@@ -2076,7 +2112,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3266234088930282016, guid: dbfbda3c6401252498ee58cb4f8c9c3f, type: 3}
       propertyPath: m_RootOrder
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3266234088930282016, guid: dbfbda3c6401252498ee58cb4f8c9c3f, type: 3}
       propertyPath: m_LocalPosition.x
@@ -2345,7 +2381,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6538127200302755968, guid: b959cff37854d004c917681c1ab65f07, type: 3}
       propertyPath: m_RootOrder
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6538127200302755968, guid: b959cff37854d004c917681c1ab65f07, type: 3}
       propertyPath: m_LocalPosition.x
@@ -2457,6 +2493,14 @@ PrefabInstance:
       propertyPath: m_tooltipParent
       value: 
       objectReference: {fileID: 8089301153166903805}
+    - target: {fileID: 131131596640316333, guid: 67a787ed222387c49b1021942da19bbe, type: 3}
+      propertyPath: m_viveRole.m_roleValueInt
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 131131596640316333, guid: 67a787ed222387c49b1021942da19bbe, type: 3}
+      propertyPath: m_viveRole.m_roleValueName
+      value: RightHand
+      objectReference: {fileID: 0}
     - target: {fileID: 131131596640316335, guid: 67a787ed222387c49b1021942da19bbe, type: 3}
       propertyPath: m_Name
       value: Tooltip

@@ -26,19 +26,17 @@ namespace PathNav.Interaction
         internal Transform  CameraTransform   => cameraTransform;
         
         private IController _motionController;
-        private IController _verticalController;
 
         internal LocomotionDof dof;
-
-        
         #endregion
 
         #region Movement Variables
-        internal float     MaxVelocity                 => locomotionInfo.MaxVelocity;
-        internal float     MinVelocity                 => locomotionInfo.MinVelocity;
-        internal float     Acceleration                => locomotionInfo.Acceleration;
-        internal Vector3   InputPose                   => _motionController.PointerForward;
-        internal Vector3   VerticalShift               => _verticalController.PointerForward;
+        internal float   MaxVelocity  => locomotionInfo.MaxVelocity;
+        internal float   MinVelocity  => locomotionInfo.MinVelocity;
+        internal float   Acceleration => locomotionInfo.Acceleration;
+        internal Vector3 InputPose    => _motionController.PointerForward;
+        //internal Vector3 InputPose    => CameraTransform.forward; //used for gaze-based locomotion
+        internal Vector2 JoystickPose => _motionController.JoystickPose;
         #endregion
 
         #region State Variables
@@ -136,16 +134,6 @@ namespace PathNav.Interaction
         {
             _motionController = null;
         }
-        
-        private void SetActiveVerticalController(IController controller)
-        {
-            _verticalController = controller;
-        }
-
-        internal void ClearActiveVerticalController()
-        {
-            _verticalController = null;
-        }
         #endregion
 
         #region Emitted Events
@@ -197,8 +185,6 @@ namespace PathNav.Interaction
             EventManager.Subscribe<SceneControlEventArgs>(EventId.FollowPathReady, FollowPath);
             EventManager.Subscribe<ControllerEventArgs>(EventId.JoystickTouchStart, StartLocomotion);
             EventManager.Subscribe<ControllerEventArgs>(EventId.JoystickTouchEnd,   StopLocomotion);
-            EventManager.Subscribe<ControllerEventArgs>(EventId.TriggerDown,        StartVertical);
-            EventManager.Subscribe<ControllerEventArgs>(EventId.TriggerUp,          StopVertical);
         }
 
         private void UnsubscribeToLocomotionInputEvents()
@@ -206,8 +192,6 @@ namespace PathNav.Interaction
             EventManager.Unsubscribe<SceneControlEventArgs>(EventId.FollowPathReady, FollowPath);
             EventManager.Unsubscribe<ControllerEventArgs>(EventId.JoystickTouchStart, StartLocomotion);
             EventManager.Unsubscribe<ControllerEventArgs>(EventId.JoystickTouchEnd,   StopLocomotion);
-            EventManager.Unsubscribe<ControllerEventArgs>(EventId.TriggerDown,        StartVertical);
-            EventManager.Unsubscribe<ControllerEventArgs>(EventId.TriggerUp,          StopVertical);
         }
 
         private void FollowPath(object sender, SceneControlEventArgs args)
@@ -230,20 +214,6 @@ namespace PathNav.Interaction
             _hasLocomotionInput = false;
             ClearActiveMotionController();
             if (ShouldUnlocomote) Unlocomote();
-        }
-
-        // private void StartVertical(object sender, ControllerEventArgs args)
-        // {
-        //     if (ShouldUseVertical) return;
-        //
-        //     SetActiveVerticalController(args.Controller);
-        //     _hasVerticalInput    = true;
-        // }
-
-        private void StopVertical(object sender, ControllerEventArgs args)
-        {
-            _hasVerticalInput    = false;
-            ClearActiveVerticalController();
         }
 
         private void EnableEvaluator(object sender, EventArgs args)

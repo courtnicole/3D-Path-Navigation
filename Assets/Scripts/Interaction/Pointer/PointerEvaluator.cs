@@ -8,6 +8,7 @@ namespace PathNav.Interaction
         #region Class Variables
         [InterfaceType(typeof(IController))] [SerializeField]
         private Object controller;
+
         [SerializeField] private bool debug;
         [SerializeField] private LayerMask mask;
         [SerializeField] [Range(0.1f, 15f)] private float maxRaycastDistance = 15f;
@@ -17,46 +18,60 @@ namespace PathNav.Interaction
         private IRayCast _rayCast;
         private bool _result;
         private bool _enabled;
-        private Vector3 LineOrigin => Controller.Position;
-        
+        private bool _isLocomotion;
+
         private Vector3 _previousHitPoint;
         private Vector3 _previousOrigin;
         private Vector3 CurrentHitPoint => lineRenderer.GetPosition(1);
         #endregion
 
         #region Implementation of IRayCast
-        public Vector3 RayOrigin          => Controller.PointerPosition;
-        public Vector3 RayDirection       => Controller.PointerForward;
-        public float   MaxRaycastDistance => maxRaycastDistance;
+        public Vector3 RayOrigin    => Controller.PointerPosition;
+        public Vector3 RayDirection => Controller.PointerForward;
+
+        public float MaxRaycastDistance => _isLocomotion ? _locomotionMaxRaycastDistance : maxRaycastDistance;
+
+        private const float _locomotionMaxRaycastDistance = 0.25f;
 
         public RaycastHit HitResult { get; set; }
 
         public Vector3 RayHitPoint { get; set; }
         #endregion
+
         private void Awake()
         {
             _rayCast             = this;
             _enabled             = debug ? true : false;
             lineRenderer.enabled = debug ? true : false;
         }
-        
+
         public void Enable()
         {
-            _enabled = true;
+            _isLocomotion           = false;
+            _enabled                = true;
+            EnableLineRenderer();
+        }
+
+        public void EnableLocomotion()
+        {
+            _enabled                = true;
+            _isLocomotion           = true;
             EnableLineRenderer();
         }
 
         private void EnableLineRenderer()
         {
-            lineRenderer.enabled = true;
+            lineRenderer.startWidth = _isLocomotion ? 0.005f : 0.015f;
+            lineRenderer.endWidth   = _isLocomotion ? 0.005f : 0.015f;
+            lineRenderer.enabled    = true;
         }
 
         private void LateUpdate()
         {
             if (!_enabled) return;
             _previousHitPoint = RayHitPoint;
-            _previousOrigin = RayOrigin;
-            
+            _previousOrigin   = RayOrigin;
+
             _result = _rayCast.Raycast(mask);
             UpdateVisualRaycast();
         }
@@ -64,9 +79,8 @@ namespace PathNav.Interaction
         private void UpdateVisualRaycast()
         {
             if (!_enabled) return;
-            if (Vector3.Distance(_previousHitPoint, RayHitPoint) < 0.005f &&
-                Vector3.Distance(_previousOrigin,   RayOrigin)   < 0.005f)  return;
-            
+            if (Vector3.Distance(_previousHitPoint, RayHitPoint) < 0.0015f && Vector3.Distance(_previousOrigin, RayOrigin) < 0.0015f) return;
+
             lineRenderer.SetPosition(0, RayOrigin);
             lineRenderer.SetPosition(1, RayHitPoint);
         }

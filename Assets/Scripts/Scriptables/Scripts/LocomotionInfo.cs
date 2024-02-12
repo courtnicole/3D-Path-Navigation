@@ -20,7 +20,7 @@ namespace PathNav.Interaction
             set => maxVelocity = value;
         }
 
-        [SerializeField, Range(-7.00f, 0.0f),] private float minVelocity = 0.35f;
+        [SerializeField, Range(0.0f, 2.0f),] private float minVelocity = 0.35f;
 
         public float MinVelocity
         {

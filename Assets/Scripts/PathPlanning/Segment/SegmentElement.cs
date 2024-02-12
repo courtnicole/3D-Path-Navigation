@@ -240,6 +240,7 @@ namespace PathNav.PathPlanning
         {
             if (CurrentPointCount           < 3) return false;
             if (controller?.CollisionBounds == null) return false;
+            if (controller is null) return false;
 
             bool isInsideBounds = controller.CollisionBounds.Contains(CurrentPoints[CurrentPointCount - 1].position);
             SelectedSegmentIndex = isInsideBounds ? CurrentPointCount - 1 : -1;

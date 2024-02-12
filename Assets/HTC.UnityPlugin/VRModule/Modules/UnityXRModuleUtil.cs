@@ -378,7 +378,7 @@ namespace HTC.UnityPlugin.VRModuleManagement
 #endif
             if (warnedFeatures.Add(hashCode))
             {
-                Debug.LogWarningFormat("Device {0} doesn't have {1} feature {2}.", device.name, typeof(T).Name, feature.name);
+                //Debug.LogWarningFormat("Device {0} doesn't have {1} feature {2}.", device.name, typeof(T).Name, feature.name);
             }
         }
 #else

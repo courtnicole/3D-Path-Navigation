@@ -45,7 +45,7 @@ namespace PathNav.ExperimentControl
         private static string _logFile;
         private static readonly CsvConfiguration Config = new(CultureInfo.InvariantCulture);
         private bool _recordData;
-
+        
         #region Enable/Disable/Update
         internal void Enable()
         {
@@ -59,7 +59,7 @@ namespace PathNav.ExperimentControl
         {
             UnsubscribeToEvents();
         }
-
+        
         private void LateUpdate()
         {
             if (!_recordData) return;
@@ -138,7 +138,13 @@ namespace PathNav.ExperimentControl
 
             follower.followSpeed              = 0;
             parentConstraint.constraintActive = _locomotionDof == LocomotionDof.FourDoF;
-            follower.follow                   = _locomotionDof == LocomotionDof.FourDoF;
+            follower.follow                   = true; //_locomotionDof == LocomotionDof.FourDoF;
+            
+            if (_locomotionDof == LocomotionDof.SixDof)
+            {
+                pointerLeft.EnableLocomotion();
+                pointerRight.EnableLocomotion();
+            }
             
             overlay.FadeToClear();
 
@@ -265,7 +271,7 @@ namespace PathNav.ExperimentControl
             };
         }
 
-        private static void InitDataLog(string logDirectory, string filePath)
+        private void InitDataLog(string logDirectory, string filePath)
         {
             if (!Directory.Exists(logDirectory))
             {
@@ -273,7 +279,11 @@ namespace PathNav.ExperimentControl
             }
 
             _logFile = filePath;
-            if (File.Exists(_logFile)) return;
+
+            if (File.Exists(_logFile))
+            {
+                return;
+            }
 
             using StreamWriter streamWriter = new(_logFile);
             using CsvWriter    csvWriter    = new(streamWriter, Config);

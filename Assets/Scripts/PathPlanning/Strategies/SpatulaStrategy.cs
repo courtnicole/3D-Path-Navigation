@@ -40,7 +40,7 @@ namespace PathNav.PathPlanning
 
         #region Segment and Path Variables
         internal Vector3 lastHandPosition;
-        internal const float minimumDelta = 0.0075f;
+        internal const float minimumDelta = 0.01f;
         internal Bounds bounds;
         internal int PointIndexToMoveOrDelete => ActiveSegment.SelectedPointVisualIndex;
         private IPlacementPlane _placementPlane;
