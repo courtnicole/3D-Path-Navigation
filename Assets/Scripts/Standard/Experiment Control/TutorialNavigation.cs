@@ -29,7 +29,7 @@ namespace PathNav.ExperimentControl
         [SerializeField] private DefaultTooltipRenderer tooltipRendererRight;
         [SerializeField] private DefaultTooltipRenderDataAsset fourDofTooltip;
         [SerializeField] private DefaultTooltipRenderDataAsset sixDofTooltip;
-        
+
         [SerializeField] private SplineFollower follower;
         [SerializeField] private Transform teleportLocation;
         [SerializeField] private Teleporter teleporter;

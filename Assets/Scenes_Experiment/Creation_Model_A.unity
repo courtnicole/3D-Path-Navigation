@@ -186,6 +186,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8048800878127146725, guid: 3ace0d1676ed36e46909ad35b3a04fc8, type: 3}
+      propertyPath: m_RenderPostProcessing
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 3ace0d1676ed36e46909ad35b3a04fc8, type: 3}
 --- !u!114 &33873754 stripped
@@ -1612,7 +1616,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2024412538}
-  - component: {fileID: 2024412537}
   m_Layer: 9
   m_Name: ViewVolume
   m_TagString: Untagged
@@ -1620,17 +1623,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 2147483647
   m_IsActive: 1
---- !u!192 &2024412537
-OcclusionArea:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2024412536}
-  serializedVersion: 2
-  m_Size: {x: 1, y: 1.2, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
-  m_IsViewVolume: 1
 --- !u!4 &2024412538
 Transform:
   m_ObjectHideFlags: 0

@@ -6,18 +6,17 @@ namespace PathNav.Patterns.FSM
 
     public class LocomotionMove<T> : IState<T> where T : LocomotionEvaluator
     {
-        private float _elapsedTime;
         private float _currentVelocity;
         private float _direction;
 
         private Vector3 _travelDirection;
         private Vector3 _shift;
+        private bool _useShift;
 
         public void Enter(T entity)
         {
             entity.OnLocomotionStart();
 
-            _elapsedTime     = 0;
             _currentVelocity = 0; //entity.dof == LocomotionDof.FourDoF ? entity.follower.followSpeed : 0;
             _travelDirection = Vector3.zero;
             _shift           = Vector3.zero;
@@ -25,6 +24,7 @@ namespace PathNav.Patterns.FSM
 
         public void UpdateLogic(T entity)
         {
+            _useShift = Mathf.Abs(entity.JoystickPose.y) > 0.125f;
             switch (entity.dof)
             {
                 case LocomotionDof.FourDoF:
@@ -59,7 +59,6 @@ namespace PathNav.Patterns.FSM
 
         public void Exit(T entity)
         {
-            _elapsedTime     = 0;
             _currentVelocity = 0; 
             entity.follower.followSpeed = 0;
             
@@ -69,7 +68,10 @@ namespace PathNav.Patterns.FSM
 
         private void Update4DoF(T entity)
         {
-            _elapsedTime     += Time.deltaTime;
+            if (!_useShift)
+            {
+                _currentVelocity = 0;
+            }
             _direction       =  entity.JoystickPose.y > 0 ? 1 : -1;
             _currentVelocity = Mathf.Clamp(_currentVelocity + (_direction * entity.Acceleration) * Time.deltaTime, entity.MaxVelocity * -1 , entity.MaxVelocity);
             if (Mathf.Abs(_currentVelocity) < entity.MinVelocity)
@@ -80,10 +82,17 @@ namespace PathNav.Patterns.FSM
 
         private void Update6DoF(T entity)
         {
-            _elapsedTime     += Time.deltaTime;
+            if (!_useShift)
+            {
+                _currentVelocity = 0;
+            }
             _direction       =  entity.JoystickPose.y > 0 ? 1 : -1;
             _travelDirection =  entity.InputPose.normalized;
-            _currentVelocity =  Mathf.Clamp(_currentVelocity + (_direction * entity.Acceleration * Time.deltaTime), entity.MinVelocity, entity.MaxVelocity);
+            _currentVelocity =  Mathf.Clamp(_currentVelocity + (_direction * entity.Acceleration) * Time.deltaTime, entity.MaxVelocity * -1, entity.MaxVelocity);
+            if (Mathf.Abs(_currentVelocity) < entity.MinVelocity)
+            {
+                _currentVelocity = entity.MinVelocity * _direction;
+            }
             _shift           =  _travelDirection * (_currentVelocity * Time.deltaTime);
         }
         

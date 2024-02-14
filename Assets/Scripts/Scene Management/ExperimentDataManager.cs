@@ -83,9 +83,9 @@ namespace PathNav.ExperimentControl
             SceneManager.activeSceneChanged += OnActiveSceneChanged;
         }
 
-        public void RecordUserId(int id)
+        public void RecordUserId(int id, float height)
         {
-            _userInfo       = new UserInfo(id);
+            _userInfo       = new UserInfo(id, height);
             _userId         = _userInfo.UserId;
             _conditionBlock = conditionBlocks[_userInfo.BlockId];
 

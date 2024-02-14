@@ -3,6 +3,7 @@ namespace  PathNav.ExperimentControl
     using global::ExperimentControl;
     using TMPro;
     using UnityEngine;
+    using UnityEngine.InputSystem.XR;
     using UnityEngine.XR.OpenXR.Samples.ControllerSample;
 
     public class Setup : MonoBehaviour
@@ -12,13 +13,14 @@ namespace  PathNav.ExperimentControl
         [SerializeField] private GameObject beginButton;    
         [SerializeField] private GameObject handednessButtons;   
         [SerializeField] private string fileName = "test.json";
+        [SerializeField] private Transform headPose;
         private string _filePath = Application.streamingAssetsPath + "/";
         private string File => _filePath + fileName;
         
         public async void GetRecentId()
         {
             int id = await FileParser.GetMostRecentUserIdAsync(File);
-            ExperimentDataManager.Instance.RecordUserId(id);
+            ExperimentDataManager.Instance.RecordUserId(id, headPose.position.y);
             userIdText.text = "User ID: " + id;
             ToggleHandedness();
         }
@@ -30,7 +32,7 @@ namespace  PathNav.ExperimentControl
 #else
             int id = await FileParser.GetNewUserIdAsync(File);
 #endif            
-            ExperimentDataManager.Instance.RecordUserId(id);
+            ExperimentDataManager.Instance.RecordUserId(id, headPose.position.y);
             userIdText.text = "User ID: " + id;
             ToggleHandedness();
         }
