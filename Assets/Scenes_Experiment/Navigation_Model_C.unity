@@ -358,7 +358,7 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 173235845}
   m_CullTransparentMesh: 1
---- !u!43 &556191778
+--- !u!43 &194288009
 Mesh:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1181,6 +1181,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 8518793611252415267}
     - target: {fileID: 5363206173960247044, guid: bcc8ce5cae3773849a94b3b50a070054, type: 3}
+      propertyPath: footVisualMarker
+      value: 
+      objectReference: {fileID: 7404495595173301527}
+    - target: {fileID: 5363206173960247044, guid: bcc8ce5cae3773849a94b3b50a070054, type: 3}
       propertyPath: parentConstraint
       value: 
       objectReference: {fileID: 7404495595173301523}
@@ -1362,6 +1366,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5dd1978a24bae5240b716fd9aa720fba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!4 &7404495595173301527 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 5152327788023561410, guid: 3f86ae8f0b81ecd419bdf8648a386999, type: 3}
+  m_PrefabInstance: {fileID: 7404495595173301522}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &7404495595173301528 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2433871860921553073, guid: 3f86ae8f0b81ecd419bdf8648a386999, type: 3}

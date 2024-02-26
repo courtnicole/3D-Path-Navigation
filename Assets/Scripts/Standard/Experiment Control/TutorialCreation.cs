@@ -15,7 +15,6 @@ namespace PathNav.ExperimentControl
     {
         private enum TutorialStage
         {
-            Start,
             Create,
             Move,
             Undo,
@@ -34,13 +33,12 @@ namespace PathNav.ExperimentControl
 
         private bool _enableTeleportation;
         private List<string> _audioMap;
-        private List<string> _drawingAudio = new() { "place_start", "draw_path", "erase_path", "finish_path", };
-        private List<string> _interpolationAudio = new() { "place_start", "place_point", "move_point", "delete_point", "finish_path", };
+        private List<string> _drawingAudio = new() {"draw_path", "erase_path", "finish_path", };
+        private List<string> _interpolationAudio = new() { "place_point", "move_point", "delete_point", "finish_path", };
         private int _audioIndex;
 
         private TutorialStage _stage;
 
-        private const string _placeStart = "Press and hold the trigger button to place the start point.";
         private const string _drawPath = "Use the trigger button to draw a path.";
         private const string _placePoint = "Use the plane and the controller to view points. Press the trigger button to create the point.";
         private const string _deletePoint = "Hover over a point and press the yellow button to delete it.";
@@ -62,13 +60,6 @@ namespace PathNav.ExperimentControl
         {
             EventManager.Unsubscribe<SegmentEventArgs>(EventId.SegmentComplete, SplineComplete);
             EndTutorial();
-        }
-        private void StartPointPlaced(object sender, PlacementEventArgs args)
-        {
-            EventManager.Unsubscribe<PlacementEventArgs>(EventId.StartPointPlaced, StartPointPlaced);
-            _stage = TutorialStage.Create;
-            _audioIndex++;
-            HandleStage();
         }
         private void PointPlaced(object sender, PathStrategyEventArgs args)
         {
@@ -135,11 +126,6 @@ namespace PathNav.ExperimentControl
         {
             switch (_stage)
             {
-                case TutorialStage.Start:
-                    PlayAudio();
-                    textMesh.text = _placeStart;
-                    EventManager.Subscribe<PlacementEventArgs>(EventId.StartPointPlaced, StartPointPlaced);
-                    break;
                 case TutorialStage.Create:
                     PlayAudio(0.5f);
                     if (ExperimentDataManager.Instance.GetCreationMethod() == PathStrategy.Bulldozer)
@@ -217,7 +203,7 @@ namespace PathNav.ExperimentControl
 
             await Task.Delay(1000);
 
-            _stage = TutorialStage.Start;
+            _stage = TutorialStage.Create;
             HandleStage();
         }
         #endregion

@@ -77,18 +77,8 @@ namespace PathNav.Events
         [EventId(typeof(LocomotionEvaluatorEventArgs))]
         LocomotionEnded, 
         #endregion
-
-        #region Placement
-        [EventId(typeof(PlacementEventArgs))]
-        StartPointPlaced,
-        #endregion
-
+        
         #region ControllerEvaluator
-        [EventId(typeof(ControllerEvaluatorEventArgs))]
-        BeginPlacingStartPoint,
-        [EventId(typeof(ControllerEvaluatorEventArgs))]
-        FinishPlacingStartPoint,
-
         [EventId(typeof(ControllerEvaluatorEventArgs))]
         StartErasePath,
         [EventId(typeof(ControllerEvaluatorEventArgs))]
@@ -156,6 +146,8 @@ namespace PathNav.Events
         #endregion
         
         #region SceneControlArgs
+        [EventId(typeof(SceneControlEventArgs))]
+        RegisterStartPoint,
         [EventId(typeof(SceneControlEventArgs))]
         SetPathStrategy,
         [EventId(typeof(SceneControlEventArgs))]

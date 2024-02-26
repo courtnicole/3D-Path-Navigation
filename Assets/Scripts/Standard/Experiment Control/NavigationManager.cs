@@ -14,6 +14,7 @@ namespace PathNav.ExperimentControl
     using System.Threading.Tasks;
     using UnityEngine;
     using UnityEngine.Animations;
+    using UnityEngine.InputSystem.XR;
     using UnityEngine.XR.OpenXR.Samples.ControllerSample;
     using Debug = UnityEngine.Debug;
 
@@ -23,7 +24,7 @@ namespace PathNav.ExperimentControl
         [SerializeField] private SplineComputer targetSpline;
         [SerializeField] private SplineFollower follower;
         [SerializeField] private SplineProjector projector;
-        [SerializeField] private Transform playerTransform;
+        
         [SerializeField] private Transform teleportLocation;
         [SerializeField] private Teleporter teleporter;
         [SerializeField] private ParentConstraint parentConstraint;
@@ -33,7 +34,17 @@ namespace PathNav.ExperimentControl
         [SerializeField] private PointerEvaluator pointerLeft;
         [SerializeField] private PointerEvaluator pointerRight;
         [SerializeField] private NavigationEndPoint endPoint;
+        [SerializeField] private Transform footVisualMarker;
 
+        
+        [Header("Data Logging Variables")]
+        [SerializeField] private Transform playerTransform;
+        [SerializeField] private Transform leftHand;
+        [SerializeField] private Transform rightHand;
+        [SerializeField] private TrackedPoseDriver headPoseDriver;
+        [SerializeField] private TrackedPoseDriver leftHandPoseDriver;
+        [SerializeField] private TrackedPoseDriver rightHandPoseDriver;
+        
         private SplineComputer _splineComputer;
         private SplinePoint[] _spline;
         private Vector3 _deltaTranslation;
@@ -45,13 +56,13 @@ namespace PathNav.ExperimentControl
         private static string _logFile;
         private static readonly CsvConfiguration Config = new(CultureInfo.InvariantCulture);
         private bool _recordData;
-        
+
         #region Enable/Disable/Update
         internal void Enable()
         {
             _taskTimerTotal = new Stopwatch();
             _locomotionDof  = ExperimentDataManager.Instance.GetNavigationMethod();
-            
+
             StartNavigation();
         }
 
@@ -59,10 +70,11 @@ namespace PathNav.ExperimentControl
         {
             UnsubscribeToEvents();
         }
-        
+
         private void LateUpdate()
         {
             if (!_recordData) return;
+
             RecordData();
         }
         #endregion
@@ -99,12 +111,14 @@ namespace PathNav.ExperimentControl
         public void OnEndReached()
         {
             if (_locomotionDof != LocomotionDof.FourDoF) return;
+
             NavigationComplete();
         }
 
         public void OnEndCollision()
         {
             if (_locomotionDof != LocomotionDof.SixDof) return;
+
             NavigationComplete();
         }
 
@@ -126,30 +140,30 @@ namespace PathNav.ExperimentControl
         {
             InitializeDataLogging();
             await Task.Delay(10);
-            
+
             SetSpline();
             await Task.Delay(50);
-            
+
             SubscribeToEvents();
             await Task.Delay(10);
-            
+
             SetupNavigation();
             await Task.Delay(500);
 
             follower.followSpeed              = 0;
             parentConstraint.constraintActive = _locomotionDof == LocomotionDof.FourDoF;
             follower.follow                   = true; //_locomotionDof == LocomotionDof.FourDoF;
-            
+
             if (_locomotionDof == LocomotionDof.SixDof)
             {
                 pointerLeft.EnableLocomotion();
                 pointerRight.EnableLocomotion();
             }
-            
+
             overlay.FadeToClear();
 
             await Task.Delay(1000);
-            
+
             _taskTimerTotal.Start();
             _recordData = true;
         }
@@ -172,7 +186,7 @@ namespace PathNav.ExperimentControl
                 _spline           = ExperimentDataManager.Instance.GetSavedSpline();
                 _deltaTranslation = ExperimentDataManager.Instance.GetSplineModel().Translation;
                 _deltaScale       = ExperimentDataManager.Instance.GetSplineModel().Scale;
-                
+
                 SetupSpline();
             }
             else
@@ -215,15 +229,15 @@ namespace PathNav.ExperimentControl
             _recordData = false;
             overlay.FadeToBlackImmediate();
             _taskTimerTotal.Stop();
-            
+
             EventManager.Publish(EventId.SplineNavigationComplete, this, GetSceneControlEventArgs());
             UnsubscribeToEvents();
-            
+
             ExperimentDataManager.Instance.RecordNavigationData(_taskTimerTotal.Elapsed);
             ExperimentDataManager.Instance.RecordDiscomfortScore(10);
             ExperimentDataManager.Instance.EndExperimentImmediately();
         }
-        
+
         private bool CheckTeleportation()
         {
             if (teleportLocation is not null)
@@ -246,15 +260,17 @@ namespace PathNav.ExperimentControl
         {
             if (!CheckTeleportation()) return;
 
+            float height = ExperimentDataManager.Instance.GetHeight();
+            footVisualMarker.localPosition =  new Vector3(0, -height, 0);
+            height                         *= 0.5f;
             SplineSample sample = follower.spline.Evaluate(0);
-            teleportLocation.position = sample.position + new Vector3(0, 1.5f, 0);
+            teleportLocation.position = sample.position + new Vector3(0, height, 0);
             teleportLocation.forward  = sample.forward;
             teleporter.Teleport(teleportLocation);
-            
+
             sample = follower.spline.Evaluate(follower.spline.pointCount - 1);
             endPoint.Place(sample.position);
         }
-
         #endregion
 
         #region Data Logging
@@ -290,16 +306,33 @@ namespace PathNav.ExperimentControl
             csvWriter.Context.RegisterClassMap<NavigationDataFormatMap>();
             csvWriter.WriteHeader<NavigationDataFormat>();
             csvWriter.NextRecord();
+
+            
         }
 
         private void RecordData()
         {
-            _navigationData.SPEED           = follower.followSpeed;
-            _navigationData.SPLINE_POSITION = _locomotionDof == LocomotionDof.FourDoF ? follower.result.position.ToString("F3") : projector.result.position.ToString("F3");
-            _navigationData.SPLINE_PERCENT  = _locomotionDof == LocomotionDof.FourDoF ? follower.result.percent : projector.result.percent;
-            _navigationData.POSITION        = playerTransform.position.ToString("F3");
-            _navigationData.ROTATION        = playerTransform.rotation.ToString("F3");
-            _navigationData.TIMESTAMP       = DateTime.Now;
+            _navigationData.SPEED = follower.followSpeed;
+
+            _navigationData.SPLINE_POSITION = _locomotionDof == LocomotionDof.FourDoF
+                ? follower.result.position.ToString("F3")
+                : projector.result.position.ToString("F3");
+            _navigationData.SPLINE_PERCENT = _locomotionDof == LocomotionDof.FourDoF ? follower.result.percent : projector.result.percent;
+            _navigationData.HEAD_POSITION  = playerTransform.position.ToString("F3");
+            _navigationData.HEAD_ROTATION  = playerTransform.rotation.ToString("F3");
+            _navigationData.LEFT_POSITION  = leftHand.position.ToString("F3");
+            _navigationData.LEFT_ROTATION  = leftHand.rotation.ToString("F3");
+            _navigationData.RIGHT_POSITION = rightHand.position.ToString("F3");
+            _navigationData.RIGHT_ROTATION = rightHand.rotation.ToString("F3");
+            
+            _navigationData.TRACKED_HEAD_POSITION = headPoseDriver.positionInput.action.ReadValue<Vector3>().ToString("F3");
+            _navigationData.TRACKED_HEAD_ROTATION = headPoseDriver.rotationInput.action.ReadValue<Quaternion>().ToString("F3");
+            _navigationData.TRACKED_LEFT_POSITION = leftHandPoseDriver.positionInput.action.ReadValue<Vector3>().ToString("F3");
+            _navigationData.TRACKED_LEFT_ROTATION = leftHandPoseDriver.rotationInput.action.ReadValue<Quaternion>().ToString("F3");
+            _navigationData.TRACKED_RIGHT_POSITION = rightHandPoseDriver.positionInput.action.ReadValue<Vector3>().ToString("F3");
+            _navigationData.TRACKED_RIGHT_ROTATION = rightHandPoseDriver.rotationInput.action.ReadValue<Quaternion>().ToString("F3");
+            
+            _navigationData.TIMESTAMP      = DateTime.Now;
 
             using StreamWriter streamWriter = new(_logFile, true);
             using CsvWriter    csvWriter    = new(streamWriter, Config);
@@ -307,6 +340,9 @@ namespace PathNav.ExperimentControl
             csvWriter.WriteRecord(_navigationData);
             csvWriter.NextRecord();
         }
+        
+        
+        
         #endregion
     }
 }

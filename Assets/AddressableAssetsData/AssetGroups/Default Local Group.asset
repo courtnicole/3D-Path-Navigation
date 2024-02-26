@@ -32,11 +32,6 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels:
     - PathCreation
-  - m_GUID: 5ca72f8923331b34588cde0a94c12bdc
-    m_Address: Model F
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - Model
   - m_GUID: a755f283dd5776943be0935ccd6c4c50
     m_Address: Model A
     m_ReadOnly: 0
@@ -54,11 +49,6 @@ MonoBehaviour:
     - Model
   - m_GUID: 0db17e3a92e18e444ac79f544439aa4c
     m_Address: Model D
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - Model
-  - m_GUID: 44db7ad891a3b034ca868a7c523d2199
-    m_Address: Model E
     m_ReadOnly: 0
     m_SerializedLabels:
     - Model

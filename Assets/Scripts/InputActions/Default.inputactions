@@ -22,6 +22,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": true
+                },
+                {
+                    "name": "eyePose",
+                    "type": "PassThrough",
+                    "id": "ff5dc011-d46b-4870-a88e-2fbff1210c16",
+                    "expectedControlType": "Pose",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -66,6 +75,17 @@
                     "processors": "",
                     "groups": "XR",
                     "action": "Rotation",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "ae802de4-ab4e-4ce9-aa09-8bd93b4ae743",
+                    "path": "<EyeGaze>/pose",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "XR",
+                    "action": "eyePose",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

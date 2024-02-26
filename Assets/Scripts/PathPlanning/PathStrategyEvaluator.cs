@@ -22,23 +22,18 @@ namespace PathNav.PathPlanning
     public class PathStrategyEvaluator : MonoBehaviour
     {
         [SerializeField] private AssetReferenceGameObject segmentKey;
-        [SerializeField] private GameObject startPointPrefab;
         [SerializeField] private Renderer model;
         [SerializeField] private PlacementPlaneElement placementPlaneLeft;
         [SerializeField] private PlacementPlaneElement placementPlaneRight;
+        [SerializeField] private Transform startPointTransform1;
+        [SerializeField] private Transform startPointTransform2;
+        [SerializeField] private GameObject targetPoints1;
+        [SerializeField] private GameObject targetPoints2;
 
         #region Factory Variables
         private ISegment _activeSegment;
         #endregion
-
-        #region Start Point Variables
-        private GameObject _startObject;
-        private SegmentStartPoint _startObjectController;
-        private bool _startPointActive;
-        private bool StartPointExists => _startObject != null;
-        private bool _startPointPlaced; 
-        #endregion
-
+        
         #region Controller Variables
         private IController _interactingController;
         private void SetController(IController controller) => _interactingController = controller;
@@ -52,19 +47,26 @@ namespace PathNav.PathPlanning
         private IPathStrategy _bulldozerStrategy;
         private IPathStrategy _spatulaStrategy; 
         private PlacementPlaneElement _placementPlane;
-        private Bounds bounds;
+        private Bounds _bounds;
+        private Transform _startPointTransform;
         #endregion
 
         #region Unity Events
         private void OnEnable()
         {
             Enable();
+            
         }
 
         private void OnDisable()
         {
             _activeStrategy?.Disable();
             Disable();
+        }
+
+        private void Start()
+        {
+            EventManager.Publish(EventId.RegisterStartPoint, this, new SceneControlEventArgs());
         }
 
         private void Update()
@@ -76,10 +78,24 @@ namespace PathNav.PathPlanning
         #region Initialization
         private void Enable()
         {
+            
             placementPlaneLeft.Disable();
             placementPlaneRight.Disable();
-            bounds = model.bounds;
+            _bounds = model.bounds;
+            bool useTargetPoints1 = ExperimentDataManager.Instance.UseTargetPoints1();
+            _startPointTransform = useTargetPoints1 ? startPointTransform1 : startPointTransform2;
+            if (useTargetPoints1)
+            {
+                targetPoints1.SetActive(true);
+                targetPoints2.SetActive(false);
+            }
+            else
+            {
+                targetPoints1.SetActive(false);
+                targetPoints2.SetActive(true);
+            }
             SubscribeToEvents();
+            
         }
 
         private void Disable()
@@ -92,28 +108,22 @@ namespace PathNav.PathPlanning
         #region Manage Event Subscriptions
         private void SubscribeToEvents()
         {
-            EventManager.Subscribe<ControllerEvaluatorEventArgs>(EventId.BeginPlacingStartPoint,  BeginPlacingStartPoint);
-            EventManager.Subscribe<ControllerEvaluatorEventArgs>(EventId.FinishPlacingStartPoint, FinishPlacingStartPoint);
-
-            EventManager.Subscribe<PlacementEventArgs>(EventId.StartPointPlaced, StartPointPlaced);
+            EventManager.Subscribe<SceneControlEventArgs>(EventId.RegisterStartPoint, RegisterStartPoint);
             EventManager.Subscribe<SceneControlEventArgs>(EventId.SetPathStrategy, SetPathStrategy);
         }
 
         private void UnsubscribeToEvents()
         {
-            EventManager.Unsubscribe<ControllerEvaluatorEventArgs>(EventId.BeginPlacingStartPoint,  BeginPlacingStartPoint);
-            EventManager.Unsubscribe<ControllerEvaluatorEventArgs>(EventId.FinishPlacingStartPoint, FinishPlacingStartPoint);
-
-            EventManager.Unsubscribe<PlacementEventArgs>(EventId.StartPointPlaced, StartPointPlaced);
+            EventManager.Unsubscribe<SceneControlEventArgs>(EventId.RegisterStartPoint, RegisterStartPoint);
             EventManager.Unsubscribe<SceneControlEventArgs>(EventId.SetPathStrategy, SetPathStrategy);
         } 
         #endregion
 
         #region Event Callbacks
-        private void StartPointPlaced(object sender, PlacementEventArgs args)
+        private void RegisterStartPoint(object sender, SceneControlEventArgs args)
         {
             if (!_strategySet) return;
-            _activeStrategy.SetStartPosition(args.Position, -args.Heading);
+            _activeStrategy.SetStartPosition(_startPointTransform.position, _startPointTransform.forward);
             ConfigureSegment();
         }
 
@@ -125,18 +135,18 @@ namespace PathNav.PathPlanning
             switch (_strategy)
             {
                 case PathStrategy.Bulldozer:
-                    _bulldozerStrategy = new BulldozerStrategy(bounds);
+                    _bulldozerStrategy = new BulldozerStrategy(_bounds);
                     SetStrategy(_bulldozerStrategy);
                     break;
                 case PathStrategy.Spatula:
-                    _spatulaStrategy = new SpatulaStrategy(_placementPlane, bounds);
+                    _spatulaStrategy = new SpatulaStrategy(_placementPlane, _bounds);
                     InitializeSpatulaStrategy();
                     SetStrategy(_spatulaStrategy);
                     break;
                 case PathStrategy.None:
                     break;
                 default:
-                    _bulldozerStrategy = new BulldozerStrategy(bounds);
+                    _bulldozerStrategy = new BulldozerStrategy(_bounds);
                     InitializeBulldozerStrategy();
                     SetStrategy(_bulldozerStrategy);
                     break;
@@ -175,47 +185,7 @@ namespace PathNav.PathPlanning
             _activeStrategy = null;
         }
         #endregion
-
-        #region Start Point Creation
-        private void BeginPlacingStartPoint(object obj, ControllerEvaluatorEventArgs args)
-        {
-            if (_startPointPlaced) return;
-            SetController(args.Controller);
-            AttachStartPoint();
-        }
-
-        private void FinishPlacingStartPoint(object obj, ControllerEvaluatorEventArgs args)
-        {
-            if (!StartPointExists) return;
-            if (!_startPointActive) return;
-            if (_startPointPlaced) return;
-            
-            (_startObjectController as IPlaceable).Place(EventId.StartPointPlaced, _startObject.transform);
-            _startObjectController.Detach();
-            _startPointPlaced = true;
-            ClearController();
-        }
-
-        private void AttachStartPoint()
-        {
-            if (_startPointActive) return;
-            if (_startPointPlaced) return;
-            
-            _startObject = Instantiate(startPointPrefab);
-
-            if (_startObject.TryGetComponent(out SegmentStartPoint startObjectController))
-            {
-                _startObjectController = startObjectController;
-                _startObjectController.Attach(_interactingController.AttachmentPoint);
-                _startPointActive = true;
-            }
-            else
-            {
-                Destroy(_startObject);
-            }
-        }
-        #endregion
-
+        
         #region Segment Creation
         private async void ConfigureSegment()
         {

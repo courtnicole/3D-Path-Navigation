@@ -36,6 +36,7 @@ namespace PathNav.ExperimentControl
         [SerializeField] private ParentConstraint parentConstraint;
         
         [SerializeField] private NavigationEndPoint endPoint;
+        [SerializeField] private Transform footVisualMarker;
 
         private List<string> _audioMap;
         private List<string> _fourDofAudio = new() { "navigation_4dof", "finish_navigation", };
@@ -179,7 +180,6 @@ namespace PathNav.ExperimentControl
                     tooltipRendererLeft.SetTooltipData(sixDofTooltip);
                     tooltipRendererRight.SetTooltipData(sixDofTooltip);
                     _audioMap       = _sixDofAudio;
-                    follower.follow = false;
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -188,9 +188,13 @@ namespace PathNav.ExperimentControl
             EventManager.Publish(EventId.EnableLocomotion, this, EventArgs.Empty);
 
             if (!CheckTeleportation()) return;
+            
+            float height = ExperimentDataManager.Instance.GetHeight();
+            footVisualMarker.localPosition =  new Vector3(0, -height, 0);
+            height                         *= 0.5f;
 
             SplineSample sample = follower.spline.Evaluate(0);
-            teleportLocation.position = sample.position + new Vector3(0, 1.5f, 0);
+            teleportLocation.position = sample.position + new Vector3(0, height, 0);
             teleportLocation.forward  = sample.forward;
             teleporter.Teleport(teleportLocation);
 

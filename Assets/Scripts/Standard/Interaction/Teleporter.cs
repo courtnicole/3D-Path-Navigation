@@ -4,6 +4,8 @@ namespace PathNav.Interaction
     using System.Collections;
     using UnityEngine;
 
+    
+    
     public class Teleporter : MonoBehaviour
     {
         #region Inspector Variables
@@ -27,8 +29,7 @@ namespace PathNav.Interaction
                 return position + Vector3.ProjectOnPlane(hmd.position - position, trackingOriginTransform.up);
             }
         }
-
-        private const float _currentFadeTime = 2.25f;
+        
         private bool _enabled;
         #endregion
 
@@ -83,6 +84,7 @@ namespace PathNav.Interaction
             trackingOriginTransform.position = targetPoint + playerOffset.FlattenY();
         }
 
+        //Based on SteamVR Teleporter
         private void TeleportAndRotatePlayer(Transform teleportMarker)
         {
             Vector3    cameraForward = cameraTransform.forward;
@@ -96,6 +98,8 @@ namespace PathNav.Interaction
             Vector3    headVector     = OffsetFromTrackingOrigin;
             Vector3    targetPosition = teleportMarker.position - (rotateHead * headVector);
             Quaternion targetRotation = originRot * rotateHead;
+            
+            targetRotation = Quaternion.Euler(0, targetRotation.eulerAngles.y, 0);
 
             trackingOriginTransform.position = targetPosition;
             trackingOriginTransform.rotation = targetRotation;

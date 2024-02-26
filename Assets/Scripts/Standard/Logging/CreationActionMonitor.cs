@@ -129,8 +129,7 @@ namespace PathNav.SceneManagement
         #region Event Subscription Management
         private void SubscribeToEvents()
         {
-            EventManager.Subscribe<ControllerEvaluatorEventArgs>(EventId.BeginPlacingStartPoint,  BeginPlacingStartPoint);
-            EventManager.Subscribe<ControllerEvaluatorEventArgs>(EventId.FinishPlacingStartPoint, FinishPlacingStartPoint);
+            EventManager.Subscribe<SceneControlEventArgs>(EventId.RegisterStartPoint,  RegisterStartPoint);
 
             EventManager.Subscribe<PathStrategyEventArgs>(EventId.DrawStarted, DrawStarted);
             EventManager.Subscribe<PathStrategyEventArgs>(EventId.DrawEnded,   DrawEnded);
@@ -149,8 +148,7 @@ namespace PathNav.SceneManagement
 
         private void UnsubscribeFromEvents()
         {
-            EventManager.Unsubscribe<ControllerEvaluatorEventArgs>(EventId.BeginPlacingStartPoint,  BeginPlacingStartPoint);
-            EventManager.Unsubscribe<ControllerEvaluatorEventArgs>(EventId.FinishPlacingStartPoint, FinishPlacingStartPoint);
+            EventManager.Unsubscribe<SceneControlEventArgs>(EventId.RegisterStartPoint,  RegisterStartPoint);
 
             EventManager.Unsubscribe<PathStrategyEventArgs>(EventId.DrawStarted, DrawStarted);
             EventManager.Unsubscribe<PathStrategyEventArgs>(EventId.DrawEnded,   DrawEnded);
@@ -221,18 +219,11 @@ namespace PathNav.SceneManagement
             RecordAction("PointDeleted", DateTime.Now);
         }
 
-        private void BeginPlacingStartPoint(object sender, ControllerEvaluatorEventArgs args)
+        private void RegisterStartPoint(object sender, SceneControlEventArgs args)
         {
             _taskTimerTotal.Start();
             StartCreateTimer();
-            IncrementTotalActions();
-            RecordAction("BeginStartPointPlacement", DateTime.Now);
-        }
-
-        private void FinishPlacingStartPoint(object sender, ControllerEvaluatorEventArgs args)
-        {
-            StopCreateTimer();
-            RecordAction("FinishStartPointPlacement", DateTime.Now);
+            RecordAction("StartPointRegistered", DateTime.Now);
         }
 
         private void FinishPath(object sender, ControllerEvaluatorEventArgs args)

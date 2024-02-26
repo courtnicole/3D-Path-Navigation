@@ -498,6 +498,7 @@ MonoBehaviour:
   beginButton: {fileID: 598209802}
   handednessButtons: {fileID: 1022928006}
   fileName: test.json
+  headPose: {fileID: 5171462226885780415}
 --- !u!1 &296340055
 GameObject:
   m_ObjectHideFlags: 0

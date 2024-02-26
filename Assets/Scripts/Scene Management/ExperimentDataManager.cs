@@ -58,7 +58,9 @@ namespace PathNav.ExperimentControl
 
         //trialCount
         private static int _currentTrialCount;
+
         private static int _modelIndex;
+
         //trialIndex
         private static int _currentTrialStageIndex;
 
@@ -112,8 +114,8 @@ namespace PathNav.ExperimentControl
             await CsvLogger.InitSceneDataLog(_logDirectory, _logFilePath);
 
             _currentTrialStageIndex = 0;
-            _currentTrialCount = 0;
-            _modelIndex = 0;
+            _currentTrialCount      = 0;
+            _modelIndex             = 0;
 
             _currentTrial = _conditionBlock.GetCurrentTrial(_currentTrialStageIndex);
 
@@ -170,7 +172,8 @@ namespace PathNav.ExperimentControl
         #region Spline
         public void SaveSplineComputer(SplineComputer splineToSave)
         {
-            if(_trialState != TrialState.Trial) return;
+            if (_trialState != TrialState.Trial) return;
+
             switch (_conditionBlock.GetCurrentModel(_currentTrialStageIndex, _modelIndex).Id)
             {
                 case "Model_A":
@@ -242,7 +245,7 @@ namespace PathNav.ExperimentControl
 
                     break;
             }
-            
+
             WriteSpline(splineToSave.GetPoints());
         }
 
@@ -254,20 +257,30 @@ namespace PathNav.ExperimentControl
         public SplinePoint[] GetSavedSpline()
         {
             _savedModel = _conditionBlock.GetCurrentModel(_currentTrialStageIndex, _modelIndex);
+
             if (_useSplineFile)
             {
                 string splineFile = _savedModel.Id switch
                                     {
-                                        "Model_A" => _currentTrialCount % 2 == 0 ? $"{_logDirectorySpline}drawing_A.csv" : $"{_logDirectorySpline}interpolating_A.csv",
-                                        "Model_B" => _currentTrialCount % 2 == 0 ? $"{_logDirectorySpline}drawing_B.csv" : $"{_logDirectorySpline}interpolating_B.csv",
-                                        "Model_C" => _currentTrialCount % 2 == 0 ? $"{_logDirectorySpline}drawing_C.csv" : $"{_logDirectorySpline}interpolating_C.csv",
-                                        "Model_D" => _currentTrialCount % 2 == 0 ? $"{_logDirectorySpline}drawing_D.csv" : $"{_logDirectorySpline}interpolating_D.csv",
-                                        _         => throw new ArgumentOutOfRangeException(),
+                                        "Model_A" => _currentTrialCount % 2 == 0
+                                            ? $"{_logDirectorySpline}drawing_A.csv"
+                                            : $"{_logDirectorySpline}interpolating_A.csv",
+                                        "Model_B" => _currentTrialCount % 2 == 0
+                                            ? $"{_logDirectorySpline}drawing_B.csv"
+                                            : $"{_logDirectorySpline}interpolating_B.csv",
+                                        "Model_C" => _currentTrialCount % 2 == 0
+                                            ? $"{_logDirectorySpline}drawing_C.csv"
+                                            : $"{_logDirectorySpline}interpolating_C.csv",
+                                        "Model_D" => _currentTrialCount % 2 == 0
+                                            ? $"{_logDirectorySpline}drawing_D.csv"
+                                            : $"{_logDirectorySpline}interpolating_D.csv",
+                                        _ => throw new ArgumentOutOfRangeException(),
                                     };
                 SplinePoint[] splinePoints = CsvLogger.ReadSpline(splineFile);
                 _savedSpline = splinePoints;
             }
-            else {
+            else
+            {
                 _savedSpline = _savedModel.Id switch
                                {
                                    "Model_A" => _currentTrialCount % 2 == 0 ? _drawingModelASpline : _interpolationModelASpline,
@@ -277,6 +290,7 @@ namespace PathNav.ExperimentControl
                                    _         => throw new ArgumentOutOfRangeException(),
                                };
             }
+
             return _savedSpline;
         }
 
@@ -284,8 +298,10 @@ namespace PathNav.ExperimentControl
         #endregion
 
         #region Public Getters
-        public int           GetId()                     => _userId;
-        public int           GetBlock()                  => _userInfo.BlockId;
+        public int GetId()    => _userId;
+        public int GetBlock() => _userInfo.BlockId;
+
+        public float         GetHeight()                 => _userInfo.Height;
         public PathStrategy  GetCreationMethod()         => _currentTrial.pathStrategy;
         public string        GetCreationMethodString()   => _currentTrial.GetPathStrategyString();
         public LocomotionDof GetNavigationMethod()       => _currentTrial.locomotionDof;
@@ -293,7 +309,18 @@ namespace PathNav.ExperimentControl
         public string        GetModel()                  => _conditionBlock.GetCurrentModel(_currentTrialStageIndex, _modelIndex).Id;
         public string        GetLogDirectory()           => _logDirectory;
         public string        GetActionLogFilePath()      => _logFilePathActions;
-        public Handedness    GetHandedness()             => _handedness;
+
+        public bool UseTargetPoints1()
+        {
+            if (_userId % 2 == 0)
+            {
+                return _currentTrialStageIndex == 0;
+            }
+
+            return _currentTrialStageIndex != 0;
+        }
+
+        public Handedness GetHandedness() => _handedness;
 
         public bool CreationTutorialActive()
         {
@@ -351,9 +378,9 @@ namespace PathNav.ExperimentControl
 
         internal void TutorialComplete()
         {
-            _trialState = TrialState.Trial;
+            _trialState        = TrialState.Trial;
             _currentTrialCount = 0;
-            _modelIndex = 0;
+            _modelIndex        = 0;
             LoadNextScene();
         }
 
@@ -402,10 +429,10 @@ namespace PathNav.ExperimentControl
 
                 if (_currentTrialStageIndex < _totalTrialStages)
                 {
-                    _currentTrialCount   = 0;
-                    _modelIndex   = 0;
-                    _currentTrial = _conditionBlock.GetCurrentTrial(_currentTrialStageIndex);
-                    _trialState   = TrialState.Tutorial;
+                    _currentTrialCount = 0;
+                    _modelIndex        = 0;
+                    _currentTrial      = _conditionBlock.GetCurrentTrial(_currentTrialStageIndex);
+                    _trialState        = TrialState.Tutorial;
                 }
                 else
                 {

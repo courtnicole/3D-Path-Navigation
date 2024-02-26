@@ -4,6 +4,8 @@ using UnityEngine;
 
 namespace PathNav
 {
+    using ExperimentControl;
+
     public class Overlay : MonoBehaviour
     {
         private Renderer _renderer;
@@ -19,6 +21,12 @@ namespace PathNav
             _renderer       = GetComponent<Renderer>();
             _material       = _renderer.material;
             _material.color = _colorBlack;
+        }
+
+        private void Start()
+        {
+            if(!ExperimentDataManager.Instance)
+                FadeToClear();
         }
         public void FadeToClear()
         {

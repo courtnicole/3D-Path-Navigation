@@ -11,9 +11,24 @@ namespace PathNav.ExperimentControl
         public float  SPEED           { get; set; }
         public double SPLINE_PERCENT  { get; set; }
         public string SPLINE_POSITION { get; set; }
-        public string POSITION        { get; set; }
-        public string ROTATION        { get; set; }
+        public string HEAD_POSITION        { get; set; }
+        public string HEAD_ROTATION        { get; set; }
         
+        public string LEFT_POSITION { get; set; }
+        public string LEFT_ROTATION { get; set; }
+        
+        public string RIGHT_POSITION { get; set; }
+        public string RIGHT_ROTATION { get; set; }
+        
+        public string TRACKED_HEAD_POSITION { get; set; }
+        public string TRACKED_HEAD_ROTATION { get; set; }
+        
+        public string TRACKED_LEFT_POSITION { get; set; }
+        public string TRACKED_LEFT_ROTATION { get; set; }
+        
+        public string TRACKED_RIGHT_POSITION { get; set; }
+        public string TRACKED_RIGHT_ROTATION { get; set; }
+
         
         public DateTime TIMESTAMP { get; set; }
     }

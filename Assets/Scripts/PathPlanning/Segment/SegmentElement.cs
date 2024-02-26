@@ -23,8 +23,6 @@ namespace PathNav.PathPlanning
         public SplineComputer Spline { get; private set; }
 
         private bool _useNodeVisuals;
-
-        private int _eraseLayerMask;
         #endregion
 
         #region Unity Methods
@@ -198,8 +196,6 @@ namespace PathNav.PathPlanning
             _segmentInfo = info.Info;
             Spline       = info.Spline;
             
-            _eraseLayerMask = (1 << 8);
-
             if (!gameObject.GetComponent<InteractableElement>()) return;
 
             gameObject.GetComponent<InteractableElement>().Id = Id;
