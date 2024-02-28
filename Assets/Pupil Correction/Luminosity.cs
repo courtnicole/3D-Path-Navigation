@@ -19,6 +19,8 @@ namespace PathNav.ExperimentControl
        public Camera cameraUsedToRender;
        public Material calculation;
        RenderTexture _RenderTexture;
+       RenderTexture _RenderTexture2;
+        
        Texture2D debugRTBackground;
        public float SizeScalar = 0.25f;
         private void Start()
@@ -27,27 +29,19 @@ namespace PathNav.ExperimentControl
             debugRTBackground.SetPixels(new Color[4] { Color.yellow, Color.yellow, Color.yellow, Color.yellow });
             debugRTBackground.Apply();
             
-             (_width, _height) = ((int)(cameraUsedToRender.pixelWidth * SizeScalar), (int)(cameraUsedToRender.pixelHeight * SizeScalar));
+             (_width, _height) = ((cameraUsedToRender.pixelWidth), (cameraUsedToRender.pixelHeight));
             _RenderTexture     = new RenderTexture(_width, _height, 0);
             _RenderTexture.Create();
+            _RenderTexture2 = new RenderTexture(_width, _height, 0);
+            _RenderTexture2.Create();
             
             RenderPipelineManager.endContextRendering += OnEndContextRendering;
         }
         
         private void OnEndContextRendering(ScriptableRenderContext context, List<Camera> cameras)
         {
-            if (_RenderTexture != null && (_RenderTexture.width != _width || _RenderTexture.height != _height))
-            {
-                Destroy(_RenderTexture);
-                _RenderTexture = null;
-            }
-
-            if (_RenderTexture == null)
-            {
-                _RenderTexture = new RenderTexture(_width, _height, 0);
-            }
-            
-            Graphics.Blit(cameraUsedToRender.targetTexture, _RenderTexture, calculation);
+            //RenderTexture.active = _RenderTexture;
+            Graphics.Blit( cameraUsedToRender.targetTexture, _RenderTexture);
             cameraUsedToRender.targetTexture = null;
         }
         
