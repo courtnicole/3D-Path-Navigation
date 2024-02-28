@@ -3,9 +3,7 @@ namespace PathNav.PathPlanning
     using Events;
     using ExperimentControl;
     using Extensions;
-    using global::ExperimentControl;
     using Input;
-    using Interaction;
     using Patterns.Factory;
     using System.Threading;
     using System.Threading.Tasks;

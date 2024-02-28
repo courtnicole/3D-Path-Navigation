@@ -318,19 +318,19 @@ namespace PathNav.ExperimentControl
                 ? follower.result.position.ToString("F3")
                 : projector.result.position.ToString("F3");
             _navigationData.SPLINE_PERCENT = _locomotionDof == LocomotionDof.FourDoF ? follower.result.percent : projector.result.percent;
-            _navigationData.HEAD_POSITION  = playerTransform.position.ToString("F3");
-            _navigationData.HEAD_ROTATION  = playerTransform.rotation.ToString("F3");
-            _navigationData.LEFT_POSITION  = leftHand.position.ToString("F3");
-            _navigationData.LEFT_ROTATION  = leftHand.rotation.ToString("F3");
-            _navigationData.RIGHT_POSITION = rightHand.position.ToString("F3");
-            _navigationData.RIGHT_ROTATION = rightHand.rotation.ToString("F3");
-            
-            _navigationData.TRACKED_HEAD_POSITION = headPoseDriver.positionInput.action.ReadValue<Vector3>().ToString("F3");
-            _navigationData.TRACKED_HEAD_ROTATION = headPoseDriver.rotationInput.action.ReadValue<Quaternion>().ToString("F3");
-            _navigationData.TRACKED_LEFT_POSITION = leftHandPoseDriver.positionInput.action.ReadValue<Vector3>().ToString("F3");
-            _navigationData.TRACKED_LEFT_ROTATION = leftHandPoseDriver.rotationInput.action.ReadValue<Quaternion>().ToString("F3");
-            _navigationData.TRACKED_RIGHT_POSITION = rightHandPoseDriver.positionInput.action.ReadValue<Vector3>().ToString("F3");
-            _navigationData.TRACKED_RIGHT_ROTATION = rightHandPoseDriver.rotationInput.action.ReadValue<Quaternion>().ToString("F3");
+            // _navigationData.HEAD_POSITION  = playerTransform.position.ToString("F3");
+            // _navigationData.HEAD_ROTATION  = playerTransform.rotation.ToString("F3");
+            // _navigationData.LEFT_POSITION  = leftHand.position.ToString("F3");
+            // _navigationData.LEFT_ROTATION  = leftHand.rotation.ToString("F3");
+            // _navigationData.RIGHT_POSITION = rightHand.position.ToString("F3");
+            // _navigationData.RIGHT_ROTATION = rightHand.rotation.ToString("F3");
+            //
+            // _navigationData.TRACKED_HEAD_POSITION = headPoseDriver.positionInput.action.ReadValue<Vector3>().ToString("F3");
+            // _navigationData.TRACKED_HEAD_ROTATION = headPoseDriver.rotationInput.action.ReadValue<Quaternion>().ToString("F3");
+            // _navigationData.TRACKED_LEFT_POSITION = leftHandPoseDriver.positionInput.action.ReadValue<Vector3>().ToString("F3");
+            // _navigationData.TRACKED_LEFT_ROTATION = leftHandPoseDriver.rotationInput.action.ReadValue<Quaternion>().ToString("F3");
+            // _navigationData.TRACKED_RIGHT_POSITION = rightHandPoseDriver.positionInput.action.ReadValue<Vector3>().ToString("F3");
+            // _navigationData.TRACKED_RIGHT_ROTATION = rightHandPoseDriver.rotationInput.action.ReadValue<Quaternion>().ToString("F3");
             
             _navigationData.TIMESTAMP      = DateTime.Now;
 
