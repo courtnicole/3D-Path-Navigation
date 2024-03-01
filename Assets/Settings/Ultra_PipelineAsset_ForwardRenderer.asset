@@ -1,5 +1,22 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-8245678278430419056
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7eef51bd0d27ebb4ba5524aab47d2c45, type: 3}
+  m_Name: LuminosityRenderFeature
+  m_EditorClassIdentifier: 
+  m_Active: 1
+  settings:
+    renderEvent: 600
+    shader: {fileID: 4800000, guid: 6207a8f3c95c16c40a3f5071e6b3ab39, type: 3}
+    filterMode: 1
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -15,8 +32,8 @@ MonoBehaviour:
   debugShaders:
     debugReplacementPS: {fileID: 4800000, guid: cf852408f2e174538bcd9b7fda1c5ae7, type: 3}
   m_RendererFeatures:
-  - {fileID: 5209729342720207268}
-  m_RendererFeatureMap: a469c4203cad4c48
+  - {fileID: -8245678278430419056}
+  m_RendererFeatureMap: 1b27911d77e00938901700124b77918d
   m_UseNativeRenderPass: 0
   postProcessData: {fileID: 11400000, guid: 41439944d30ece34e96484bdb6645b55, type: 2}
   xrSystemData: {fileID: 11400000, guid: 60e1133243b97e347b653163a8c01b64, type: 2}
@@ -53,20 +70,4 @@ MonoBehaviour:
   m_AccurateGbufferNormals: 0
   m_ClusteredRendering: 0
   m_TileSize: 32
-  m_IntermediateTextureMode: 1
---- !u!114 &5209729342720207268
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 966347d160d1f0641926ed81c24bd566, type: 3}
-  m_Name: LuminosityPass
-  m_EditorClassIdentifier: 
-  m_Active: 1
-  settings:
-    displayMaterial: {fileID: -3033667219593020291, guid: fe350c0facac420479f4664285f9f60e, type: 3}
-    textureName: Temporary
+  m_IntermediateTextureMode: 0
