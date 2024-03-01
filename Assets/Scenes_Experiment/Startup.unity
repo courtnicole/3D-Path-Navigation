@@ -459,6 +459,7 @@ GameObject:
   m_Component:
   - component: {fileID: 238862747}
   - component: {fileID: 238862748}
+  - component: {fileID: 238862749}
   m_Layer: 0
   m_Name: Logic
   m_TagString: Untagged
@@ -499,6 +500,19 @@ MonoBehaviour:
   handednessButtons: {fileID: 1022928006}
   fileName: test.json
   headPose: {fileID: 5171462226885780415}
+--- !u!114 &238862749
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 238862746}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bd38f94dc7ca6e742be53e1d3d7f87e6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  rt: {fileID: 8600000, guid: 77fcd6e2d562806468b423818fd0bfe2, type: 2}
 --- !u!1 &296340055
 GameObject:
   m_ObjectHideFlags: 0
@@ -687,7 +701,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 62d3905a354d3104eb7fda0c4eef8d6f, type: 2}
+  - {fileID: 2100000, guid: 0b874a704017b6c40988298168cdc886, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

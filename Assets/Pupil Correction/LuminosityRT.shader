@@ -87,7 +87,7 @@ Shader "CustomRenderTexture/LuminosityRT"
             {
                 UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
                 float4 sampled_color = SAMPLE_TEXTURE2D_X(_MainTex, sampler_MainTex, input.uv);
-                sampled_color.r = 1.0;
+                sampled_color.r = Luminance(sampled_color.rgb);
                 return sampled_color;
             }
             ENDHLSL
