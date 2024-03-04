@@ -67,27 +67,31 @@ Shader "CustomRenderTexture/LuminosityRT"
             //From common postprocessing
             real3 GetLinearToSRGB(real3 c)
             {
-                #if _USE_FAST_SRGB_LINEAR_CONVERSION
-    return FastLinearToSRGB(c);
-                #else
-                return LinearToSRGB(c);
-                #endif
+                real3 sRGBLo = c * 12.92;
+                real3 sRGBHi = (PositivePow(c, real3(1.0 / 2.4, 1.0 / 2.4, 1.0 / 2.4)) * 1.055) - 0.055;
+                real3 sRGB = (c <= 0.0031308) ? sRGBLo : sRGBHi;
+                return sRGB;
             }
 
-            real4 GetLinearToSRGB(real4 c)
+            real3 GetSRGBToLinear(real3 c)
             {
-                #if _USE_FAST_SRGB_LINEAR_CONVERSION
-    return FastLinearToSRGB(c);
-                #else
-                return LinearToSRGB(c);
-                #endif
+                real3 linearRGBLo = c / 12.92;
+                real3 linearRGBHi = PositivePow((c + 0.055) / 1.055, real3(2.4, 2.4, 2.4));
+                real3 linearRGB = (c <= 0.04045) ? linearRGBLo : linearRGBHi;
+                return linearRGB;
+            }
+
+            real GetLuminance(real3 linearRgb)
+            {
+                return dot(linearRgb, real3(0.2126729, 0.7151522, 0.0721750));
             }
 
             half4 frag(Varyings input) : SV_Target
             {
                 UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
                 float4 sampled_color = SAMPLE_TEXTURE2D_X(_MainTex, sampler_MainTex, input.uv);
-                sampled_color.r = Luminance(sampled_color.rgb);
+                //sampled_color.rgb = GetLinearToSRGB(sampled_color.rgb);
+                //sampled_color.r = Luminance(sampled_color.rgb);
                 return sampled_color;
             }
             ENDHLSL

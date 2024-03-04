@@ -8,16 +8,26 @@ namespace PathNav
     public class Dummy : MonoBehaviour
     {
         public RenderTexture rt;
-
+        private Texture2D _texture;
+        private RenderTexture _activeRT;
+        private Rect _rect;
         void Start()
         {
+            var format = rt.graphicsFormat;
+            _texture                                  =  new Texture2D(1, 1, format, TextureCreationFlags.None);
+            _rect                                     =  new Rect(0, 0, 1, 1);
             RenderPipelineManager.endContextRendering += OnEndContextRendering;
         }
 
         void OnEndContextRendering(ScriptableRenderContext context, List<Camera> cameras)
         {
-            //sample from rt mip level 2
-            
+            _activeRT = RenderTexture.active;
+            RenderTexture.active = rt;
+            _texture.ReadPixels(_rect, 0, 0);
+            //_texture.Apply();
+            var pixel = _texture.GetPixel(0, 0);
+            Debug.Log(pixel);
+            RenderTexture.active = _activeRT;
             
         }
 
@@ -26,13 +36,13 @@ namespace PathNav
             RenderPipelineManager.endContextRendering -= OnEndContextRendering;
         }
 
-        public void OnGUI()
-        {
-            if (rt != null)
-            {
-                //
-                GUI.DrawTexture(new Rect(0, 0, 100, 100), rt);
-            }
-        }
+        // public void OnGUI()
+        // {
+        //     if (rt != null)
+        //     {
+        //         //
+        //         GUI.DrawTexture(new Rect(0, 0, 100, 100), rt);
+        //     }
+        // }
     }
 }

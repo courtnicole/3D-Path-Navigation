@@ -80,7 +80,7 @@ namespace PathNav.PathPlanning
             placementPlaneLeft.Disable();
             placementPlaneRight.Disable();
             _bounds = model.bounds;
-            bool useTargetPoints1 = ExperimentDataManager.Instance.UseTargetPoints1();
+            bool useTargetPoints1 = ExperimentDataManager.Instance != null ? ExperimentDataManager.Instance.UseTargetPoints1() : true;
             _startPointTransform = useTargetPoints1 ? startPointTransform1 : startPointTransform2;
             if (useTargetPoints1)
             {

@@ -17,11 +17,8 @@ MonoBehaviour:
     renderPassEvent: 600
     blitMaterial: {fileID: 2100000, guid: 0eb9f4bfa6eb40e438a155a5c61a8f13, type: 2}
     blitMaterialPassIndex: 0
-    tempTextureObject: {fileID: 8400000, guid: af6ca93ae44b75a4aa165622072dd7e0, type: 2}
     dstTextureObject: {fileID: 8600000, guid: 77fcd6e2d562806468b423818fd0bfe2, type: 2}
-    filterMode: 1
-  shaders:
-    blitDirectly: {fileID: 4800000, guid: 6207a8f3c95c16c40a3f5071e6b3ab39, type: 3}
+    tempTextureObject: {fileID: 8400000, guid: af6ca93ae44b75a4aa165622072dd7e0, type: 2}
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0

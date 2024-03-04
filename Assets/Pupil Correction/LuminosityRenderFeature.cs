@@ -3,6 +3,7 @@ namespace PathNav
 	using System;
 	using UnityEditor;
 	using UnityEngine;
+	using UnityEngine.Experimental.Rendering;
 	using UnityEngine.Rendering;
 	using UnityEngine.Rendering.Universal;
 
@@ -23,73 +24,57 @@ namespace PathNav
             private RenderTargetIdentifier _temporaryTargetId; 
 			private RenderTargetIdentifier _destinationTargetId; 
 
-			private RenderTargetIdentifier _cameraDepthTarget;
+			private RenderTargetHandle _temporaryTargetHandle;
+			private RenderTextureDescriptor _tempDescriptor;
 
 			private string _mProfilerTag;
 			private int _blitTextureID = Shader.PropertyToID("_MainTex");
-			private Material _blitDirectlyMaterial;
+			//private Material _blitDirectlyMaterial;
 			private bool _hasPrintedError;
 
-			public LuminosityPass(RenderPassEvent renderPassEvent, BlitSettings settings, BlitShaderResources shaders, string tag) {
+			public LuminosityPass(RenderPassEvent renderPassEvent, BlitSettings settings, RenderTextureDescriptor descriptor, string tag) {
 				this.renderPassEvent = renderPassEvent;
-				_settings = settings;
-				_mProfilerTag = tag;
-				//_temporaryTargetHandle.Init("_TemporaryColorTexture");
-				if (shaders.blitDirectly == null) {
-					Debug.LogError("shaders.blitDirectly is null?");
-				} else {
-					_blitDirectlyMaterial = new Material(shaders.blitDirectly);
-				}
+				_settings            = settings;
+				_mProfilerTag        = tag;
+				_tempDescriptor      = descriptor;
+				_temporaryTargetHandle.Init("_TemporaryColorTexture");
+				// if (shaders.blitDirectly == null) {
+				// 	Debug.LogError("shaders.blitDirectly is null?");
+				// } else {
+				// 	_blitDirectlyMaterial = new Material(shaders.blitDirectly);
+				// }
 			}
 
-			public void ConfigureTargets(RenderTargetIdentifier temporary, RenderTargetIdentifier destination) {
-				_temporaryTargetId     = temporary;
-				_destinationTargetId   = destination;
-			}
-			
-			public override void Configure(CommandBuffer cmd, RenderTextureDescriptor cameraTextureDescriptor) {
-				//ConfigureTarget(new RenderTargetIdentifier(_temporaryTargetId,   0, CubemapFace.Unknown, -1));
-				//ConfigureTarget(new RenderTargetIdentifier(_destinationTargetId, 0, CubemapFace.Unknown, -1));
+			public void ConfigureTargets(RenderTargetIdentifier destination) {
+				
+				_destinationTargetId = destination;
 			}
 			
 			public override void Execute(ScriptableRenderContext context, ref RenderingData renderingData) {
 				
 				CommandBuffer cmd = CommandBufferPool.Get(_mProfilerTag);
-				//RenderTextureDescriptor opaqueDesc = renderingData.cameraData.cameraTargetDescriptor;
-				//opaqueDesc.depthBufferBits = 0;
 				
 				ScriptableRenderer renderer = renderingData.cameraData.renderer;
-				_cameraDepthTarget = renderer.cameraDepthTarget;
 
 				_sourceTargetId = renderer.cameraColorTarget;
-
-				// _destinationTargetId = new RenderTargetIdentifier(_settings.dstTextureObject);
-
-				// opaqueDesc.autoGenerateMips = true;
-				// opaqueDesc.useMipMap        = true;
-				// opaqueDesc.colorFormat      = RenderTextureFormat.ARGBFloat;
-				// int mipLevel = 0;
-				// if(opaqueDesc.mipCount > 1) {
-				// 	mipLevel = opaqueDesc.mipCount - 1;
-				// }
 				
-				//cmd.GetTemporaryRT(_temporaryTargetHandle.id, opaqueDesc, _settings.filterMode);
+				cmd.GetTemporaryRT(_temporaryTargetHandle.id, _tempDescriptor, FilterMode.Bilinear);
 				
 				cmd.SetGlobalTexture(_blitTextureID, _sourceTargetId);
-				cmd.SetRenderTarget(new RenderTargetIdentifier(_temporaryTargetId, 0, CubemapFace.Unknown, -1)); // THIS IS BAD
+				cmd.SetRenderTarget(new RenderTargetIdentifier(_temporaryTargetHandle.Identifier(), 0, CubemapFace.Unknown, -1)); // THIS IS BAD
 				cmd.DrawMesh(RenderingUtils.fullscreenMesh, Matrix4x4.identity, _settings.blitMaterial, 0, _settings.blitMaterialPassIndex);
 				
-				cmd.SetGlobalTexture(_blitTextureID, _temporaryTargetId);
+				//cmd.SetGlobalTexture(_blitTextureID, _temporaryTargetHandle.Identifier());
 				cmd.SetRenderTarget(new RenderTargetIdentifier(_destinationTargetId, 8, CubemapFace.Unknown, -1));
-				cmd.CopyTexture(_temporaryTargetId, 0, 8, _destinationTargetId, 0, 0);
+				cmd.CopyTexture(_temporaryTargetHandle.Identifier(), 0, 8, _destinationTargetId, 0, 0);
 				//cmd.DrawMesh(RenderingUtils.fullscreenMesh, Matrix4x4.identity, _blitDirectlyMaterial, 0, 0);
 
 				context.ExecuteCommandBuffer(cmd);
 				cmd.Clear();
 				CommandBufferPool.Release(cmd);
 			}
-			public override void FrameCleanup(CommandBuffer cmd) {
-				//cmd.ReleaseTemporaryRT(_temporaryTargetHandle.id);
+			public override void OnCameraCleanup(CommandBuffer cmd) {
+				cmd.ReleaseTemporaryRT(_temporaryTargetHandle.id);
 			}
         }
 
@@ -98,31 +83,31 @@ namespace PathNav
 			public RenderPassEvent renderPassEvent = RenderPassEvent.AfterRenderingPostProcessing;
 			public Material blitMaterial;
 			public int blitMaterialPassIndex;
-			public RenderTexture tempTextureObject;
 			public RenderTexture dstTextureObject;
-		}
-
-		[Serializable][ReloadGroup]
-		public class BlitShaderResources {
-			[Reload("LuminosityCalculation.shader")]
-			public Shader blitDirectly;
+			public RenderTexture tempTextureObject;
 		}
 		
 		public BlitSettings settings = new ();
-		public BlitShaderResources shaders = new ();
 		private LuminosityPass _luminosityPass;
+		private RenderTextureDescriptor _tempDescriptor;
+		private RenderTexture _dstTextureObject;
 
 		public override void Create() {
-#if UNITY_EDITOR
-			// This triggers the BlitShaderResources ReloadGroup to reload
-			string path = AssetDatabase.GetAssetPath(MonoScript.FromScriptableObject(this)).Replace("/LuminosityRenderFeature.cs", "");
-			ResourceReloader.ReloadAllNullIn(this, path);
-#endif
-
+			 _tempDescriptor = new RenderTextureDescriptor(256, 256)
+			{
+				colorFormat      = RenderTextureFormat.ARGBHalf,
+				autoGenerateMips = true,
+				useMipMap        = true,
+				sRGB             = false,
+			};
+			
+			//_tempDescriptor   = settings.tempTextureObject.descriptor;
+			_dstTextureObject = new RenderTexture(1, 1, 0, RenderTextureFormat.ARGBHalf, RenderTextureReadWrite.Linear);
+			//_dstTextureObject = settings.dstTextureObject;
 			int passIndex = settings.blitMaterial != null ? settings.blitMaterial.passCount - 1 : 1;
 			settings.blitMaterialPassIndex = Mathf.Clamp(settings.blitMaterialPassIndex, -1, passIndex);
 			
-			_luminosityPass = new LuminosityPass(settings.renderPassEvent, settings, shaders, name);
+			_luminosityPass = new LuminosityPass(settings.renderPassEvent, settings, _tempDescriptor, name);
 		}
 
 		public override void AddRenderPasses(ScriptableRenderer renderer, ref RenderingData renderingData) {
@@ -133,7 +118,7 @@ namespace PathNav
 			}
 			
 			_luminosityPass.ConfigureInput(ScriptableRenderPassInput.Color);
-			_luminosityPass.ConfigureTargets(new RenderTargetIdentifier(settings.tempTextureObject), new RenderTargetIdentifier(settings.dstTextureObject));
+			_luminosityPass.ConfigureTargets(new RenderTargetIdentifier(_dstTextureObject));
 			renderer.EnqueuePass(_luminosityPass);
 		}
 	}
