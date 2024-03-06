@@ -55,6 +55,18 @@ Shader "Pupil/LuminosityRT"
             TEXTURE2D_X(_LuminosityTex);
             SAMPLER(sampler_LuminosityTex);
 
+            float3 positive_pow(const float3 base, const float3 power)
+            {
+                return pow(abs(base), power);
+            }
+
+            float3 get_srgb_to_linear(const float3 c)
+            {
+                const float3 linear_rgb_lo = c / 12.92;
+                const float3 linear_rgb_hi = positive_pow((c + 0.055) / 1.055, float3(2.4, 2.4, 2.4));
+                return (c <= 0.04045) ? linear_rgb_lo : linear_rgb_hi;
+            }
+
             half4 frag(Varyings input) : SV_Target
             {
                 UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);

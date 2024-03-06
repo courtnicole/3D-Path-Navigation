@@ -1,3 +1,5 @@
+using Unity.Collections;
+
 namespace PathNav
 {
     using System;
@@ -6,15 +8,7 @@ namespace PathNav
     using UnityEngine.Rendering;
     using UnityEngine.Rendering.Universal;
     using UnityEngine.Experimental.Rendering;
-
-    /*
-     * Based on: 
-     * https://github.com/Cyanilux/URP_BlitRenderFeature/blob/cmd-drawMesh/Blit.cs
-     * Based on the Blit from the UniversalRenderingExamples :
-     * https://github.com/Unity-Technologies/UniversalRenderingExamples/tree/master/Assets/Scripts/Runtime/RenderPasses
-     * And Blit in XR from URP docs :
-     * https://docs.unity3d.com/Packages/com.unity.render-pipelines.universal@12.1/manual/renderer-features/how-to-fullscreen-blit-in-xr-spi.html
-     */
+    
     public class LuminosityRenderFeature : ScriptableRendererFeature
     {
         public class LuminosityPass : ScriptableRenderPass
@@ -28,29 +22,41 @@ namespace PathNav
             private RenderTargetHandle _temporaryTargetHandle;
             private readonly RenderTextureDescriptor _tempDescriptor;
 
-            private readonly string _mProfilerTag;
+            private readonly string _profilerTag;
             private readonly int _blitTextureID = Shader.PropertyToID("_LuminosityTex");
 
-            private ComputeShader _readPixelCompute;
-            private int _readPixelKernel, _groupSizeX, _groupSizeY, threadsX, threadsY;
-            private float[] _luminance;
-
+            private readonly ComputeShader _pixelComputeShader;
+            private readonly int _linearToXYZKernel;
+            private readonly int _readLuminanceKernel;
+            
+            private readonly ComputeBuffer _luminanceBuffer;
+            private NativeArray<float> _buffer; 
+            private readonly Queue<float> _luminance;
+            
+            private readonly int _groupSizeX;
+            private readonly int _groupSizeY;
+            private int _threadsX, _threadsY;
             public LuminosityPass(RenderPassEvent renderPassEvent, BlitSettings settings,
-                RenderTextureDescriptor descriptor, RenderTargetIdentifier destinationId,
-                ComputeShader shader, string tag)
+                RenderTextureDescriptor descriptor, RenderTargetIdentifier destinationId, ComputeShader shader,
+                ref ComputeBuffer buffer, ref Queue<float> queue, string tag)
             {
                 this.renderPassEvent = renderPassEvent;
                 _settings = settings;
-                _mProfilerTag = tag;
+                _profilerTag = tag;
                 _tempDescriptor = descriptor;
                 _destinationTargetId = destinationId;
                 _temporaryTargetHandle.Init("_LuminosityTex");
-                _readPixelCompute = shader;
-                _readPixelKernel = _readPixelCompute.FindKernel("readPixel");
-                _readPixelCompute.GetKernelThreadGroupSizes(_readPixelKernel,
+                
+                _pixelComputeShader = shader;
+                _linearToXYZKernel = _pixelComputeShader.FindKernel("linear_to_xyz");
+                _pixelComputeShader.GetKernelThreadGroupSizes(_linearToXYZKernel,
                     out uint sizeX, out uint sizeY, out var _);
                 _groupSizeX = (int)sizeX;
                 _groupSizeY = (int)sizeY;
+                
+                _readLuminanceKernel = _pixelComputeShader.FindKernel("read_luminance");
+                _luminanceBuffer = buffer;
+                _luminance = queue;
             }
 
             public override void OnCameraSetup(CommandBuffer cmd, ref RenderingData renderingData)
@@ -62,8 +68,9 @@ namespace PathNav
             public override void Configure(CommandBuffer cmd, RenderTextureDescriptor cameraTextureDescriptor)
             {
                 cmd.GetTemporaryRT(_temporaryTargetHandle.id, _tempDescriptor, FilterMode.Bilinear);
-                threadsX = Mathf.CeilToInt(_tempDescriptor.width / (float)_groupSizeX);
-                threadsY = Mathf.CeilToInt(_tempDescriptor.height / (float)_groupSizeY);
+                _threadsX = Mathf.CeilToInt(_tempDescriptor.width / (float)_groupSizeX);
+                _threadsY = Mathf.CeilToInt(_tempDescriptor.height / (float)_groupSizeY);
+                _buffer = new NativeArray<float>(1, Allocator.Persistent, NativeArrayOptions.UninitializedMemory);
 
                 //Cannot use ConfigureTarget(RenderTargetIdentifier[] colorAttachment) here? Forces output to screen...
                 ConfigureTarget(new RenderTargetIdentifier(_destinationTargetId, 0, CubemapFace.Unknown, -1));
@@ -73,19 +80,34 @@ namespace PathNav
 
             public override void Execute(ScriptableRenderContext context, ref RenderingData renderingData)
             {
-                CommandBuffer cmd = CommandBufferPool.Get(_mProfilerTag);
+                if (renderingData.cameraData.camera.cameraType != CameraType.Game)
+                    return;
+                
+                CommandBuffer cmd = CommandBufferPool.Get(_profilerTag);
 
                 cmd.SetGlobalTexture(_blitTextureID, _sourceTargetId);
+                //XR SPI workaround
                 //cmd.DrawMesh(RenderingUtils.fullscreenMesh, Matrix4x4.identity, _settings.blitMaterial, 0,
                 //     _settings.blitMaterialPassIndex);
                 cmd.Blit(_sourceTargetId, _temporaryTargetHandle.Identifier(), _settings.blitMaterial,
                     _settings.blitMaterialPassIndex);
 
-                cmd.SetComputeTextureParam(_readPixelCompute, _readPixelKernel, "source",
+                cmd.SetComputeTextureParam(_pixelComputeShader, _linearToXYZKernel, "linear_source",
                     _temporaryTargetHandle.Identifier(), 0);
-                cmd.DispatchCompute(_readPixelCompute, _readPixelKernel, threadsX, threadsY, 1);
+                cmd.DispatchCompute(_pixelComputeShader, _linearToXYZKernel, _threadsX, _threadsY, 1);
                 cmd.GenerateMips(_temporaryTargetHandle.Identifier());
-                cmd.CopyTexture(_temporaryTargetHandle.Identifier(), 0, 0, _destinationTargetId, 0, 0);
+                
+                cmd.SetComputeTextureParam(_pixelComputeShader, _readLuminanceKernel, "mip_source", _temporaryTargetHandle.Identifier(), 8);
+                cmd.SetComputeBufferParam(_pixelComputeShader, _readLuminanceKernel, "luminance", _luminanceBuffer);
+                cmd.DispatchCompute(_pixelComputeShader, _readLuminanceKernel, 1, 1, 1);
+                
+                cmd.RequestAsyncReadback(_luminanceBuffer, request =>
+                {
+                    _buffer = request.GetData<float>();
+                    _luminance.Enqueue(_buffer[0]);
+                });
+                
+                //cmd.CopyTexture(_temporaryTargetHandle.Identifier(), 0, 8, _destinationTargetId, 0, 0);
 
                 context.ExecuteCommandBuffer(cmd);
                 cmd.Clear();
@@ -94,6 +116,7 @@ namespace PathNav
 
             public override void OnCameraCleanup(CommandBuffer cmd)
             {
+                _buffer.Dispose();
                 cmd.ReleaseTemporaryRT(_temporaryTargetHandle.id);
             }
         }
@@ -106,7 +129,7 @@ namespace PathNav
             public int blitMaterialPassIndex;
             public RenderTexture dstTextureObject;
 
-            public ComputeShader _readPixelCompute;
+            public ComputeShader luminanceComputeShader;
         }
 
         public BlitSettings settings = new();
@@ -114,17 +137,10 @@ namespace PathNav
         private RenderTextureDescriptor _tempDescriptor;
         private RenderTexture _dstTextureObject;
 
-        private ComputeShader readPixelCompute;
-
-        // private void SetupComputeVariables()
-        // {
-        //     _outputBuffer = new GraphicsBuffer(GraphicsBuffer.Target.Structured, 1, sizeof(float));
-        // }
-        // private void DisposeComputeVariables()
-        // {
-        //     _outputBuffer?.Dispose();
-        // }
-
+        private ComputeShader _luminanceCompute;
+        private Queue<float> _luminanceQueue;
+        private ComputeBuffer _luminanceBuffer;
+        
         public override void Create()
         {
             _tempDescriptor = new RenderTextureDescriptor(256, 256)
@@ -136,18 +152,16 @@ namespace PathNav
                 enableRandomWrite = true,
             };
 
-            //_dstTextureObject = new RenderTexture(1, 1, 0, RenderTextureFormat.ARGBHalf, RenderTextureReadWrite.Linear);
             _dstTextureObject = settings.dstTextureObject;
             int passIndex = settings.blitMaterial != null ? settings.blitMaterial.passCount - 1 : 1;
             settings.blitMaterialPassIndex = Mathf.Clamp(settings.blitMaterialPassIndex, -1, passIndex);
 
-            readPixelCompute = settings._readPixelCompute;
-            //SetupComputeVariables();
+            _luminanceCompute = settings.luminanceComputeShader;
+            _luminanceBuffer = new ComputeBuffer(1, sizeof(float), ComputeBufferType.Structured);
+            _luminanceQueue = new Queue<float>();
 
             _luminosityPass = new LuminosityPass(settings.renderPassEvent, settings, _tempDescriptor,
-                new RenderTargetIdentifier(_dstTextureObject),
-                readPixelCompute,
-                name);
+                new RenderTargetIdentifier(_dstTextureObject), _luminanceCompute, ref _luminanceBuffer, ref _luminanceQueue, name);
         }
 
         public override void AddRenderPasses(ScriptableRenderer renderer, ref RenderingData renderingData)
@@ -169,7 +183,7 @@ namespace PathNav
 
         protected override void Dispose(bool disposing)
         {
-            //DisposeComputeVariables();
+            _luminanceBuffer.Dispose();
         }
     }
 }

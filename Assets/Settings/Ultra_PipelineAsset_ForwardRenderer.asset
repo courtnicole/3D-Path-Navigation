@@ -18,7 +18,7 @@ MonoBehaviour:
     blitMaterial: {fileID: 2100000, guid: 0eb9f4bfa6eb40e438a155a5c61a8f13, type: 2}
     blitMaterialPassIndex: 0
     dstTextureObject: {fileID: 8600000, guid: 77fcd6e2d562806468b423818fd0bfe2, type: 2}
-    _readPixelCompute: {fileID: 7200000, guid: eae453b8e3cb61947a966dedbf07f5c7, type: 3}
+    luminanceComputeShader: {fileID: 7200000, guid: eae453b8e3cb61947a966dedbf07f5c7, type: 3}
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
