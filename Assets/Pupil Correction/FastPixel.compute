@@ -1,12 +1,46 @@
-// Each #kernel tells which function to compile; you can have many kernels
-#pragma kernel CSMain
+#pragma kernel readPixel
 
-Texture2D<float3> source;
-float luminance;
+RWTexture2D<float3> source;
+// RWStructuredBuffer<float> luminance;
+
+float3 positive_pow(const float3 base, const float3 power)
+{
+    return pow(abs(base), power);
+}
+
+float3 get_srgb_to_linear(const float3 c)
+{
+    const float3 linear_rgb_lo = c / 12.92;
+    const float3 linear_rgb_hi = positive_pow((c + 0.055) / 1.055, float3(2.4, 2.4, 2.4));
+    return (c <= 0.04045) ? linear_rgb_lo : linear_rgb_hi;
+}
+
+/*
+ * Assuming D65 white point:
+ * 
+ * X: 0.4124564  0.3575761  0.1804375
+ * Y: 0.2126729  0.7151522  0.0721750
+ * Z: 0.0193339  0.1191920  0.9503041
+ */
+float3 get_linear_to_xyz(const float3 color)
+{
+    return float3(
+        dot(color, float3(0.4124564, 0.3575761, 0.1804375)),
+        dot(color, float3(0.2126729, 0.7151522, 0.0721750)),
+        dot(color, float3(0.0193339, 0.1191920, 0.9503041))
+    );
+}
+
+float get_luminance(const float3 linear_rgb)
+{
+    return dot(linear_rgb, float3(0.2126729, 0.7151522, 0.0721750));
+}
 
 [numthreads(8,8,1)]
-void CSMain (uint3 id : SV_DispatchThreadID)
+void readPixel(uint3 globalId : SV_DispatchThreadID)
 {
-    float3 color = source.Load(int3(0, 0, 0));
-
+    // Color value is already in Linear space, can skip conversion from sRGB
+    // (HDR processing occurs with sRGB values in linear space)
+    const float3 color = source[globalId.xy];
+    source[globalId.xy] = get_linear_to_xyz(color);
 }

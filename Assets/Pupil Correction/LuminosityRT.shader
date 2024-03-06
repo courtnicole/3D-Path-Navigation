@@ -1,4 +1,4 @@
-Shader "CustomRenderTexture/LuminosityRT"
+Shader "Pupil/LuminosityRT"
 {
     SubShader
     {
@@ -9,7 +9,8 @@ Shader "CustomRenderTexture/LuminosityRT"
         LOD 100
         Cull Off
         ZWrite Off
-        ZTest NotEqual // ZTest Always
+        //ZTest NotEqual 
+        ZTest Always
         //Blend One Zero
 
         Pass
@@ -20,7 +21,6 @@ Shader "CustomRenderTexture/LuminosityRT"
             #pragma vertex vert
             #pragma fragment frag
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
-            #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/Color.hlsl"
 
             struct Attributes
             {
@@ -43,16 +43,7 @@ Shader "CustomRenderTexture/LuminosityRT"
                 UNITY_SETUP_INSTANCE_ID(input);
                 UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(output);
 
-                //output.positionCS = TransformObjectToHClip(input.positionOS.xyz);
-
-                /*
-                - The feature is setup with a mesh already in clip space so we output directly
-                - (Though it can also optionally override the view/projection matrices so other 
-                shaders/materials that don't do this (e.g. shader graphs) can still be used)
-                */
-                // output.positionCS = float4(input.positionOS.xyz, 1.0);
-                output.positionCS = float4(input.positionOS.xy, UNITY_NEAR_CLIP_VALUE, 1.0);
-                // Note : Have switched to using UNITY_NEAR_CLIP_VALUE and ZTest NotEqual to stop blit occurring on occlusion mesh for VR
+                output.positionCS = float4(input.positionOS.xyz, 1.0);
                 #if UNITY_UV_STARTS_AT_TOP
                 output.positionCS.y *= -1;
                 #endif
@@ -61,37 +52,13 @@ Shader "CustomRenderTexture/LuminosityRT"
                 return output;
             }
 
-            TEXTURE2D_X(_MainTex);
-            SAMPLER(sampler_MainTex);
-
-            //From common postprocessing
-            real3 GetLinearToSRGB(real3 c)
-            {
-                real3 sRGBLo = c * 12.92;
-                real3 sRGBHi = (PositivePow(c, real3(1.0 / 2.4, 1.0 / 2.4, 1.0 / 2.4)) * 1.055) - 0.055;
-                real3 sRGB = (c <= 0.0031308) ? sRGBLo : sRGBHi;
-                return sRGB;
-            }
-
-            real3 GetSRGBToLinear(real3 c)
-            {
-                real3 linearRGBLo = c / 12.92;
-                real3 linearRGBHi = PositivePow((c + 0.055) / 1.055, real3(2.4, 2.4, 2.4));
-                real3 linearRGB = (c <= 0.04045) ? linearRGBLo : linearRGBHi;
-                return linearRGB;
-            }
-
-            real GetLuminance(real3 linearRgb)
-            {
-                return dot(linearRgb, real3(0.2126729, 0.7151522, 0.0721750));
-            }
+            TEXTURE2D_X(_LuminosityTex);
+            SAMPLER(sampler_LuminosityTex);
 
             half4 frag(Varyings input) : SV_Target
             {
                 UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
-                float4 sampled_color = SAMPLE_TEXTURE2D_X(_MainTex, sampler_MainTex, input.uv);
-                //sampled_color.rgb = GetLinearToSRGB(sampled_color.rgb);
-                //sampled_color.r = Luminance(sampled_color.rgb);
+                half4 sampled_color = SAMPLE_TEXTURE2D_X(_LuminosityTex, sampler_LuminosityTex, input.uv);
                 return sampled_color;
             }
             ENDHLSL
