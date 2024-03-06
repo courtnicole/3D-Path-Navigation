@@ -878,7 +878,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b90eaae8ee7f6bf46be1c8ad060bd48d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_ActionAsset: {fileID: -944628639613478452, guid: ee35e82046ad68046b8d163c1260e4dd, type: 3}
+  actionAsset: {fileID: -944628639613478452, guid: ee35e82046ad68046b8d163c1260e4dd, type: 3}
 --- !u!1 &6797405555230079441
 GameObject:
   m_ObjectHideFlags: 0
@@ -989,10 +989,10 @@ MonoBehaviour:
     m_Bits: 512
   m_VolumeTrigger: {fileID: 0}
   m_VolumeFrameworkUpdateModeOption: 2
-  m_RenderPostProcessing: 1
+  m_RenderPostProcessing: 0
   m_Antialiasing: 0
   m_AntialiasingQuality: 2
-  m_StopNaN: 1
+  m_StopNaN: 0
   m_Dithering: 0
   m_ClearDepth: 1
   m_AllowXRRendering: 1
@@ -1304,6 +1304,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1142970027387065162}
     m_Modifications:
+    - target: {fileID: 717484878579803269, guid: deec7a59160ef7541aaceb9a9d5d62fc, type: 3}
+      propertyPath: controller
+      value: 
+      objectReference: {fileID: 6797816226411209566}
     - target: {fileID: 717484878579803270, guid: deec7a59160ef7541aaceb9a9d5d62fc, type: 3}
       propertyPath: m_RootOrder
       value: 1
@@ -1583,6 +1587,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1845417380298604467}
     m_Modifications:
+    - target: {fileID: 717484878579803269, guid: deec7a59160ef7541aaceb9a9d5d62fc, type: 3}
+      propertyPath: controller
+      value: 
+      objectReference: {fileID: 6797816226411440509}
     - target: {fileID: 717484878579803270, guid: deec7a59160ef7541aaceb9a9d5d62fc, type: 3}
       propertyPath: m_RootOrder
       value: 1
