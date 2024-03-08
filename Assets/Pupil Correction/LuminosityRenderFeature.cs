@@ -36,18 +36,11 @@ namespace PathNav
             private readonly int _groupSizeX;
             private readonly int _groupSizeY;
             private int _threadsX, _threadsY;
-
-            private AsyncGPUReadbackRequest _request;
-
-            public LuminosityPass
-            (RenderPassEvent         renderPassEvent,
-             BlitSettings            settings,
-             RenderTextureDescriptor descriptor,
-             RenderTargetIdentifier  destinationId,
-             ComputeShader           shader,
-             ref ComputeBuffer       buffer,
-             ref Queue<float>        queue,
-             string                  tag)
+            
+            public LuminosityPass(RenderPassEvent         renderPassEvent, BlitSettings            settings,
+             RenderTextureDescriptor descriptor, RenderTargetIdentifier  destinationId,
+             ComputeShader           shader, ref ComputeBuffer       buffer,
+             ref Queue<float>        queue, string                  tag)
             {
                 this.renderPassEvent = renderPassEvent;
                 _settings            = settings;
@@ -116,7 +109,6 @@ namespace PathNav
                 cmd.RequestAsyncReadback(_luminanceBuffer,
                                          request =>
                                          {
-                                             _request = request;
                                              _buffer = request.GetData<float>();
                                              _luminance.Enqueue(_buffer[0]);
                                          });
@@ -187,6 +179,7 @@ namespace PathNav
             if (renderingData.cameraData.cameraType != CameraType.Game)
                 return;
 
+            if (settings.luminanceComputeShader == null) return;
             if (settings.blitMaterial == null)
             {
                 Debug.LogWarningFormat("Missing Blit Material. {0} blit pass will not execute. Check for missing reference in the assigned renderer.",
