@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 816513845}
-  m_IndirectSpecularColor: {r: 0.21048671, g: 0.27313346, b: 0.28224415, a: 1}
+  m_IndirectSpecularColor: {r: 0.21049023, g: 0.2731333, b: 0.28224593, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -97,7 +97,7 @@ LightmapSettings:
     m_ExportTrainingData: 0
     m_TrainingDataDestination: TrainingData
     m_LightProbeSampleCountMultiplier: 4
-  m_LightingDataAsset: {fileID: 0}
+  m_LightingDataAsset: {fileID: 112000000, guid: affb86259b8c34f43b67b9be77ecaa9c, type: 2}
   m_LightingSettings: {fileID: 4890085278179872738, guid: 5f5b09829e6a84848ae606268890d3f8, type: 2}
 --- !u!196 &4
 NavMeshSettings:
@@ -123,6 +123,55 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &648418305
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 648418307}
+  - component: {fileID: 648418306}
+  m_Layer: 9
+  m_Name: Post-process Volume
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &648418306
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 648418305}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 172515602e62fb746b5d573b38a5fe58, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_IsGlobal: 1
+  priority: 0
+  blendDistance: 0
+  weight: 1
+  sharedProfile: {fileID: 11400000, guid: 17a120694a487b6459952500bda646e1, type: 2}
+--- !u!4 &648418307
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 648418305}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1997782982}
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &816513843
 GameObject:
   m_ObjectHideFlags: 0
@@ -134,7 +183,7 @@ GameObject:
   - component: {fileID: 816513846}
   - component: {fileID: 816513845}
   - component: {fileID: 816513844}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Directional Light
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -245,6 +294,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1142970028393329733, guid: f42fbfed012548b41bc919fc4d9949e6, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1142970028393329784, guid: f42fbfed012548b41bc919fc4d9949e6, type: 3}
       propertyPath: m_IsActive
       value: 0
@@ -252,6 +305,10 @@ PrefabInstance:
     - target: {fileID: 3709667469600522961, guid: f42fbfed012548b41bc919fc4d9949e6, type: 3}
       propertyPath: m_Name
       value: Rig Base
+      objectReference: {fileID: 0}
+    - target: {fileID: 6900556691179947491, guid: f42fbfed012548b41bc919fc4d9949e6, type: 3}
+      propertyPath: m_RenderPostProcessing
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8026687227679222607, guid: f42fbfed012548b41bc919fc4d9949e6, type: 3}
       propertyPath: m_RootOrder
@@ -308,7 +365,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1997782982}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Scene
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -330,9 +387,28 @@ Transform:
   - {fileID: 543450652370538796}
   - {fileID: 816513846}
   - {fileID: 543450651705648257}
+  - {fileID: 648418307}
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &2020824863 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3709667469600522961, guid: f42fbfed012548b41bc919fc4d9949e6, type: 3}
+  m_PrefabInstance: {fileID: 1120921685}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &2020824866
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2020824863}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa2df1e7bfe65db4babb37de2ead7526, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  postProcessingVolume: {fileID: 648418306}
 --- !u!1 &2080822118
 GameObject:
   m_ObjectHideFlags: 0
@@ -373,7 +449,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7898976098525399805}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: RootNode
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -389,7 +465,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7076128673157518801}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Interior_scene_complete:polySurface31
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -421,7 +497,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6780960424752464492}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Interior_scene_complete:polySurface112
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -445,7 +521,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4389774669972417169}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Interior_scene_complete:PM3D_sofa2:PM3D_sofa
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -461,7 +537,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4082795557626284750}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Interior_scene_complete:polySurface146
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -492,7 +568,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6601978313740731971}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Interior_scene_complete:polySurface149
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -586,7 +662,7 @@ GameObject:
   - component: {fileID: 2806500982167962911}
   - component: {fileID: 3286403807853399623}
   - component: {fileID: 6825883293302028102}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Interior_scene_complete:pCylinder48_Interior_scene_complete:lam
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -649,7 +725,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3951117843895089917}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Interior_scene_complete:pSphere4
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -665,7 +741,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 543450651705648257}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: room
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -681,7 +757,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 543450652370538796}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: desk
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -705,7 +781,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5296471348696355433}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Interior_scene_complete:polySurface148
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -736,7 +812,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4753173312054992690}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Interior_scene_complete:pCylinder293
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -762,7 +838,7 @@ GameObject:
   - component: {fileID: 1626987932368466075}
   - component: {fileID: 8859440076477598913}
   - component: {fileID: 7521823059835123705}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: 321570183-WALMART-WRITING_DESK_ZAKWANI_ACME-wood
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -778,7 +854,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 454516026872958703}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Interior_scene_complete:group58
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -915,7 +991,7 @@ GameObject:
   - component: {fileID: 5570107210584319642}
   - component: {fileID: 7920564424809645280}
   - component: {fileID: 586292660570742486}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Interior_scene_complete:pCylinder17_Interior_scene_complete:aiS
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -931,7 +1007,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2449746379952326105}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Interior_scene_complete:roof
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1053,7 +1129,7 @@ GameObject:
   - component: {fileID: 8315156095409234582}
   - component: {fileID: 9175471741012424920}
   - component: {fileID: 7236567668578129253}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Interior_scene_complete:polySurface5_Interior_scene_complete:ai
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1092,7 +1168,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1083435840373390730}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Interior_scene_complete:pDisc2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1123,7 +1199,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1873557818498848650}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Interior_scene_complete:pCylinder48
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1139,7 +1215,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7639284562514421557}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Interior_scene_complete:pCylinder300
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1173,7 +1249,7 @@ GameObject:
   - component: {fileID: 4308023809422802296}
   - component: {fileID: 2795848387868724748}
   - component: {fileID: 8254829616725909281}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Interior_scene_complete:roof_Interior_scene_complete:aiStandard
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1227,7 +1303,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 9021070715089540190}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Interior_scene_complete:polySurface141
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1372,7 +1448,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 657665387183542526}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: tyres:curtain
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1388,7 +1464,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8832637296822143962}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Interior_scene_complete:pDisc3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1404,7 +1480,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8823880775232753235}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Interior_scene_complete:polySurface143
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1465,7 +1541,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3981139407003273008}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Interior_scene_complete:polySurface150
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1597,7 +1673,7 @@ GameObject:
   - component: {fileID: 3357055286331869385}
   - component: {fileID: 2384067711347195267}
   - component: {fileID: 1407366864400286349}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Interior_scene_complete:group43_Interior_scene_complete:aiStand
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1615,7 +1691,7 @@ GameObject:
   - component: {fileID: 4769809322280842263}
   - component: {fileID: 277790169252388681}
   - component: {fileID: 6831150130037248752}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Interior_scene_complete:house1_Interior_scene_complete:aiSt
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1720,7 +1796,7 @@ GameObject:
   - component: {fileID: 2308089464961276106}
   - component: {fileID: 5830834803503173603}
   - component: {fileID: 8039636180487902377}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: 321570183-WALMART-WRITING_DESK_ZAKWANI_ACME-plastic
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1752,7 +1828,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 720173222350970031}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Interior_scene_complete:polySurface115
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1799,7 +1875,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 202090522991483694}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Interior_scene_complete:pCylinder17
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1823,7 +1899,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8749742646153424587}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Interior_scene_complete:polySurface139
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1896,7 +1972,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2909745733453371549}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Interior_scene_complete:polySurface145
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1912,7 +1988,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4969789727909717888}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Interior_scene_complete:pSphere1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1930,7 +2006,7 @@ GameObject:
   - component: {fileID: 8234026464351362602}
   - component: {fileID: 8493222225074417238}
   - component: {fileID: 5362080217075614903}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: 'Interior_scene_complete:polySurface115_Interior_scene_complete:'
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1994,7 +2070,7 @@ GameObject:
   - component: {fileID: 2203638422896128329}
   - component: {fileID: 933390835435977819}
   - component: {fileID: 2587485939820639987}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Interior_scene_complete:pCylinder16_Interior_scene_complete:aiS
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2010,7 +2086,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5864921255547439716}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Interior_scene_complete:house1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2043,7 +2119,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3279534359256643470}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Interior_scene_complete:pCylinder27
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2101,7 +2177,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8541496281306835726}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: aefa54437f814ec497f48b89d01b867a.fbx
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2117,7 +2193,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7199488895707678831}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Interior_scene_complete:polySurface98
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2135,7 +2211,7 @@ GameObject:
   - component: {fileID: 4162477908645605660}
   - component: {fileID: 8555528773865762544}
   - component: {fileID: 6281942967463864780}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Interior_scene_complete:pSphere1_Interior_scene_complete:aiStan
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2166,7 +2242,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1453820720785339908}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Interior_scene_complete:pDisc1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2182,7 +2258,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5766450109985827578}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Interior_scene_complete:polySurface142
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2198,7 +2274,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4172861882642772914}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Interior_scene_complete:polySurface22
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2214,7 +2290,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7401524488270730515}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Interior_scene_complete:pCylinder16
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2230,7 +2306,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3210173998881402006}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Interior_scene_complete:polySurface5
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2369,7 +2445,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8941001013222942560}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Interior_scene_complete:polySurface13
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2416,7 +2492,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6775438412298707772}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Interior_scene_complete:polySurface138
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2449,7 +2525,7 @@ GameObject:
   - component: {fileID: 722969601451493652}
   - component: {fileID: 1129917341567742646}
   - component: {fileID: 4831542191365246377}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Interior_scene_complete:polySurface31_Interior_scene_complete:a
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2509,7 +2585,7 @@ GameObject:
   - component: {fileID: 8242503881413650269}
   - component: {fileID: 5133062314820447078}
   - component: {fileID: 3768850603572459247}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Interior_scene_complete:house1_Interior_scene_complete:aiStanda
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2541,7 +2617,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7021830229870454042}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Interior_scene_complete:polySurface11
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2559,7 +2635,7 @@ GameObject:
   - component: {fileID: 5062975621796892657}
   - component: {fileID: 2501324176500605113}
   - component: {fileID: 4374930181875588849}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: 321570183-WALMART-WRITING_DESK_ZAKWANI_ACME-metal
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2575,7 +2651,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1959786334315589152}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Interior_scene_complete:pCylinder12
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2633,7 +2709,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1493821952881693567}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Interior_scene_complete:PM3D_sofa3:PM3D_sofa
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2666,7 +2742,7 @@ GameObject:
   - component: {fileID: 3830562209026422533}
   - component: {fileID: 5601458227580806629}
   - component: {fileID: 3857470811356013128}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: tyres:curtain_tyres:aiStandardSurface88SG1_0
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2816,7 +2892,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4922854941583784621}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Interior_scene_complete:group43
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2832,7 +2908,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4906559326243812962}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Interior_scene_complete:pCube23
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2922,7 +2998,7 @@ GameObject:
   - component: {fileID: 7700883185452536636}
   - component: {fileID: 6796889799838009772}
   - component: {fileID: 4232130653265637691}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Interior_scene_complete:pCylinder12_Interior_scene_complete:lam
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3038,7 +3114,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7869981486642727219}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Interior_scene_complete:polySurface42
   m_TagString: Untagged
   m_Icon: {fileID: 0}

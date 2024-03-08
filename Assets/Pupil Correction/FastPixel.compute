@@ -15,15 +15,24 @@ float3 get_linear_to_xyz(const float3 color)
 }
 
 #pragma kernel linear_to_xyz
-RWTexture2D<float3> linear_source;
+#define GROUP_SIZE 32
 
-[numthreads(8,8,1)]
-void linear_to_xyz(uint3 globalId : SV_DispatchThreadID)
+RWTexture2D<float3> linear_source;
+uint2 source_size;
+
+[numthreads(GROUP_SIZE, GROUP_SIZE, 1)]
+void linear_to_xyz(uint3 globalId : SV_DispatchThreadID, uint3 localId : SV_GroupThreadID, uint3 groupId : SV_GroupID)
 {
+    if (globalId.x >= source_size.x || globalId.y >= source_size.y)
+    {
+        return;
+    }
+
     // Color value is already in Linear space, can skip conversion from sRGB
     // (HDR processing occurs with sRGB values in linear space)
     const float3 color = linear_source[globalId.xy];
-    linear_source[globalId.xy] = get_linear_to_xyz(color);
+    const float3 xyz = get_linear_to_xyz(color);
+    linear_source[globalId.xy] = xyz;
 }
 
 #pragma kernel read_luminance

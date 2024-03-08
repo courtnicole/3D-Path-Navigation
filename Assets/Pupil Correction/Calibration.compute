@@ -1,0 +1,98 @@
+#define GROUP_SIZE 8
+#define REGION_PER_THREAD 2
+
+#define LINEAR_TO_XYZ_X float3(0.4124564, 0.3575761, 0.1804375)
+#define LINEAR_TO_XYZ_Y float3(0.2126729, 0.7151522, 0.0721750)
+#define LINEAR_TO_XYZ_Z float3(0.0193339, 0.1191920, 0.9503041)
+
+#define XYZ_TO_LINEAR_X float3(3.2404542, -1.5371385, -0.4985314)
+#define XYZ_TO_LINEAR_Y float3(-0.9692660, 1.8760108, 0.0415560)
+#define XYZ_TO_LINEAR_Z float3(0.0556434, -0.2040259, 1.0572252)
+
+RWTexture2D<float3> source;
+RWTexture2D<float3> mip_source;
+uint source_width;
+uint source_height;
+
+float target_luminance;
+
+float3 get_linear_to_xyz(const float3 color)
+{
+    return float3(
+        dot(color, LINEAR_TO_XYZ_X),
+        dot(color, LINEAR_TO_XYZ_Y),
+        dot(color, LINEAR_TO_XYZ_Z)
+    );
+}
+
+float3 get_xyz_to_linear(const float3 color)
+{
+    return float3(
+        dot(color, XYZ_TO_LINEAR_X),
+        dot(color, XYZ_TO_LINEAR_Y),
+        dot(color, XYZ_TO_LINEAR_Z)
+    );
+}
+
+float3 positive_pow(const float3 base, const float3 power)
+{
+    return pow(abs(base), power);
+}
+
+float3 get_srgb_to_linear(const float3 c)
+{
+    const float3 linear_rgb_lo = c / 12.92;
+    const float3 linear_rgb_hi = positive_pow((c + 0.055) / 1.055, float3(2.4, 2.4, 2.4));
+    return (c <= 0.04045) ? linear_rgb_lo : linear_rgb_hi;
+}
+
+float3 get_linear_to_srgb(float3 c)
+{
+    const float3 s_rgb_lo = c * 12.92;
+    const float3 s_rgb_hi = (positive_pow(c, float3(1.0 / 2.4, 1.0 / 2.4, 1.0 / 2.4)) * 1.055) - 0.055;
+    return (c <= 0.0031308) ? s_rgb_lo : s_rgb_hi;
+}
+
+#pragma kernel linear_to_xyz
+[numthreads(GROUP_SIZE,GROUP_SIZE,1)]
+void linear_to_xyz(uint3 globalId : SV_DispatchThreadID)
+{
+    if (globalId.x >= source_width || globalId.y >= source_height)
+    {
+        return;
+    }
+
+    // Color value is already in Linear space, can skip conversion from sRGB
+    // (HDR processing occurs with sRGB values in linear space)
+    const float3 color = source[globalId.xy];
+    const float3 linear_color = get_srgb_to_linear(color);
+    const float3 xyz = get_linear_to_xyz(linear_color);
+    const float3 mip_color = mip_source[uint2(0,0)];
+    const float3 mip_xyz = get_linear_to_xyz(get_srgb_to_linear(mip_color));
+
+    const float shift = 1.0  + (mip_xyz.y - target_luminance);
+    
+    const float3 shifted_color = float3(xyz.x * shift, xyz.y * shift, xyz.z * shift);
+    const float3 new_color = get_xyz_to_linear(shifted_color);
+    const float3 final_color = get_linear_to_srgb(new_color);
+    source[globalId.xy] = final_color;
+}
+
+#pragma kernel average_luminance_calibration
+
+
+[numthreads(GROUP_SIZE,GROUP_SIZE,1)]
+void average_luminance_calibration(uint3 globalId : SV_DispatchThreadID, uint3 localId : SV_GroupThreadID)
+{
+    if (globalId.x >= source_width || globalId.y >= source_height)
+    {
+        return;
+    }
+
+    const float3 color = source[globalId.xy];
+    const float3 mip_color = mip_source.Load(uint2(0,0));
+    const float mip_luminance = mip_color.y;
+    const float shift = 1.0  - (target_luminance - mip_luminance);
+    const float3 shifted_color = float3(color.x, target_luminance, color.z);
+    source[globalId.xy] = get_xyz_to_linear(shifted_color);
+}

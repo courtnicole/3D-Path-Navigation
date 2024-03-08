@@ -15,12 +15,10 @@ Shader "Pupil/LuminosityBlit"
             HLSLPROGRAM
             #pragma vertex FullscreenVert
             #pragma fragment Fragment
-            #pragma multi_compile_fragment _ _LINEAR_TO_SRGB_CONVERSION
             #pragma multi_compile _ _USE_DRAW_PROCEDURAL
             
             #include "Packages/com.unity.render-pipelines.universal/Shaders/Utils/Fullscreen.hlsl"
-            #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/Color.hlsl"
-
+            
             TEXTURE2D_X(_SourceTex);
             SAMPLER(sampler_SourceTex);
 
@@ -30,10 +28,6 @@ Shader "Pupil/LuminosityBlit"
                 float2 uv = input.uv;
 
                 half4 col = SAMPLE_TEXTURE2D_X(_SourceTex, sampler_SourceTex, uv);
-
-                #ifdef _LINEAR_TO_SRGB_CONVERSION
-                col = LinearToSRGB(col);
-                #endif
 
                 return col;
             }

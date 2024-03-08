@@ -33,6 +33,7 @@ namespace PathNav
             private NativeArray<float> _buffer;
             private readonly Queue<float> _luminance;
 
+            private int _width, _height;
             private readonly int _groupSizeX;
             private readonly int _groupSizeY;
             private int _threadsX, _threadsY;
@@ -73,6 +74,8 @@ namespace PathNav
             public override void Configure(CommandBuffer cmd, RenderTextureDescriptor cameraTextureDescriptor)
             {
                 cmd.GetTemporaryRT(_temporaryTargetHandle.id, _tempDescriptor, FilterMode.Bilinear);
+                _width    = _tempDescriptor.width;
+                _height   = _tempDescriptor.height;
                 _threadsX = Mathf.CeilToInt(_tempDescriptor.width  / (float)_groupSizeX);
                 _threadsY = Mathf.CeilToInt(_tempDescriptor.height / (float)_groupSizeY);
                 _buffer   = new NativeArray<float>(1, Allocator.Persistent, NativeArrayOptions.UninitializedMemory);
@@ -84,8 +87,8 @@ namespace PathNav
 
             public override void Execute(ScriptableRenderContext context, ref RenderingData renderingData)
             {
-                if (renderingData.cameraData.camera.cameraType != CameraType.Game)
-                    return;
+                // if (renderingData.cameraData.camera.cameraType != CameraType.Game)
+                //     return;
 
                 if (_linearToXYZKernel   < 0) return;
                 if (_readLuminanceKernel < 0) return;
@@ -99,6 +102,8 @@ namespace PathNav
                 cmd.Blit(_sourceTargetId, _temporaryTargetHandle.Identifier(), _settings.blitMaterial, _settings.blitMaterialPassIndex);
 
                 cmd.SetComputeTextureParam(_pixelComputeShader, _linearToXYZKernel, "linear_source", _temporaryTargetHandle.Identifier(), 0);
+                cmd.SetComputeIntParam(_pixelComputeShader, "source_width", _width);
+                cmd.SetComputeIntParam(_pixelComputeShader, "source_height", _width);
                 cmd.DispatchCompute(_pixelComputeShader, _linearToXYZKernel, _threadsX, _threadsY, 1);
                 cmd.GenerateMips(_temporaryTargetHandle.Identifier());
 
@@ -176,8 +181,8 @@ namespace PathNav
 
         public override void AddRenderPasses(ScriptableRenderer renderer, ref RenderingData renderingData)
         {
-            if (renderingData.cameraData.cameraType != CameraType.Game)
-                return;
+            // if (renderingData.cameraData.cameraType != CameraType.Game)
+            //     return;
 
             if (settings.luminanceComputeShader == null) return;
             if (settings.blitMaterial == null)
