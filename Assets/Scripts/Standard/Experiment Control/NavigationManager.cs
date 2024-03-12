@@ -12,10 +12,12 @@ namespace PathNav.ExperimentControl
     using System.Globalization;
     using System.IO;
     using System.Threading.Tasks;
+    using Tobii.XR;
     using UnityEngine;
     using UnityEngine.Animations;
     using UnityEngine.InputSystem.XR;
     using UnityEngine.XR.OpenXR.Samples.ControllerSample;
+    using ViveSR.anipal.Eye;
     using Debug = UnityEngine.Debug;
 
     public class NavigationManager : MonoBehaviour
@@ -53,7 +55,13 @@ namespace PathNav.ExperimentControl
 
         private Stopwatch _taskTimerTotal;
         private NavigationDataFormat _navigationData;
+        private GazeDataFormat _gazeData;
+        private PoseDataFormat _poseData;
+        
         private static string _logFile;
+        private Vector3 gazeOrigin, gazeDirection;
+        private static EyeData pupilData = new EyeData();
+        private static TobiiXR_EyeTrackingData eyeData = new TobiiXR_EyeTrackingData();
         private static readonly CsvConfiguration Config = new(CultureInfo.InvariantCulture);
         private bool _recordData;
 
@@ -285,6 +293,22 @@ namespace PathNav.ExperimentControl
                 MODEL    = ExperimentDataManager.Instance.GetModel(),
                 METHOD   = ExperimentDataManager.Instance.GetNavigationMethodString(),
             };
+            
+            _gazeData = new GazeDataFormat
+            {
+                ID = ExperimentDataManager.Instance.GetId(),
+                BLOCK_ID = ExperimentDataManager.Instance.GetBlock(),
+                MODEL = ExperimentDataManager.Instance.GetModel(),
+                METHOD = ExperimentDataManager.Instance.GetNavigationMethodString(),
+            };
+            
+            _poseData = new PoseDataFormat
+            {
+                ID = ExperimentDataManager.Instance.GetId(),
+                BLOCK_ID = ExperimentDataManager.Instance.GetBlock(),
+                MODEL = ExperimentDataManager.Instance.GetModel(),
+                METHOD = ExperimentDataManager.Instance.GetNavigationMethodString(),
+            };
         }
 
         private void InitDataLog(string logDirectory, string filePath)
@@ -312,27 +336,11 @@ namespace PathNav.ExperimentControl
 
         private void RecordData()
         {
+            double time = LSL.LSL.local_clock();
             _navigationData.SPEED = follower.followSpeed;
-
-            _navigationData.SPLINE_POSITION = _locomotionDof == LocomotionDof.FourDoF
-                ? follower.result.position.ToString("F3")
-                : projector.result.position.ToString("F3");
+            _navigationData.SPLINE_POSITION = _locomotionDof == LocomotionDof.FourDoF ? follower.result.position.ToString("F3") : projector.result.position.ToString("F3");
             _navigationData.SPLINE_PERCENT = _locomotionDof == LocomotionDof.FourDoF ? follower.result.percent : projector.result.percent;
-            // _navigationData.HEAD_POSITION  = playerTransform.position.ToString("F3");
-            // _navigationData.HEAD_ROTATION  = playerTransform.rotation.ToString("F3");
-            // _navigationData.LEFT_POSITION  = leftHand.position.ToString("F3");
-            // _navigationData.LEFT_ROTATION  = leftHand.rotation.ToString("F3");
-            // _navigationData.RIGHT_POSITION = rightHand.position.ToString("F3");
-            // _navigationData.RIGHT_ROTATION = rightHand.rotation.ToString("F3");
-            //
-            // _navigationData.TRACKED_HEAD_POSITION = headPoseDriver.positionInput.action.ReadValue<Vector3>().ToString("F3");
-            // _navigationData.TRACKED_HEAD_ROTATION = headPoseDriver.rotationInput.action.ReadValue<Quaternion>().ToString("F3");
-            // _navigationData.TRACKED_LEFT_POSITION = leftHandPoseDriver.positionInput.action.ReadValue<Vector3>().ToString("F3");
-            // _navigationData.TRACKED_LEFT_ROTATION = leftHandPoseDriver.rotationInput.action.ReadValue<Quaternion>().ToString("F3");
-            // _navigationData.TRACKED_RIGHT_POSITION = rightHandPoseDriver.positionInput.action.ReadValue<Vector3>().ToString("F3");
-            // _navigationData.TRACKED_RIGHT_ROTATION = rightHandPoseDriver.rotationInput.action.ReadValue<Quaternion>().ToString("F3");
-            
-            _navigationData.TIMESTAMP      = DateTime.Now;
+            _navigationData.TIMESTAMP = time;
 
             using StreamWriter streamWriter = new(_logFile, true);
             using CsvWriter    csvWriter    = new(streamWriter, Config);
@@ -340,8 +348,29 @@ namespace PathNav.ExperimentControl
             csvWriter.WriteRecord(_navigationData);
             csvWriter.NextRecord();
         }
-        
-        
+
+        private void GazeData()
+        {
+            eyeData = TobiiXR.GetEyeTrackingData(TobiiXR_TrackingSpace.World);
+            SRanipal_Eye.GetGazeRay(GazeIndex.COMBINE, out gazeOrigin, out gazeDirection, pupilData);
+            
+            _gazeData.CONVERGENCE_DISTANCE = eyeData.ConvergenceDistance;
+            _gazeData.CONVERGENCE_VALID    = eyeData.ConvergenceDistanceIsValid;
+            
+            _gazeData.GAZERAY_ORIGIN_X     = eyeData.GazeRay.Origin.x;
+            _gazeData.GAZERAY_ORIGIN_Y     = eyeData.GazeRay.Origin.y;
+            _gazeData.GAZERAY_ORIGIN_Z     = eyeData.GazeRay.Origin.z;
+            _gazeData.GAZERAY_DIRECTION_X  = eyeData.GazeRay.Direction.x;
+            _gazeData.GAZERAY_DIRECTION_Y  = eyeData.GazeRay.Direction.y;
+            _gazeData.GAZERAY_DIRECTION_Z  = eyeData.GazeRay.Direction.z;
+            _gazeData.GAZERAY_VALID        = eyeData.GazeRay.IsValid;
+            
+            _gazeData.LEFT_IS_BLINKING     = eyeData.IsLeftEyeBlinking;
+            _gazeData.RIGHT_IS_BLINKING     = eyeData.IsRightEyeBlinking;
+            
+            _gazeData.LEFT_EYE_PUPIL_DIAMETER = pupilData.verbose_data.left.pupil_diameter_mm;
+            _gazeData.RIGHT_EYE_PUPIL_DIAMETER = pupilData.verbose_data.right.pupil_diameter_mm;
+        }
         
         #endregion
     }

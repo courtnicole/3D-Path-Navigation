@@ -2,6 +2,7 @@
   "dependencies": {
     "com.github-glitchenzo.nugetforunity": "https://github.com/GlitchEnzo/NuGetForUnity.git?path=/src/NuGetForUnity",
     "com.labstreaminglayer.lsl4unity": "https://github.com/labstreaminglayer/LSL4Unity.git",
+    "com.tobii.xr.sdk": "file:C:/Users/Courtney/Downloads/TobiiXRSDK_3.0.1.179",
     "com.unity.addressables": "1.19.19",
     "com.unity.cinemachine": "2.8.9",
     "com.unity.ide.rider": "3.0.28",

@@ -1,7 +1,7 @@
 
 namespace PathNav.ExperimentControl
 {
-    public class GazeDataFormatMap 
+    public sealed class GazeDataFormatMap 
     {
 
         

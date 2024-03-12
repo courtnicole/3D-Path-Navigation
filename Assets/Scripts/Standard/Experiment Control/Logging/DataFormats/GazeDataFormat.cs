@@ -1,6 +1,6 @@
 namespace PathNav.ExperimentControl
 {
-    public class GazeDataFormat
+    public class GazeDataFormat 
     {
         public int    ID       { get; set; }	
         public int    BLOCK_ID { get; set; }	
@@ -21,16 +21,9 @@ namespace PathNav.ExperimentControl
         public bool GAZERAY_VALID { get; set; }
         
         public bool LEFT_IS_BLINKING { get; set; }
-        public bool RIGH_IS_BLINKING { get; set; }
+        public bool RIGHT_IS_BLINKING { get; set; }
         
-        public bool LEFT_BLINK_VALID { get; set; }
-        public bool RIGHT_BLINK_VALID { get; set; }
-        
-        public float LEFT_EYE_PUPIL_DIAMETER { get; set; }
+        public float LEFT_EYE_PUPIL_DIAMETER  { get; set; }
         public float RIGHT_EYE_PUPIL_DIAMETER { get; set; }
-        
-        
-        
-        
     }
 }

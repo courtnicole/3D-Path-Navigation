@@ -62,8 +62,10 @@ namespace PathNav.ExperimentControl
         
         public void CreatePoseStream()
         {
-            StreamInfo streamInfo = new (_poseStreamName, _poseStreamType, 21, 0.00833333333, channel_format_t.cf_float32, _poseStreamID);
+            StreamInfo streamInfo = new (_poseStreamName, _poseStreamType, 42, 0.00833333333, channel_format_t.cf_float32, _poseStreamID);
+           
             XMLElement channels   = streamInfo.desc().append_child("channels");
+            
             channels.append_child("channel").append_child_value("label", "Head_PosX");
             channels.append_child("channel").append_child_value("label", "Head_PosY");
             channels.append_child("channel").append_child_value("label", "Head_PosZ");
@@ -71,6 +73,7 @@ namespace PathNav.ExperimentControl
             channels.append_child("channel").append_child_value("label", "Head_RotX");
             channels.append_child("channel").append_child_value("label", "Head_RotY");
             channels.append_child("channel").append_child_value("label", "Head_RotZ");
+            
             channels.append_child("channel").append_child_value("label", "LefHand_PosX");
             channels.append_child("channel").append_child_value("label", "LefHand_PosY");
             channels.append_child("channel").append_child_value("label", "LefHand_PosZ");
@@ -78,6 +81,7 @@ namespace PathNav.ExperimentControl
             channels.append_child("channel").append_child_value("label", "LefHand_RotX");
             channels.append_child("channel").append_child_value("label", "LefHand_RotY");
             channels.append_child("channel").append_child_value("label", "LefHand_RotZ");
+            
             channels.append_child("channel").append_child_value("label", "RightHand_PosX");
             channels.append_child("channel").append_child_value("label", "RightHand_PosY");
             channels.append_child("channel").append_child_value("label", "RightHand_PosZ");
@@ -85,13 +89,43 @@ namespace PathNav.ExperimentControl
             channels.append_child("channel").append_child_value("label", "RightHand_RotX");
             channels.append_child("channel").append_child_value("label", "RightHand_RotY");
             channels.append_child("channel").append_child_value("label", "RightHand_RotZ");
-            _poseSample = new float[21];
+            
+            channels.append_child("channel").append_child_value("label", "Tracked_Head_PosX");
+            channels.append_child("channel").append_child_value("label", "Tracked_Head_PosY");
+            channels.append_child("channel").append_child_value("label", "Tracked_Head_PosZ");
+            channels.append_child("channel").append_child_value("label", "Tracked_Head_RotW");
+            channels.append_child("channel").append_child_value("label", "Tracked_Head_RotX");
+            channels.append_child("channel").append_child_value("label", "Tracked_Head_RotY");
+            channels.append_child("channel").append_child_value("label", "Tracked_Head_RotZ");
+            
+            channels.append_child("channel").append_child_value("label", "Tracked_LefHand_PosX");
+            channels.append_child("channel").append_child_value("label", "Tracked_LefHand_PosY");
+            channels.append_child("channel").append_child_value("label", "Tracked_LefHand_PosZ");
+            channels.append_child("channel").append_child_value("label", "Tracked_LefHand_RotW");
+            channels.append_child("channel").append_child_value("label", "Tracked_LefHand_RotX");
+            channels.append_child("channel").append_child_value("label", "Tracked_LefHand_RotY");
+            channels.append_child("channel").append_child_value("label", "Tracked_LefHand_RotZ");
+            
+            channels.append_child("channel").append_child_value("label", "Tracked_RightHand_PosX");
+            channels.append_child("channel").append_child_value("label", "Tracked_RightHand_PosY");
+            channels.append_child("channel").append_child_value("label", "Tracked_RightHand_PosZ");
+            channels.append_child("channel").append_child_value("label", "Tracked_RightHand_RotW");
+            channels.append_child("channel").append_child_value("label", "Tracked_RightHand_RotX");
+            channels.append_child("channel").append_child_value("label", "Tracked_RightHand_RotY");
+            channels.append_child("channel").append_child_value("label", "Tracked_RightHand_RotZ");
+            _poseSample = new float[42];
             _poseOutlet = new StreamOutlet(streamInfo);
         }
 
         public void CreateNavigationStream()
         {
             StreamInfo streamInfo = new (_navigationStreamName, _navigationStreamType, 7, 0.00833333333, channel_format_t.cf_float32, _navigationStreamID);
+            
+            XMLElement channels = streamInfo.desc().append_child("channels");
+            
+            channels.append_child("channel").append_child_value("label", "speed");
+            channels.append_child("channel").append_child_value("label", "spline_position");
+            channels.append_child("channel").append_child_value("label", "spline_percent");
         }
     }
 }
