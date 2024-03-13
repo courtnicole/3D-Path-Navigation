@@ -64,6 +64,13 @@ namespace PathNav.ExperimentControl
         private static TobiiXR_EyeTrackingData eyeData = new TobiiXR_EyeTrackingData();
         private static readonly CsvConfiguration Config = new(CultureInfo.InvariantCulture);
         private bool _recordData;
+        
+        private Vector3 HeadPosition => playerTransform.position;
+        private Quaternion HeadRotation => playerTransform.rotation;
+        private Vector3 LeftHandPosition => leftHand.position;
+        private Quaternion LeftHandRotation => leftHand.rotation;
+        private Vector3 RightHandPosition => rightHand.position;
+        private Quaternion RightHandRotation => rightHand.rotation;
 
         #region Enable/Disable/Update
         internal void Enable()
@@ -337,10 +344,16 @@ namespace PathNav.ExperimentControl
         private void RecordData()
         {
             double time = LSL.LSL.local_clock();
+            GazeData();
+            PoseData();
+            
             _navigationData.SPEED = follower.followSpeed;
             _navigationData.SPLINE_POSITION = _locomotionDof == LocomotionDof.FourDoF ? follower.result.position.ToString("F3") : projector.result.position.ToString("F3");
             _navigationData.SPLINE_PERCENT = _locomotionDof == LocomotionDof.FourDoF ? follower.result.percent : projector.result.percent;
             _navigationData.TIMESTAMP = time;
+            
+            _gazeData.TIMESTAMP = time;
+            _poseData.TIMESTAMP = time;
 
             using StreamWriter streamWriter = new(_logFile, true);
             using CsvWriter    csvWriter    = new(streamWriter, Config);
@@ -370,6 +383,63 @@ namespace PathNav.ExperimentControl
             
             _gazeData.LEFT_EYE_PUPIL_DIAMETER = pupilData.verbose_data.left.pupil_diameter_mm;
             _gazeData.RIGHT_EYE_PUPIL_DIAMETER = pupilData.verbose_data.right.pupil_diameter_mm;
+        }
+
+        private void PoseData()
+        {
+            _poseData.HEAD_POSITION_X = HeadPosition.x;
+            _poseData.HEAD_POSITION_Y = HeadPosition.y;
+            _poseData.HEAD_POSITION_Z = HeadPosition.z;
+            
+            _poseData.HEAD_ROTATION_X = HeadRotation.x;
+            _poseData.HEAD_ROTATION_Y = HeadRotation.y;
+            _poseData.HEAD_ROTATION_Z = HeadRotation.z;
+            _poseData.HEAD_ROTATION_W = HeadRotation.w;
+
+            _poseData.LEFT_POSITION_X = LeftHandPosition.x;
+            _poseData.LEFT_POSITION_Y = LeftHandPosition.y;
+            _poseData.LEFT_POSITION_Z = LeftHandPosition.z;
+
+            _poseData.LEFT_ROTATION_X = LeftHandRotation.x;
+            _poseData.LEFT_ROTATION_Y = LeftHandRotation.y;
+            _poseData.LEFT_ROTATION_Z = LeftHandRotation.z;
+            _poseData.LEFT_ROTATION_W = LeftHandRotation.w;
+
+            _poseData.RIGHT_POSITION_X = RightHandPosition.x;
+            _poseData.RIGHT_POSITION_Y = RightHandPosition.y;
+            _poseData.RIGHT_POSITION_Z = RightHandPosition.z;
+            
+            _poseData.RIGHT_ROTATION_X = RightHandRotation.x;
+            _poseData.RIGHT_ROTATION_Y = RightHandRotation.y;
+            _poseData.RIGHT_ROTATION_Z = RightHandRotation.z;
+            _poseData.RIGHT_ROTATION_W = RightHandRotation.w;
+
+            _poseData.TRACKED_HEAD_POSITION_X = headPoseDriver.positionInput.action.ReadValue<Vector3>().x;
+            _poseData.TRACKED_HEAD_POSITION_Y = headPoseDriver.positionInput.action.ReadValue<Vector3>().y;
+            _poseData.TRACKED_HEAD_POSITION_Z = headPoseDriver.positionInput.action.ReadValue<Vector3>().z;
+            
+            _poseData.TRACKED_HEAD_ROTATION_X = headPoseDriver.rotationInput.action.ReadValue<Quaternion>().x;
+            _poseData.TRACKED_HEAD_ROTATION_Y = headPoseDriver.rotationInput.action.ReadValue<Quaternion>().y;
+            _poseData.TRACKED_HEAD_ROTATION_Z = headPoseDriver.rotationInput.action.ReadValue<Quaternion>().z;
+            _poseData.TRACKED_HEAD_ROTATION_W = headPoseDriver.rotationInput.action.ReadValue<Quaternion>().w;
+            
+            _poseData.TRACKED_LEFT_POSITION_X = leftHandPoseDriver.positionInput.action.ReadValue<Vector3>().x;
+            _poseData.TRACKED_LEFT_POSITION_Y = leftHandPoseDriver.positionInput.action.ReadValue<Vector3>().y;
+            _poseData.TRACKED_LEFT_POSITION_Z = leftHandPoseDriver.positionInput.action.ReadValue<Vector3>().z;
+            
+            _poseData.TRACKED_LEFT_ROTATION_X = leftHandPoseDriver.rotationInput.action.ReadValue<Quaternion>().x;
+            _poseData.TRACKED_LEFT_ROTATION_Y = leftHandPoseDriver.rotationInput.action.ReadValue<Quaternion>().y;
+            _poseData.TRACKED_LEFT_ROTATION_Z = leftHandPoseDriver.rotationInput.action.ReadValue<Quaternion>().z;
+            _poseData.TRACKED_LEFT_ROTATION_W = leftHandPoseDriver.rotationInput.action.ReadValue<Quaternion>().w;
+            
+            _poseData.TRACKED_RIGHT_POSITION_X = rightHandPoseDriver.positionInput.action.ReadValue<Vector3>().x;
+            _poseData.TRACKED_RIGHT_POSITION_Y = rightHandPoseDriver.positionInput.action.ReadValue<Vector3>().y;
+            _poseData.TRACKED_RIGHT_POSITION_Z = rightHandPoseDriver.positionInput.action.ReadValue<Vector3>().z;
+            
+            _poseData.TRACKED_RIGHT_ROTATION_X = rightHandPoseDriver.rotationInput.action.ReadValue<Quaternion>().x;
+            _poseData.TRACKED_RIGHT_ROTATION_Y = rightHandPoseDriver.rotationInput.action.ReadValue<Quaternion>().y;
+            _poseData.TRACKED_RIGHT_ROTATION_Z = rightHandPoseDriver.rotationInput.action.ReadValue<Quaternion>().z;
+            _poseData.TRACKED_RIGHT_ROTATION_W = rightHandPoseDriver.rotationInput.action.ReadValue<Quaternion>().w;
         }
         
         #endregion

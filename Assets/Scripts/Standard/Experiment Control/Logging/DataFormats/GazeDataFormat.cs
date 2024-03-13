@@ -25,5 +25,7 @@ namespace PathNav.ExperimentControl
         
         public float LEFT_EYE_PUPIL_DIAMETER  { get; set; }
         public float RIGHT_EYE_PUPIL_DIAMETER { get; set; }
+        
+        public double TIMESTAMP { get; set; }
     }
 }

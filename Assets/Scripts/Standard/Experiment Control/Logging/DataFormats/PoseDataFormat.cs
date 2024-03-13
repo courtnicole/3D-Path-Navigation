@@ -58,6 +58,6 @@ namespace PathNav.ExperimentControl
         public float TRACKED_RIGHT_ROTATION_Z { get; set; }
         public float TRACKED_RIGHT_ROTATION_W { get; set; }
         
-        public DateTime TIMESTAMP { get; set; }
+        public double TIMESTAMP { get; set; }
     }
 }
