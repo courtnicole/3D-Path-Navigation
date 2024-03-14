@@ -1,19 +1,24 @@
-using Unity.Collections;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
 
 namespace PathNav
 {
-    using System;
-    using System.Collections.Generic;
-    using UnityEngine;
+    using ExperimentControl;
+    using Unity.Collections;
     using UnityEngine.Rendering;
     using UnityEngine.Rendering.Universal;
-    using UnityEngine.Experimental.Rendering;
 
-    public class LuminosityRenderFeature : ScriptableRendererFeature
+    public struct Data
     {
-        public class LuminosityPass : ScriptableRenderPass
+        public float luminance;
+        public double timestamp;
+    }
+    public class LuminosityPass : ScriptableRenderPass
         {
-            private readonly BlitSettings _settings;
+
+            
+            //private readonly LuminosityRenderFeature.BlitSettings _settings;
 
             private RenderTargetIdentifier _sourceTargetId;
             private RenderTargetIdentifier _temporaryTargetId;
@@ -31,20 +36,19 @@ namespace PathNav
 
             private readonly ComputeBuffer _luminanceBuffer;
             private NativeArray<float> _buffer;
-            private readonly Queue<float> _luminance;
+            private Data _data;
+            private readonly Queue<Data> _luminance;
 
             private int _width, _height;
             private readonly int _groupSizeX;
             private readonly int _groupSizeY;
             private int _threadsX, _threadsY;
             
-            public LuminosityPass(RenderPassEvent         renderPassEvent, BlitSettings            settings,
-             RenderTextureDescriptor descriptor, RenderTargetIdentifier  destinationId,
-             ComputeShader           shader, ref ComputeBuffer       buffer,
-             ref Queue<float>        queue, string                  tag)
+            public LuminosityPass(RenderPassEvent renderPassEvent, RenderTextureDescriptor              descriptor,      RenderTargetIdentifier               destinationId,
+             ComputeShader                        shader,          ref ComputeBuffer                    buffer,
+             ref Queue<Data>                      queue,           string                               tag)
             {
                 this.renderPassEvent = renderPassEvent;
-                _settings            = settings;
                 _profilerTag         = tag;
                 _tempDescriptor      = descriptor;
                 _destinationTargetId = destinationId;
@@ -99,7 +103,7 @@ namespace PathNav
                 //XR SPI workaround
                 //cmd.DrawMesh(RenderingUtils.fullscreenMesh, Matrix4x4.identity, _settings.blitMaterial, 0,
                 //     _settings.blitMaterialPassIndex);
-                cmd.Blit(_sourceTargetId, _temporaryTargetHandle.Identifier(), _settings.blitMaterial, _settings.blitMaterialPassIndex);
+                cmd.Blit(_sourceTargetId, _temporaryTargetHandle.Identifier());
 
                 cmd.SetComputeTextureParam(_pixelComputeShader, _linearToXYZKernel, "linear_source", _temporaryTargetHandle.Identifier(), 0);
                 cmd.SetComputeIntParam(_pixelComputeShader, "source_width", _width);
@@ -114,8 +118,14 @@ namespace PathNav
                 cmd.RequestAsyncReadback(_luminanceBuffer,
                                          request =>
                                          {
-                                             _buffer = request.GetData<float>();
-                                             _luminance.Enqueue(_buffer[0]);
+                                             _buffer                                       = request.GetData<float>();
+                                             _data.luminance                               = _buffer[0];
+                                             _data.timestamp                            = LSL.LSL.local_clock();
+                                             if (DataLogger.Instance != null)
+                                             {
+                                                 DataLogger.Instance.LogGazeData();
+                                             }
+                                             _luminance.Enqueue(_data);
                                          });
 
                 context.ExecuteCommandBuffer(cmd);
@@ -130,78 +140,4 @@ namespace PathNav
             }
         }
 
-        [Serializable]
-        public class BlitSettings
-        {
-            public RenderPassEvent renderPassEvent = RenderPassEvent.AfterRenderingPostProcessing;
-            public Material blitMaterial;
-            public int blitMaterialPassIndex;
-            public RenderTexture dstTextureObject;
-
-            public ComputeShader luminanceComputeShader;
-        }
-
-        public BlitSettings settings = new();
-        private LuminosityPass _luminosityPass;
-        private RenderTextureDescriptor _tempDescriptor;
-        private RenderTexture _dstTextureObject;
-
-        private ComputeShader _luminanceCompute;
-        private Queue<float> _luminanceQueue;
-        private ComputeBuffer _luminanceBuffer;
-
-        public override void Create()
-        {
-            _tempDescriptor = new RenderTextureDescriptor(256, 256)
-            {
-                graphicsFormat    = GraphicsFormat.R16G16B16A16_SFloat,
-                autoGenerateMips  = false,
-                useMipMap         = true,
-                depthBufferBits   = 0,
-                enableRandomWrite = true,
-            };
-
-            _dstTextureObject = settings.dstTextureObject;
-            int passIndex = settings.blitMaterial != null ? settings.blitMaterial.passCount - 1 : 1;
-            settings.blitMaterialPassIndex = Mathf.Clamp(settings.blitMaterialPassIndex, -1, passIndex);
-
-            _luminanceCompute = settings.luminanceComputeShader;
-            _luminanceBuffer  = new ComputeBuffer(1, sizeof(float), ComputeBufferType.Structured);
-            _luminanceQueue   = new Queue<float>();
-
-            _luminosityPass = new LuminosityPass(settings.renderPassEvent,
-                                                 settings,
-                                                 _tempDescriptor,
-                                                 new RenderTargetIdentifier(_dstTextureObject),
-                                                 _luminanceCompute,
-                                                 ref _luminanceBuffer,
-                                                 ref _luminanceQueue,
-                                                 name);
-        }
-
-        public override void AddRenderPasses(ScriptableRenderer renderer, ref RenderingData renderingData)
-        {
-            // if (renderingData.cameraData.cameraType != CameraType.Game)
-            //     return;
-
-            if (settings.luminanceComputeShader == null) return;
-            if (settings.blitMaterial == null)
-            {
-                Debug.LogWarningFormat("Missing Blit Material. {0} blit pass will not execute. Check for missing reference in the assigned renderer.",
-                                       GetType().Name);
-                return;
-            }
-
-            _luminosityPass.ConfigureInput(ScriptableRenderPassInput.Color);
-            renderer.EnqueuePass(_luminosityPass);
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            Debug.Log(_luminanceQueue.Count);
-            if (!disposing) return;
-
-            _luminanceBuffer.Dispose();
-        }
-    }
 }

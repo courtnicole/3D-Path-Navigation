@@ -28,7 +28,7 @@ Shader "Pupil/LuminosityBlit"
                 float2 uv = input.uv;
 
                 half4 col = SAMPLE_TEXTURE2D_X(_SourceTex, sampler_SourceTex, uv);
-
+                col *= 1.4;
                 return col;
             }
             ENDHLSL

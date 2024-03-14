@@ -53,6 +53,8 @@ namespace PathNav.ExperimentControl
         private static string _logFilePath;
         private static string _logFilePathActions;
         private static string _logFilePathNavigation;
+        private static string _logFilePathPose;
+        private static string _logFilePathGaze;
         private static string _logDirectorySpline;
         private static string _logFilePathSpline;
 
@@ -104,6 +106,8 @@ namespace PathNav.ExperimentControl
             _logFilePath           = _logDirectory + _userInfo.DataFile;
             _logFilePathActions    = _logDirectory + _userInfo.ActionFile;
             _logFilePathNavigation = _logDirectory + _userInfo.NavigationFile;
+            _logFilePathGaze       = _logDirectory + _userInfo.GazeFile;
+            _logFilePathPose       = _logDirectory + _userInfo.PoseFile;
 
             _sceneData = new SceneDataFormat
             {
@@ -309,6 +313,9 @@ namespace PathNav.ExperimentControl
         public string        GetModel()                  => _conditionBlock.GetCurrentModel(_currentTrialStageIndex, _modelIndex).Id;
         public string        GetLogDirectory()           => _logDirectory;
         public string        GetActionLogFilePath()      => _logFilePathActions;
+        public string        GetNavigationLogFilePath()  => _logFilePathNavigation;
+        public string        GetPoseLogFilePath()  => _logFilePathPose;
+        public string        GetGazeLogFilePath()  => _logFilePathGaze;
 
         public bool UseTargetPoints1()
         {
@@ -329,7 +336,7 @@ namespace PathNav.ExperimentControl
             return _trialState == TrialState.Tutorial;
         }
 
-        public string GetNavigationLogFilePath() => _logFilePathNavigation;
+       
         #endregion
 
         #region Scene Control

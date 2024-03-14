@@ -2,6 +2,7 @@
 namespace PathNav.ExperimentControl
 {
     using CsvHelper.Configuration;
+    using System.Globalization;
 
     public sealed class GazeDataFormatMap : ClassMap<GazeDataFormat>
     {
@@ -25,7 +26,6 @@ namespace PathNav.ExperimentControl
             Map(m => m.LEFT_EYE_PUPIL_DIAMETER).Index(15).Name("LEFT_EYE_PUPIL_DIAMETER");
             Map(m => m.RIGHT_EYE_PUPIL_DIAMETER).Index(16).Name("RIGHT_EYE_PUPIL_DIAMETER");
             Map(m => m.TIMESTAMP).Index(17).Name("TIMESTAMP");
-            
         }
     }
 }

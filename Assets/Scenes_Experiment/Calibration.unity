@@ -141,7 +141,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &82599899
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -468,3 +468,33 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   calibrationImage: {fileID: 1914129111}
+--- !u!114 &2020824867
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2020824863}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 16c314bbea30da046a88ff556c575557, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerTransform: {fileID: 0}
+  leftHand: {fileID: 0}
+  rightHand: {fileID: 0}
+  headPoseDriver: {fileID: 0}
+  leftHandPoseDriver: {fileID: 0}
+  rightHandPoseDriver: {fileID: 0}
+--- !u!114 &2020824870
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2020824863}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9f52ea9534a40194f909591e0f53aba8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
