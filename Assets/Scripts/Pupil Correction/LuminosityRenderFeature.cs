@@ -1,5 +1,6 @@
 namespace PathNav
 {
+    using ExperimentControl;
     using System;
     using System.Collections.Generic;
     using UnityEngine;
@@ -51,9 +52,7 @@ namespace PathNav
             _luminosityPass = new LuminosityPass(settings.renderPassEvent,
                                                  _tempDescriptor,
                                                  new RenderTargetIdentifier(_dstTextureObject),
-                                                 _luminanceCompute,
-                                                 ref _luminanceBuffer,
-                                                 ref _luminanceQueue,
+                                                 _luminanceCompute, _luminanceBuffer, _luminanceQueue,
                                                  name);
         }
 
@@ -76,10 +75,14 @@ namespace PathNav
 
         protected override void Dispose(bool disposing)
         {
-            Debug.Log(_luminanceQueue.Count);
             if (!disposing) return;
-
+            if (ExperimentDataLogger.Instance != null)
+            {
+                Debug.Log(_luminanceQueue.Count);
+                ExperimentDataLogger.Instance.RecordLuminanceData(_luminanceQueue);
+            }
             _luminanceBuffer.Dispose();
+            _luminanceQueue.Clear();
         }
     }
 }

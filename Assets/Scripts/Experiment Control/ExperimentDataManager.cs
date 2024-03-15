@@ -11,10 +11,12 @@ namespace PathNav.ExperimentControl
     using System.Collections;
     using System.Collections.Generic;
     using System.Threading.Tasks;
+    using Tobii.XR;
     using UnityEngine;
     using UnityEngine.SceneManagement;
     #endregion
 
+    [DefaultExecutionOrder(-10)]
     public class ExperimentDataManager : MonoBehaviour
     {
         private enum TrialState
@@ -24,8 +26,10 @@ namespace PathNav.ExperimentControl
         }
 
         [SerializeField] private ConditionBlock[] conditionBlocks;
-        private static UserInfo _userInfo;
+        public TobiiXR_Settings Settings;
         public static ExperimentDataManager Instance { get; private set; }
+
+        private static UserInfo _userInfo;
 
         private static SplinePoint[] _drawingModelASpline;
         private static SplinePoint[] _drawingModelBSpline;
@@ -55,6 +59,7 @@ namespace PathNav.ExperimentControl
         private static string _logFilePathNavigation;
         private static string _logFilePathPose;
         private static string _logFilePathGaze;
+        private static string _logFilePathLuminance;
         private static string _logDirectorySpline;
         private static string _logFilePathSpline;
 
@@ -76,15 +81,14 @@ namespace PathNav.ExperimentControl
             {
                 Instance = this;
                 DontDestroyOnLoad(this);
+                TobiiXR.Start(Settings);
+                _logDirectory                   =  Application.dataPath + "/Data/";
+                SceneManager.activeSceneChanged += OnActiveSceneChanged;
             }
             else
             {
                 Destroy(gameObject);
-                return;
             }
-
-            _logDirectory                   =  Application.dataPath + "/Data/";
-            SceneManager.activeSceneChanged += OnActiveSceneChanged;
         }
 
         public void RecordUserId(int id, float height)
@@ -108,6 +112,7 @@ namespace PathNav.ExperimentControl
             _logFilePathNavigation = _logDirectory + _userInfo.NavigationFile;
             _logFilePathGaze       = _logDirectory + _userInfo.GazeFile;
             _logFilePathPose       = _logDirectory + _userInfo.PoseFile;
+            _logFilePathLuminance  = _logDirectory + _userInfo.LuminanceFile;
 
             _sceneData = new SceneDataFormat
             {
@@ -115,17 +120,12 @@ namespace PathNav.ExperimentControl
                 BLOCK_ID = _userInfo.BlockId,
             };
 
+            var logger = gameObject.AddComponent<ExperimentDataLogger>();
+            logger.Setup(_userId, _userInfo.BlockId, _logDirectory, _logFilePathGaze, _logFilePathPose, _logFilePathNavigation, _logFilePathLuminance);
+
             await CsvLogger.InitSceneDataLog(_logDirectory, _logFilePath);
 
-            _currentTrialStageIndex = 0;
-            _currentTrialCount      = 0;
-            _modelIndex             = 0;
-
-            _currentTrial = _conditionBlock.GetCurrentTrial(_currentTrialStageIndex);
-
-            _trialState = TrialState.Tutorial;
-
-            LoadNextScene();
+            RunGazeCalibration();
         }
 
         #region Data Recording
@@ -314,8 +314,9 @@ namespace PathNav.ExperimentControl
         public string        GetLogDirectory()           => _logDirectory;
         public string        GetActionLogFilePath()      => _logFilePathActions;
         public string        GetNavigationLogFilePath()  => _logFilePathNavigation;
-        public string        GetPoseLogFilePath()  => _logFilePathPose;
-        public string        GetGazeLogFilePath()  => _logFilePathGaze;
+        public string        GetPoseLogFilePath()        => _logFilePathPose;
+        public string        GetGazeLogFilePath()        => _logFilePathGaze;
+        public string        GetLuminanceLogFilePath()   => _logFilePathLuminance;
 
         public bool UseTargetPoints1()
         {
@@ -335,8 +336,6 @@ namespace PathNav.ExperimentControl
 
             return _trialState == TrialState.Tutorial;
         }
-
-       
         #endregion
 
         #region Scene Control
@@ -383,11 +382,29 @@ namespace PathNav.ExperimentControl
             EventManager.Publish(EventId.EnableLocomotion, this, EventArgs.Empty);
         }
 
+        private void RunGazeCalibration()
+        {
+            StartCoroutine(PlayNextScene("Calibration"));
+        }
+
         internal void TutorialComplete()
         {
             _trialState        = TrialState.Trial;
             _currentTrialCount = 0;
             _modelIndex        = 0;
+            LoadNextScene();
+        }
+
+        internal void CalibrationComplete()
+        {
+            _currentTrialStageIndex = 0;
+            _currentTrialCount      = 0;
+            _modelIndex             = 0;
+
+            _currentTrial = _conditionBlock.GetCurrentTrial(_currentTrialStageIndex);
+
+            _trialState = TrialState.Tutorial;
+
             LoadNextScene();
         }
 
@@ -476,6 +493,7 @@ namespace PathNav.ExperimentControl
             _activeSceneName = next.name;
 
             if (_activeSceneName.Contains("Loading")) return;
+            if (_activeSceneName.Contains("Calibration")) return;
 
             if (_activeSceneName.Contains("Creation_Tutorial"))
             {

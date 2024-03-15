@@ -45,8 +45,7 @@ namespace PathNav
             private int _threadsX, _threadsY;
             
             public LuminosityPass(RenderPassEvent renderPassEvent, RenderTextureDescriptor              descriptor,      RenderTargetIdentifier               destinationId,
-             ComputeShader                        shader,          ref ComputeBuffer                    buffer,
-             ref Queue<Data>                      queue,           string                               tag)
+             ComputeShader                        shader,          ComputeBuffer                    buffer, Queue<Data>                      queue,           string                               tag)
             {
                 this.renderPassEvent = renderPassEvent;
                 _profilerTag         = tag;
@@ -118,13 +117,13 @@ namespace PathNav
                 cmd.RequestAsyncReadback(_luminanceBuffer,
                                          request =>
                                          {
-                                             _buffer                                       = request.GetData<float>();
-                                             _data.luminance                               = _buffer[0];
-                                             _data.timestamp                            = LSL.LSL.local_clock();
-                                             if (DataLogger.Instance != null)
+                                             _buffer         = request.GetData<float>();
+                                             _data           = new Data
                                              {
-                                                 DataLogger.Instance.LogGazeData();
-                                             }
+                                                 luminance = _buffer[0],
+                                                 timestamp = LSL.LSL.local_clock(),
+                                             };
+                                             
                                              _luminance.Enqueue(_data);
                                          });
 

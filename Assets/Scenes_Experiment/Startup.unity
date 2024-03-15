@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.209047, g: 0.27270508, b: 0.28239626, a: 1}
+  m_IndirectSpecularColor: {r: 0.21049023, g: 0.2731333, b: 0.28224593, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -2022,6 +2022,26 @@ MonoBehaviour:
   - {fileID: 11400000, guid: fe3f9c38c00d4174aa72a3736900fd2f, type: 2}
   - {fileID: 11400000, guid: fe3f9c38c00d4174aa72a3736900fd2f, type: 2}
   - {fileID: 11400000, guid: fe3f9c38c00d4174aa72a3736900fd2f, type: 2}
+  Settings:
+    EyeTrackingFilter: {fileID: 0}
+    StandaloneEyeTrackingProviders:
+    - TypeName: HTCProvider
+    - TypeName: Tobii.XR.TobiiProvider
+    - TypeName: Tobii.XR.NoseDirectionProvider
+    - TypeName: Tobii.XR.MouseProvider
+    AndroidEyeTrackingProviders:
+    - TypeName: Tobii.XR.TobiiProvider
+    - TypeName: Tobii.XR.PicoXRProvider
+    - TypeName: Tobii.XR.NoseDirectionProvider
+    - TypeName: Tobii.XR.MouseProvider
+    LayerMask:
+      serializedVersion: 2
+      m_Bits: 4294967295
+    HowLongToKeepCandidatesInSeconds: 1
+    AdvancedEnabled: 0
+    OcumenLicense: 
+    PopupLicenseValidationErrors: 0
+    LicenseAsset: {fileID: 0}
 --- !u!114 &777987982
 MonoBehaviour:
   m_ObjectHideFlags: 0

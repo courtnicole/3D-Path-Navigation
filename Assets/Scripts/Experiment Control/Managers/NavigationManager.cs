@@ -21,8 +21,11 @@ namespace PathNav.ExperimentControl
     using ViveSR.anipal.Eye;
     using Debug = UnityEngine.Debug;
 
+
     public class NavigationManager : MonoBehaviour
     {
+        #region Variables
+        
         [SerializeField] private List<AudioClipMap> audioMap;
         [SerializeField] private SplineComputer targetSpline;
         [SerializeField] private SplineFollower follower;
@@ -73,13 +76,22 @@ namespace PathNav.ExperimentControl
         private Queue<PoseDataFormat> _poseQueue;
         private Queue<NavigationDataFormat> _navigationQueue;
         
-        private Vector3 HeadPosition => playerTransform.position;
-        private Quaternion HeadRotation => playerTransform.rotation;
-        private Vector3 LeftHandPosition => leftHand.position;
-        private Quaternion LeftHandRotation => leftHand.rotation;
-        private Vector3 RightHandPosition => rightHand.position;
+        private Vector3    HeadPosition      => playerTransform.position;
+        private Quaternion HeadRotation      => playerTransform.rotation;
+        private Vector3    LeftHandPosition  => leftHand.position;
+        private Quaternion LeftHandRotation  => leftHand.rotation;
+        private Vector3    RightHandPosition => rightHand.position;
         private Quaternion RightHandRotation => rightHand.rotation;
-
+        
+        private Vector3    TrackedHeadPosition      => headPoseDriver.positionInput.action.ReadValue<Vector3>();
+        private Vector3    TrackedRightHandPosition => rightHandPoseDriver.positionInput.action.ReadValue<Vector3>();
+        private Vector3    TrackedLeftHandPosition  => leftHandPoseDriver.positionInput.action.ReadValue<Vector3>();
+        private Quaternion TrackedHeadRotation      => headPoseDriver.rotationInput.action.ReadValue<Quaternion>();
+        private Quaternion TrackedRightHandRotation => rightHandPoseDriver.rotationInput.action.ReadValue<Quaternion>();
+        private Quaternion TrackedLeftHandRotation  => leftHandPoseDriver.rotationInput.action.ReadValue<Quaternion>();
+        
+        #endregion
+        
         #region Enable/Disable/Update
         internal void Enable()
         {
@@ -477,32 +489,33 @@ namespace PathNav.ExperimentControl
             _poseData.RIGHT_ROTATION_Z = RightHandRotation.z;
             _poseData.RIGHT_ROTATION_W = RightHandRotation.w;
 
-            _poseData.TRACKED_HEAD_POSITION_X = headPoseDriver.positionInput.action.ReadValue<Vector3>().x;
-            _poseData.TRACKED_HEAD_POSITION_Y = headPoseDriver.positionInput.action.ReadValue<Vector3>().y;
-            _poseData.TRACKED_HEAD_POSITION_Z = headPoseDriver.positionInput.action.ReadValue<Vector3>().z;
             
-            _poseData.TRACKED_HEAD_ROTATION_X = headPoseDriver.rotationInput.action.ReadValue<Quaternion>().x;
-            _poseData.TRACKED_HEAD_ROTATION_Y = headPoseDriver.rotationInput.action.ReadValue<Quaternion>().y;
-            _poseData.TRACKED_HEAD_ROTATION_Z = headPoseDriver.rotationInput.action.ReadValue<Quaternion>().z;
-            _poseData.TRACKED_HEAD_ROTATION_W = headPoseDriver.rotationInput.action.ReadValue<Quaternion>().w;
+            _poseData.TRACKED_HEAD_POSITION_X = TrackedHeadPosition.x;
+            _poseData.TRACKED_HEAD_POSITION_Y = TrackedHeadPosition.y;
+            _poseData.TRACKED_HEAD_POSITION_Z = TrackedHeadPosition.z;
             
-            _poseData.TRACKED_LEFT_POSITION_X = leftHandPoseDriver.positionInput.action.ReadValue<Vector3>().x;
-            _poseData.TRACKED_LEFT_POSITION_Y = leftHandPoseDriver.positionInput.action.ReadValue<Vector3>().y;
-            _poseData.TRACKED_LEFT_POSITION_Z = leftHandPoseDriver.positionInput.action.ReadValue<Vector3>().z;
+            _poseData.TRACKED_HEAD_ROTATION_X = TrackedHeadRotation.x;
+            _poseData.TRACKED_HEAD_ROTATION_Y = TrackedHeadRotation.y;
+            _poseData.TRACKED_HEAD_ROTATION_Z = TrackedHeadRotation.z;
+            _poseData.TRACKED_HEAD_ROTATION_W = TrackedHeadRotation.w;
             
-            _poseData.TRACKED_LEFT_ROTATION_X = leftHandPoseDriver.rotationInput.action.ReadValue<Quaternion>().x;
-            _poseData.TRACKED_LEFT_ROTATION_Y = leftHandPoseDriver.rotationInput.action.ReadValue<Quaternion>().y;
-            _poseData.TRACKED_LEFT_ROTATION_Z = leftHandPoseDriver.rotationInput.action.ReadValue<Quaternion>().z;
-            _poseData.TRACKED_LEFT_ROTATION_W = leftHandPoseDriver.rotationInput.action.ReadValue<Quaternion>().w;
+            _poseData.TRACKED_LEFT_POSITION_X = TrackedLeftHandPosition.x;
+            _poseData.TRACKED_LEFT_POSITION_Y = TrackedLeftHandPosition.y;
+            _poseData.TRACKED_LEFT_POSITION_Z = TrackedLeftHandPosition.z;
             
-            _poseData.TRACKED_RIGHT_POSITION_X = rightHandPoseDriver.positionInput.action.ReadValue<Vector3>().x;
-            _poseData.TRACKED_RIGHT_POSITION_Y = rightHandPoseDriver.positionInput.action.ReadValue<Vector3>().y;
-            _poseData.TRACKED_RIGHT_POSITION_Z = rightHandPoseDriver.positionInput.action.ReadValue<Vector3>().z;
+            _poseData.TRACKED_LEFT_ROTATION_X = TrackedLeftHandRotation.x;
+            _poseData.TRACKED_LEFT_ROTATION_Y = TrackedLeftHandRotation.y;
+            _poseData.TRACKED_LEFT_ROTATION_Z = TrackedLeftHandRotation.z;
+            _poseData.TRACKED_LEFT_ROTATION_W = TrackedLeftHandRotation.w;
             
-            _poseData.TRACKED_RIGHT_ROTATION_X = rightHandPoseDriver.rotationInput.action.ReadValue<Quaternion>().x;
-            _poseData.TRACKED_RIGHT_ROTATION_Y = rightHandPoseDriver.rotationInput.action.ReadValue<Quaternion>().y;
-            _poseData.TRACKED_RIGHT_ROTATION_Z = rightHandPoseDriver.rotationInput.action.ReadValue<Quaternion>().z;
-            _poseData.TRACKED_RIGHT_ROTATION_W = rightHandPoseDriver.rotationInput.action.ReadValue<Quaternion>().w;
+            _poseData.TRACKED_RIGHT_POSITION_X = TrackedRightHandPosition.x;
+            _poseData.TRACKED_RIGHT_POSITION_Y = TrackedRightHandPosition.y;
+            _poseData.TRACKED_RIGHT_POSITION_Z = TrackedRightHandPosition.z;
+            
+            _poseData.TRACKED_RIGHT_ROTATION_X = TrackedRightHandRotation.x;
+            _poseData.TRACKED_RIGHT_ROTATION_Y = TrackedRightHandRotation.y;
+            _poseData.TRACKED_RIGHT_ROTATION_Z = TrackedRightHandRotation.z;
+            _poseData.TRACKED_RIGHT_ROTATION_W = TrackedRightHandRotation.w;
         }
 
         private void GetNavigationData()

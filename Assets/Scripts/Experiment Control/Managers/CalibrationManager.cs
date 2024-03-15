@@ -1,5 +1,6 @@
 namespace PathNav
 {
+    using ExperimentControl;
     using System.Diagnostics;
     using UnityEngine.UI;
     using UnityEngine;
@@ -25,8 +26,10 @@ namespace PathNav
         
         protected void Start()
         {
+            ExperimentDataLogger.Instance.Enable("Calibration", "Calibration");
             calibrationImage.color = _calibrationColors[_calibrationIndex];
             _calibrationStopwatch  = new Stopwatch();
+            InvokeRepeating(nameof(LogLuminance), 0.5f, 1.0f);
             _calibrationStopwatch.Start();
         }
 
@@ -39,6 +42,16 @@ namespace PathNav
                 _calibrationStopwatch.Reset();
                 _calibrationStopwatch.Start();
             }
+        }
+
+        protected void LogLuminance()
+        {
+            ExperimentDataLogger.Instance.WriteLuminanceData();
+        }
+
+        protected void FixedUpdate()
+        {
+            ExperimentDataLogger.Instance.RecordGazeData();
         }
 
         private void UpdateCalibrationColor()
@@ -55,6 +68,12 @@ namespace PathNav
             }
         }
 
-        private void EndCalibration() { }
+        private async void EndCalibration()
+        {
+            await ExperimentDataLogger.Instance.WriteGazeData();
+            await ExperimentDataLogger.Instance.WriteAllData();
+            ExperimentDataLogger.Instance.Disable();
+            ExperimentDataManager.Instance.CalibrationComplete();
+        }
     }
 }

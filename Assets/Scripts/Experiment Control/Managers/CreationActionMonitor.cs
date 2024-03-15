@@ -24,8 +24,6 @@ namespace PathNav.SceneManagement
         private static string _logFile;
         private static readonly CsvConfiguration Config = new(CultureInfo.InvariantCulture);
         
-        
-
         #region Logic
         public void Enable()
         {
