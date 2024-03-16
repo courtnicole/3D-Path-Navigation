@@ -13,7 +13,6 @@ namespace PathNav
         [Serializable]
         public class BlitSettings
         {
-            public RenderPassEvent renderPassEvent = RenderPassEvent.AfterRenderingPostProcessing;
             public Material blitMaterial;
             public int blitMaterialPassIndex;
             public RenderTexture dstTextureObject;
@@ -49,8 +48,7 @@ namespace PathNav
             _luminanceBuffer  = new ComputeBuffer(1, sizeof(float), ComputeBufferType.Structured);
             _luminanceQueue   = new Queue<Data>();
 
-            _luminosityPass = new LuminosityPass(settings.renderPassEvent,
-                                                 _tempDescriptor,
+            _luminosityPass = new LuminosityPass(_tempDescriptor,
                                                  new RenderTargetIdentifier(_dstTextureObject),
                                                  _luminanceCompute, _luminanceBuffer, _luminanceQueue,
                                                  name);
@@ -73,13 +71,13 @@ namespace PathNav
             renderer.EnqueuePass(_luminosityPass);
         }
 
-        protected override void Dispose(bool disposing)
+        protected override async void Dispose(bool disposing)
         {
             if (!disposing) return;
             if (ExperimentDataLogger.Instance != null)
             {
                 Debug.Log(_luminanceQueue.Count);
-                ExperimentDataLogger.Instance.RecordLuminanceData(_luminanceQueue);
+                await ExperimentDataLogger.Instance.RecordLuminanceData(_luminanceQueue);
             }
             _luminanceBuffer.Dispose();
             _luminanceQueue.Clear();

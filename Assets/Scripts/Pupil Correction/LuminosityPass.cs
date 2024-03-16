@@ -16,10 +16,6 @@ namespace PathNav
     }
     public class LuminosityPass : ScriptableRenderPass
         {
-
-            
-            //private readonly LuminosityRenderFeature.BlitSettings _settings;
-
             private RenderTargetIdentifier _sourceTargetId;
             private RenderTargetIdentifier _temporaryTargetId;
             private readonly RenderTargetIdentifier _destinationTargetId;
@@ -44,10 +40,10 @@ namespace PathNav
             private readonly int _groupSizeY;
             private int _threadsX, _threadsY;
             
-            public LuminosityPass(RenderPassEvent renderPassEvent, RenderTextureDescriptor              descriptor,      RenderTargetIdentifier               destinationId,
+            public LuminosityPass(RenderTextureDescriptor              descriptor,      RenderTargetIdentifier               destinationId,
              ComputeShader                        shader,          ComputeBuffer                    buffer, Queue<Data>                      queue,           string                               tag)
             {
-                this.renderPassEvent = renderPassEvent;
+                this.renderPassEvent = RenderPassEvent.AfterRenderingPostProcessing;
                 _profilerTag         = tag;
                 _tempDescriptor      = descriptor;
                 _destinationTargetId = destinationId;

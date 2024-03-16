@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.21049023, g: 0.2731333, b: 0.28224593, a: 1}
+  m_IndirectSpecularColor: {r: 0.21048671, g: 0.27313346, b: 0.28224415, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -1983,6 +1983,7 @@ GameObject:
   - component: {fileID: 777987980}
   - component: {fileID: 777987981}
   - component: {fileID: 777987982}
+  - component: {fileID: 777987983}
   m_Layer: 0
   m_Name: SceneManagement
   m_TagString: Untagged
@@ -2027,8 +2028,6 @@ MonoBehaviour:
     StandaloneEyeTrackingProviders:
     - TypeName: HTCProvider
     - TypeName: Tobii.XR.TobiiProvider
-    - TypeName: Tobii.XR.NoseDirectionProvider
-    - TypeName: Tobii.XR.MouseProvider
     AndroidEyeTrackingProviders:
     - TypeName: Tobii.XR.TobiiProvider
     - TypeName: Tobii.XR.PicoXRProvider
@@ -2054,6 +2053,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 873d45d18db8f14409781ddee1823d2f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &777987983
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 777987978}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2605788ba8d084b4c862797d0be7928d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _luminanceCompute: {fileID: 7200000, guid: eae453b8e3cb61947a966dedbf07f5c7, type: 3}
+  dstTextureObject: {fileID: 8600000, guid: 77fcd6e2d562806468b423818fd0bfe2, type: 2}
 --- !u!1 &860788557
 GameObject:
   m_ObjectHideFlags: 0

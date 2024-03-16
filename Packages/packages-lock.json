@@ -15,9 +15,9 @@
       "hash": "75d54ab160edaf02d2173350bbd91f1afbdb66d8"
     },
     "com.tobii.xr.sdk": {
-      "version": "file:C:/Users/Courtney/Downloads/TobiiXRSDK_3.0.1.179",
+      "version": "file:TobiiXRSDK_3.0.1.179",
       "depth": 0,
-      "source": "local",
+      "source": "embedded",
       "dependencies": {
         "com.unity.xr.management": "3.2.16"
       }
