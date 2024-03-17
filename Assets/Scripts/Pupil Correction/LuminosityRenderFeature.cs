@@ -71,13 +71,12 @@ namespace PathNav
             renderer.EnqueuePass(_luminosityPass);
         }
 
-        protected override async void Dispose(bool disposing)
+        protected override void Dispose(bool disposing)
         {
             if (!disposing) return;
             if (ExperimentDataLogger.Instance != null)
             {
-                Debug.Log(_luminanceQueue.Count);
-                await ExperimentDataLogger.Instance.RecordLuminanceData(_luminanceQueue);
+                ExperimentDataLogger.Instance.RecordLuminanceData(_luminanceQueue);
             }
             _luminanceBuffer.Dispose();
             _luminanceQueue.Clear();

@@ -98,6 +98,8 @@ namespace PathNav.ExperimentControl
             _conditionBlock = conditionBlocks[_userInfo.BlockId];
 
             _logDirectorySpline = $"{_logDirectory}{_userId}_splines/";
+            
+            var logger = new ExperimentDataLogger(_userId, _userInfo.BlockId);
         }
 
         public void RecordHandedness(bool useLeftHand)
@@ -119,9 +121,6 @@ namespace PathNav.ExperimentControl
                 ID       = _userInfo.UserId,
                 BLOCK_ID = _userInfo.BlockId,
             };
-
-            var logger = gameObject.AddComponent<ExperimentDataLogger>();
-            logger.Setup(_userId, _userInfo.BlockId, _logDirectory, _logFilePathGaze, _logFilePathPose, _logFilePathNavigation, _logFilePathLuminance);
 
             await CsvLogger.InitSceneDataLog(_logDirectory, _logFilePath);
 

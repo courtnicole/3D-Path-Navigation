@@ -1,12 +1,21 @@
-namespace PathNav
+using UnityEngine.InputSystem.XR;
+
+namespace PathNav.ExperimentControl
 {
-    using ExperimentControl;
     using System.Diagnostics;
     using UnityEngine.UI;
     using UnityEngine;
     public class CalibrationManager : MonoBehaviour
     {
         [SerializeField] private Image calibrationImage;
+        
+        [Header("Data Logging Variables")]
+        [SerializeField] private Transform headTransform;
+        [SerializeField] private Transform leftHand;
+        [SerializeField] private Transform rightHand;
+        [SerializeField] private TrackedPoseDriver headPoseDriver;
+        [SerializeField] private TrackedPoseDriver leftHandPoseDriver;
+        [SerializeField] private TrackedPoseDriver rightHandPoseDriver;
 
         private Color[] _calibrationColors = new Color[]
         {
@@ -26,10 +35,17 @@ namespace PathNav
         
         protected void Start()
         {
-            ExperimentDataLogger.Instance.Enable("Calibration", "Calibration");
+            if(ExperimentDataLogger.Instance == null)
+            {
+                UnityEngine.Debug.LogError("ExperimentDataLogger is not present in the scene. Disabling CalibrationManager.");
+                enabled = false;
+                return;
+            }
+            ExperimentDataLogger.Instance.SetTransformData(headTransform, leftHand, rightHand);
+            ExperimentDataLogger.Instance.SetPoseDriverData(headPoseDriver, leftHandPoseDriver, rightHandPoseDriver);
+            ExperimentDataLogger.Instance.Enable(99.9f, 99.9f);
             calibrationImage.color = _calibrationColors[_calibrationIndex];
             _calibrationStopwatch  = new Stopwatch();
-            InvokeRepeating(nameof(LogLuminance), 0.5f, 1.0f);
             _calibrationStopwatch.Start();
         }
 
@@ -44,14 +60,10 @@ namespace PathNav
             }
         }
 
-        protected void LogLuminance()
-        {
-            ExperimentDataLogger.Instance.WriteLuminanceData();
-        }
-
-        protected void FixedUpdate()
+        protected void LateUpdate()
         {
             ExperimentDataLogger.Instance.RecordGazeData();
+            ExperimentDataLogger.Instance.RecordPoseData();
         }
 
         private void UpdateCalibrationColor()
@@ -68,10 +80,8 @@ namespace PathNav
             }
         }
 
-        private async void EndCalibration()
+        private void EndCalibration()
         {
-            await ExperimentDataLogger.Instance.WriteGazeData();
-            await ExperimentDataLogger.Instance.WriteAllData();
             ExperimentDataLogger.Instance.Disable();
             ExperimentDataManager.Instance.CalibrationComplete();
         }

@@ -2,57 +2,58 @@ using System;
 
 namespace PathNav.ExperimentControl
 {
-    using CsvHelper;
-    using CsvHelper.Configuration;
     using LSL;
     using System.Collections.Generic;
-    using System.Globalization;
-    using System.IO;
-    using System.Threading.Tasks;
     using Tobii.XR;
     using UnityEngine;
     using UnityEngine.InputSystem.XR;
     using ViveSR.anipal.Eye;
 
-    public class ExperimentDataLogger : MonoBehaviour
+    public class ExperimentDataLogger
     {
         public static ExperimentDataLogger Instance { get; private set; }
 
-        public Task gazeTask;
-        public Task poseTask;
-        public Task navigationTask;
-        public Task luminanceTask;
-
-        public IList<Task> tasks = new List<Task>();
-
         #region Logging Variables
+        private static StreamOutlet _luminanceOutlet;
+        private const string _luminanceStreamName = "LuminanceStream";
+        private const string _luminanceStreamType = "Luminance";
+        private const string _luminanceStreamID = "XRData_Luminance_01";
+        private static float[] _luminanceSample;
+        
+        private static StreamOutlet _gazeOutlet;
+        private const string _gazeStreamName = "GazeStream";
+        private const string _gazeStreamType = "Gaze";
+        private const string _gazeStreamID = "XRData_Gaze_01";
+        private static float[] _gazeSample;
+        
+        private static StreamOutlet _poseOutlet;
+        private const string _poseStreamName = "PoseStream";
+        private const string _poseStreamType = "Pose";
+        private const string _poseStreamID = "XRData_Pose_01";
+        private static float[] _poseSample;
 
-        private string _logDirectory;
-        private string _gazePath;
-        private string _posePath;
-        private string _navigationPath;
-        private string _luminancePath;
-        private static readonly CsvConfiguration LuminanceConfig = new(CultureInfo.InvariantCulture);
-        private static readonly CsvConfiguration GazeConfig = new(CultureInfo.InvariantCulture);
-        private static readonly CsvConfiguration PoseConfig = new(CultureInfo.InvariantCulture);
-        private static readonly CsvConfiguration NavigationConfig = new(CultureInfo.InvariantCulture);
-
+        private static StreamOutlet _navigationOutlet;
+        private const string _navigationStreamName = "NavigationStream";
+        private const string _navigationStreamType = "Navigation";
+        private const string _navigationStreamID = "XRData_Navigation_01";
+        private static float[] _navigationSample;
         #endregion
 
         #region Experiment Data
-
-        private int _userId;
-        private int _blockId;
-        private string _modelId, _methodId;
+        private float _userId;
+        private float _blockId;
+        private float _modelId;
+        private float _methodId;
 
         private Transform _playerTransform;
         private Transform _leftHand;
         private Transform _rightHand;
+        
         private TrackedPoseDriver _headPoseDriver;
         private TrackedPoseDriver _leftHandPoseDriver;
         private TrackedPoseDriver _rightHandPoseDriver;
 
-        private static EyeData _pupilData = new();
+        private static VerboseData _pupilData = new();
         private static TobiiXR_EyeTrackingData _eyeData = new();
 
         private Vector3 HeadPosition => _playerTransform.position;
@@ -74,362 +75,206 @@ namespace PathNav.ExperimentControl
 
         #endregion
 
-        #region Data Collections
-
-        private NavigationDataFormat _navigationData;
-        private GazeDataFormat _gazeData;
-        private PoseDataFormat _poseData;
-        private LuminanceDataFormat _luminanceData;
-
-        private Queue<GazeDataFormat> _gazeQueue;
-        private Queue<PoseDataFormat> _poseQueue;
-        private Queue<NavigationDataFormat> _navigationQueue;
-        private Queue<LuminanceDataFormat> _luminanceQueue;
-
-        #endregion
-
         #region Status
 
         private static bool _enabled;
 
         #endregion
 
-        public void Setup(int user, int block, string logDirectory, string gazePath, string posePath,
-            string navigationPath, string luminancePath)
+        public ExperimentDataLogger(float userID, float blockId)
         {
-            if (Instance == null)
-            {
-                Instance = this;
-                DontDestroyOnLoad(this);
-            }
-            else
-            {
-                return;
-            }
-
-            _userId = user;
-            _blockId = block;
-            _logDirectory = logDirectory;
-            _gazePath = gazePath;
-            _posePath = posePath;
-            _navigationPath = navigationPath;
-            _luminancePath = luminancePath;
-
-            _enabled = false;
-            InitializeGazeLogging();
-            InitializePoseLogging();
-            InitializeNavigationLogging();
-            InitializeLuminanceLogging();
+            Instance = this;
+            _userId = userID;
+            _blockId = blockId;
+            
+            CreateGazeStream();
+            CreatePoseStream();
+            CreateNavigationStream();
+            CreateLuminanceStream();
         }
-
-        public bool Enable(string model, string method)
+        public void Enable(float model, float method)
         {
-            if (Instance == null)
-            {
-                return false;
-            }
-
             _modelId = model;
             _methodId = method;
-
             _enabled = true;
-
-            return true;
         }
-
-        public bool Disable()
+        
+        public void Disable()
         {
-            if (Instance == null)
-            {
-                return false;
-            }
-
-            _modelId = string.Empty;
-            _methodId = string.Empty;
             _enabled = false;
-
-            return true;
         }
-
-        public async Task WriteLuminanceData()
+        
+        private void CreateGazeStream()
         {
-            if (!_enabled)
-            {
-                return;
-            }
+            StreamInfo streamInfo = new (_gazeStreamName, _gazeStreamType, 18, LSL.IRREGULAR_RATE, channel_format_t.cf_float32, _gazeStreamID);
+            XMLElement channels   = streamInfo.desc().append_child("channels");
 
-            if (_luminanceQueue.Count == 0)
-            {
-                return;
-            }
+            channels.append_child("channel").append_child_value("label", "UserID");
+            channels.append_child("channel").append_child_value("label", "BlockID");
+            channels.append_child("channel").append_child_value("label", "ModelID");
+            channels.append_child("channel").append_child_value("label", "MethodID");
             
-            await using StreamWriter streamWriter = new(_luminancePath, true);
-            await using CsvWriter csvWriter = new(streamWriter, LuminanceConfig);
+            channels.append_child("channel").append_child_value("label", "ConvergenceDistance");
+            channels.append_child("channel").append_child_value("label", "ConvergenceDistanceIsValid");
 
-            csvWriter.Context.RegisterClassMap<LuminanceDataFormatMap>();
-            luminanceTask = csvWriter.WriteRecordsAsync(_luminanceQueue);
-            await luminanceTask;
+            channels.append_child("channel").append_child_value("label", "GazeOriginX");
+            channels.append_child("channel").append_child_value("label", "GazeOriginY");
+            channels.append_child("channel").append_child_value("label", "GazeOriginZ");
 
-            if (luminanceTask.IsCompleted)
-            {
-                luminanceTask.Dispose();
-            }
+            channels.append_child("channel").append_child_value("label", "GazeDirectionNormalizedX");
+            channels.append_child("channel").append_child_value("label", "GazeDirectionNormalizedY");
+            channels.append_child("channel").append_child_value("label", "GazeDirectionNormalizedZ");
+
+            channels.append_child("channel").append_child_value("label", "GazeRayIsValid");
+            
+            channels.append_child("channel").append_child_value("label", "LeftEyeIsBlinking");
+            channels.append_child("channel").append_child_value("label", "RightEyeIsBlinking");
+
+            channels.append_child("channel").append_child_value("label", "LeftPupilDiameter");
+            channels.append_child("channel").append_child_value("label", "RightPupilDiameter");
+            
+            _gazeSample = new float[17];
+            _gazeOutlet = new StreamOutlet(streamInfo);
+            
+            _gazeSample[0] = _userId;
+            _gazeSample[1] = _blockId;
+            _gazeSample[2] = _modelId;
+            _gazeSample[3] = _methodId;
         }
-
-        private void InitializeGazeLogging()
+        public void CreatePoseStream()
         {
-            _gazeQueue = new Queue<GazeDataFormat>();
+            StreamInfo streamInfo = new (_poseStreamName, _poseStreamType, 47, LSL.IRREGULAR_RATE, channel_format_t.cf_float32, _poseStreamID);
+           
+            XMLElement channels   = streamInfo.desc().append_child("channels");
+            
+            channels.append_child("channel").append_child_value("label", "UserID");
+            channels.append_child("channel").append_child_value("label", "BlockID");
+            channels.append_child("channel").append_child_value("label", "ModelID");
+            channels.append_child("channel").append_child_value("label", "MethodID");
+            
+            channels.append_child("channel").append_child_value("label", "Head_PosX");
+            channels.append_child("channel").append_child_value("label", "Head_PosY");
+            channels.append_child("channel").append_child_value("label", "Head_PosZ");
+            channels.append_child("channel").append_child_value("label", "Head_RotW");
+            channels.append_child("channel").append_child_value("label", "Head_RotX");
+            channels.append_child("channel").append_child_value("label", "Head_RotY");
+            channels.append_child("channel").append_child_value("label", "Head_RotZ");
+            
+            channels.append_child("channel").append_child_value("label", "LefHand_PosX");
+            channels.append_child("channel").append_child_value("label", "LefHand_PosY");
+            channels.append_child("channel").append_child_value("label", "LefHand_PosZ");
+            channels.append_child("channel").append_child_value("label", "LefHand_RotW");
+            channels.append_child("channel").append_child_value("label", "LefHand_RotX");
+            channels.append_child("channel").append_child_value("label", "LefHand_RotY");
+            channels.append_child("channel").append_child_value("label", "LefHand_RotZ");
+            
+            channels.append_child("channel").append_child_value("label", "RightHand_PosX");
+            channels.append_child("channel").append_child_value("label", "RightHand_PosY");
+            channels.append_child("channel").append_child_value("label", "RightHand_PosZ");
+            channels.append_child("channel").append_child_value("label", "RightHand_RotW");
+            channels.append_child("channel").append_child_value("label", "RightHand_RotX");
+            channels.append_child("channel").append_child_value("label", "RightHand_RotY");
+            channels.append_child("channel").append_child_value("label", "RightHand_RotZ");
 
-            if (!Directory.Exists(_logDirectory))
-            {
-                Directory.CreateDirectory(_logDirectory);
-            }
-
-            if (File.Exists(_gazePath))
-            {
-                return;
-            }
-
-            using StreamWriter streamWriter = new(_gazePath);
-            using CsvWriter csvWriter = new(streamWriter, GazeConfig);
-
-            csvWriter.Context.RegisterClassMap<GazeDataFormatMap>();
-            csvWriter.WriteHeader<GazeDataFormat>();
-            csvWriter.NextRecord();
-
-            GazeConfig.HasHeaderRecord = false;
+            channels.append_child("channel").append_child_value("label", "Tracked_Head_PosX");
+            channels.append_child("channel").append_child_value("label", "Tracked_Head_PosY");
+            channels.append_child("channel").append_child_value("label", "Tracked_Head_PosZ");
+            channels.append_child("channel").append_child_value("label", "Tracked_Head_RotW");
+            channels.append_child("channel").append_child_value("label", "Tracked_Head_RotX");
+            channels.append_child("channel").append_child_value("label", "Tracked_Head_RotY");
+            channels.append_child("channel").append_child_value("label", "Tracked_Head_RotZ");
+            
+            channels.append_child("channel").append_child_value("label", "Tracked_LefHand_PosX");
+            channels.append_child("channel").append_child_value("label", "Tracked_LefHand_PosY");
+            channels.append_child("channel").append_child_value("label", "Tracked_LefHand_PosZ");
+            channels.append_child("channel").append_child_value("label", "Tracked_LefHand_RotW");
+            channels.append_child("channel").append_child_value("label", "Tracked_LefHand_RotX");
+            channels.append_child("channel").append_child_value("label", "Tracked_LefHand_RotY");
+            channels.append_child("channel").append_child_value("label", "Tracked_LefHand_RotZ");
+            
+            channels.append_child("channel").append_child_value("label", "Tracked_RightHand_PosX");
+            channels.append_child("channel").append_child_value("label", "Tracked_RightHand_PosY");
+            channels.append_child("channel").append_child_value("label", "Tracked_RightHand_PosZ");
+            channels.append_child("channel").append_child_value("label", "Tracked_RightHand_RotW");
+            channels.append_child("channel").append_child_value("label", "Tracked_RightHand_RotX");
+            channels.append_child("channel").append_child_value("label", "Tracked_RightHand_RotY");
+            channels.append_child("channel").append_child_value("label", "Tracked_RightHand_RotZ");
+            
+            _poseSample = new float[46];
+            _poseOutlet = new StreamOutlet(streamInfo);
         }
-
-        private void InitializePoseLogging()
+        public void CreateNavigationStream()
         {
-            _poseQueue = new Queue<PoseDataFormat>();
-
-            if (!Directory.Exists(_logDirectory))
-            {
-                Directory.CreateDirectory(_logDirectory);
-            }
-
-            if (File.Exists(_posePath))
-            {
-                return;
-            }
-
-            using StreamWriter streamWriter = new(_posePath);
-            using CsvWriter csvWriter = new(streamWriter, PoseConfig);
-
-            csvWriter.Context.RegisterClassMap<PoseDataFormatMap>();
-            csvWriter.WriteHeader<PoseDataFormat>();
-            csvWriter.NextRecord();
-
-            PoseConfig.HasHeaderRecord = false;
+            StreamInfo streamInfo = new (_navigationStreamName, _navigationStreamType, 8, LSL.IRREGULAR_RATE, channel_format_t.cf_float32, _navigationStreamID);
+            
+            XMLElement channels = streamInfo.desc().append_child("channels");
+            
+            channels.append_child("channel").append_child_value("label", "UserID");
+            channels.append_child("channel").append_child_value("label", "BlockID");
+            channels.append_child("channel").append_child_value("label", "ModelID");
+            channels.append_child("channel").append_child_value("label", "MethodID");
+            
+            channels.append_child("channel").append_child_value("label", "speed");
+            channels.append_child("channel").append_child_value("label", "spline_percent");
+            channels.append_child("channel").append_child_value("label", "spline_position_x");
+            channels.append_child("channel").append_child_value("label", "spline_position_y");
+            channels.append_child("channel").append_child_value("label", "spline_position_z");
+            
+            _navigationSample = new float[9];
+            _navigationOutlet = new StreamOutlet(streamInfo);
+            
+            _navigationSample[0] = _userId;
+            _navigationSample[1] = _blockId;
+            _navigationSample[2] = _modelId;
+            _navigationSample[3] = _methodId;
         }
-
-        private void InitializeNavigationLogging()
+        public void CreateLuminanceStream()
         {
-            _navigationQueue = new Queue<NavigationDataFormat>();
-
-            if (!Directory.Exists(_logDirectory))
-            {
-                Directory.CreateDirectory(_logDirectory);
-            }
-
-            if (File.Exists(_navigationPath))
-            {
-                return;
-            }
-
-            using StreamWriter streamWriter = new(_navigationPath);
-            using CsvWriter csvWriter = new(streamWriter, NavigationConfig);
-
-            csvWriter.Context.RegisterClassMap<NavigationDataFormatMap>();
-            csvWriter.WriteHeader<NavigationDataFormat>();
-            csvWriter.NextRecord();
-
-            NavigationConfig.HasHeaderRecord = false;
+            StreamInfo streamInfo = new (_luminanceStreamName, _luminanceStreamType, 6, LSL.IRREGULAR_RATE, channel_format_t.cf_float32, _luminanceStreamID);
+            
+            XMLElement channels = streamInfo.desc().append_child("channels");
+            
+            channels.append_child("channel").append_child_value("label", "UserID");
+            channels.append_child("channel").append_child_value("label", "BlockID");
+            channels.append_child("channel").append_child_value("label", "ModelID");
+            channels.append_child("channel").append_child_value("label", "MethodID");
+            channels.append_child("channel").append_child_value("label", "Luminance");
+            
+            _luminanceSample = new float[5];
+            _luminanceOutlet = new StreamOutlet(streamInfo);
+            
+            _luminanceSample[0] = _userId;
+            _luminanceSample[1] = _blockId;
+            _luminanceSample[2] = _modelId;
+            _luminanceSample[3] = _methodId;
         }
-
-        private void InitializeLuminanceLogging()
-        {
-            _luminanceQueue = new Queue<LuminanceDataFormat>();
-
-            if (!Directory.Exists(_logDirectory))
-            {
-                Directory.CreateDirectory(_logDirectory);
-            }
-
-            if (File.Exists(_luminancePath))
-            {
-                return;
-            }
-
-            using StreamWriter streamWriter = new(_luminancePath);
-            using CsvWriter csvWriter = new(streamWriter, LuminanceConfig);
-
-            csvWriter.Context.RegisterClassMap<LuminanceDataFormatMap>();
-            csvWriter.WriteHeader<LuminanceDataFormat>();
-            csvWriter.NextRecord();
-
-            LuminanceConfig.HasHeaderRecord = false;
-        }
-
-        protected void OnApplicationQuit()
-        {
-            if (Instance == null) return;
-            _enabled = false;
-
-            if (!Instance.gazeTask.IsCompleted)
-            {
-                Instance.gazeTask.Wait();
-            }
-
-            if (!Instance.poseTask.IsCompleted)
-            {
-                Instance.poseTask.Wait();
-            }
-
-            if (!Instance.navigationTask.IsCompleted)
-            {
-                Instance.navigationTask.Wait();
-            }
-
-            if (!Instance.luminanceTask.IsCompleted)
-            { 
-                Instance.luminanceTask.Wait();
-            }
-        }
-
-        public async Task WriteAllData()
-        {
-            if (!_enabled)
-            {
-                return;
-            }
-
-            _enabled = false;
-
-            if (_gazeQueue.Count > 0)
-            {
-                await WriteGazeData();
-            }
-
-            if (_poseQueue.Count > 0)
-            {
-                await WritePoseData();
-            }
-
-            if (_navigationQueue.Count > 0)
-            {
-                await WriteNavigationData();
-            }
-
-            if (tasks.Count > 0)
-            {
-                foreach (Task task in tasks)
-                {
-                    await task;
-                }
-            }
-        }
-
-        public async Task WriteGazeData()
-        {
-            if (!_enabled)
-            {
-                return;
-            }
-
-            await using StreamWriter streamWriter = new(_gazePath, true);
-            await using CsvWriter csvWriter = new(streamWriter, GazeConfig);
-
-            csvWriter.Context.RegisterClassMap<GazeDataFormatMap>();
-            gazeTask = csvWriter.WriteRecordsAsync(_gazeQueue.ToArray());
-            await gazeTask;
-
-            if (gazeTask.IsCompleted)
-            {
-                _gazeQueue.Clear();
-                gazeTask.Dispose();
-            }
-        }
-
-        public async Task WritePoseData()
-        {
-            if (!_enabled)
-            {
-                return;
-            }
-
-            await using StreamWriter streamWriter = new(_posePath, true);
-            await using CsvWriter csvWriter = new(streamWriter, PoseConfig);
-
-            csvWriter.Context.RegisterClassMap<PoseDataFormatMap>();
-            poseTask = csvWriter.WriteRecordsAsync(_poseQueue);
-            await poseTask;
-
-            if (poseTask.IsCompleted)
-            {
-                _poseQueue.Clear();
-                poseTask.Dispose();
-            }
-        }
-
-        public async Task WriteNavigationData()
-        {
-            if (!_enabled)
-            {
-                return;
-            }
-
-            await using StreamWriter streamWriter = new(_navigationPath, true);
-            await using CsvWriter csvWriter = new(streamWriter, NavigationConfig);
-
-            csvWriter.Context.RegisterClassMap<NavigationDataFormatMap>();
-            navigationTask = csvWriter.WriteRecordsAsync(_navigationQueue);
-            await navigationTask;
-
-            if (navigationTask.IsCompleted)
-            {
-                _navigationQueue.Clear();
-                navigationTask.Dispose();
-            }
-        }
-
         public void SetTransformData(Transform head, Transform left, Transform right)
         {
             _playerTransform = head;
             _leftHand = left;
             _rightHand = right;
         }
-
         public void SetPoseDriverData(TrackedPoseDriver head, TrackedPoseDriver left, TrackedPoseDriver right)
         {
             _headPoseDriver = head;
             _leftHandPoseDriver = left;
             _rightHandPoseDriver = right;
         }
-
         public void RecordNavigationData(float speed, double splinePercent, Vector3 splinePosition)
         {
             if (!_enabled)
             {
                 return;
             }
-
-            _navigationData = new NavigationDataFormat
-            {
-                ID = _userId,
-                BLOCK_ID = _blockId,
-                MODEL = _modelId,
-                METHOD = _methodId,
-                SPEED = speed,
-                SPLINE_PERCENT = splinePercent,
-                SPLINE_POSITION = splinePosition.ToString("F3"),
-                TIMESTAMP = LSL.local_clock(),
-            };
-
-            _navigationQueue.Enqueue(_navigationData);
+            
+            _navigationSample[4] = speed;
+            _navigationSample[5] = (float)splinePercent;
+            _navigationSample[6] = splinePosition.x;
+            _navigationSample[7] = splinePosition.y;
+            _navigationSample[8] = splinePosition.z;
+            
+            _navigationOutlet.push_sample(_navigationSample);
         }
-
         public void RecordPoseData()
         {
             if (!_enabled)
@@ -447,58 +292,55 @@ namespace PathNav.ExperimentControl
                 return;
             }
 
-            _poseData = new PoseDataFormat
-            {
-                ID = _userId,
-                BLOCK_ID = _blockId,
-                MODEL = _modelId,
-                METHOD = _methodId,
-                HEAD_POSITION_X = HeadPosition.x,
-                HEAD_POSITION_Y = HeadPosition.y,
-                HEAD_POSITION_Z = HeadPosition.z,
-                HEAD_ROTATION_X = HeadRotation.x,
-                HEAD_ROTATION_Y = HeadRotation.y,
-                HEAD_ROTATION_Z = HeadRotation.z,
-                HEAD_ROTATION_W = HeadRotation.w,
-                LEFT_POSITION_X = LeftHandPosition.x,
-                LEFT_POSITION_Y = LeftHandPosition.y,
-                LEFT_POSITION_Z = LeftHandPosition.z,
-                LEFT_ROTATION_X = LeftHandRotation.x,
-                LEFT_ROTATION_Y = LeftHandRotation.y,
-                LEFT_ROTATION_Z = LeftHandRotation.z,
-                LEFT_ROTATION_W = LeftHandRotation.w,
-                RIGHT_POSITION_X = RightHandPosition.x,
-                RIGHT_POSITION_Y = RightHandPosition.y,
-                RIGHT_POSITION_Z = RightHandPosition.z,
-                RIGHT_ROTATION_X = RightHandRotation.x,
-                RIGHT_ROTATION_Y = RightHandRotation.y,
-                RIGHT_ROTATION_Z = RightHandRotation.z,
-                RIGHT_ROTATION_W = RightHandRotation.w,
-                TRACKED_HEAD_POSITION_X = TrackedHeadPosition.x,
-                TRACKED_HEAD_POSITION_Y = TrackedHeadPosition.y,
-                TRACKED_HEAD_POSITION_Z = TrackedHeadPosition.z,
-                TRACKED_HEAD_ROTATION_X = TrackedHeadRotation.x,
-                TRACKED_HEAD_ROTATION_Y = TrackedHeadRotation.y,
-                TRACKED_HEAD_ROTATION_Z = TrackedHeadRotation.z,
-                TRACKED_HEAD_ROTATION_W = TrackedHeadRotation.w,
-                TRACKED_LEFT_POSITION_X = TrackedLeftHandPosition.x,
-                TRACKED_LEFT_POSITION_Y = TrackedLeftHandPosition.y,
-                TRACKED_LEFT_POSITION_Z = TrackedLeftHandPosition.z,
-                TRACKED_LEFT_ROTATION_X = TrackedLeftHandRotation.x,
-                TRACKED_LEFT_ROTATION_Y = TrackedLeftHandRotation.y,
-                TRACKED_LEFT_ROTATION_Z = TrackedLeftHandRotation.z,
-                TRACKED_LEFT_ROTATION_W = TrackedLeftHandRotation.w,
-                TRACKED_RIGHT_POSITION_X = TrackedRightHandPosition.x,
-                TRACKED_RIGHT_POSITION_Y = TrackedRightHandPosition.y,
-                TRACKED_RIGHT_POSITION_Z = TrackedRightHandPosition.z,
-                TRACKED_RIGHT_ROTATION_X = TrackedRightHandRotation.x,
-                TRACKED_RIGHT_ROTATION_Y = TrackedRightHandRotation.y,
-                TRACKED_RIGHT_ROTATION_Z = TrackedRightHandRotation.z,
-                TRACKED_RIGHT_ROTATION_W = TrackedRightHandRotation.w,
-                TIMESTAMP = LSL.local_clock(),
-            };
-
-            _poseQueue.Enqueue(_poseData);
+            _poseSample[4] = HeadPosition.x;
+            _poseSample[5] = HeadPosition.y;
+            _poseSample[6] = HeadPosition.z;
+            _poseSample[7] = HeadRotation.w;
+            _poseSample[8] = HeadRotation.x;
+            _poseSample[9] = HeadRotation.y;
+            _poseSample[10] = HeadRotation.z;
+            
+            _poseSample[11] = LeftHandPosition.x;
+            _poseSample[12] = LeftHandPosition.y;
+            _poseSample[13] = LeftHandPosition.z;
+            _poseSample[14] = LeftHandRotation.w;
+            _poseSample[15] = LeftHandRotation.x;
+            _poseSample[16] = LeftHandRotation.y;
+            _poseSample[17] = LeftHandRotation.z;
+            
+            _poseSample[18] = RightHandPosition.x;
+            _poseSample[19] = RightHandPosition.y;
+            _poseSample[20] = RightHandPosition.z;
+            _poseSample[21] = RightHandRotation.w;
+            _poseSample[22] = RightHandRotation.x;
+            _poseSample[23] = RightHandRotation.y;
+            _poseSample[24] = RightHandRotation.z;
+            
+            _poseSample[25] = TrackedHeadPosition.x;
+            _poseSample[26] = TrackedHeadPosition.y;
+            _poseSample[27] = TrackedHeadPosition.z;
+            _poseSample[28] = TrackedHeadRotation.w;
+            _poseSample[29] = TrackedHeadRotation.x;
+            _poseSample[30] = TrackedHeadRotation.y;
+            _poseSample[31] = TrackedHeadRotation.z;
+            
+            _poseSample[32] = TrackedLeftHandPosition.x;
+            _poseSample[33] = TrackedLeftHandPosition.y;
+            _poseSample[34] = TrackedLeftHandPosition.z;
+            _poseSample[35] = TrackedLeftHandRotation.w;
+            _poseSample[36] = TrackedLeftHandRotation.x;
+            _poseSample[37] = TrackedLeftHandRotation.y;
+            _poseSample[38] = TrackedLeftHandRotation.z;
+            
+            _poseSample[39] = TrackedRightHandPosition.x;
+            _poseSample[40] = TrackedRightHandPosition.y;
+            _poseSample[41] = TrackedRightHandPosition.z;
+            _poseSample[42] = TrackedRightHandRotation.w;
+            _poseSample[43] = TrackedRightHandRotation.x;
+            _poseSample[44] = TrackedRightHandRotation.y;
+            _poseSample[45] = TrackedRightHandRotation.z;
+            
+            _poseOutlet.push_sample(_poseSample);
         }
 
         public void RecordGazeData()
@@ -508,53 +350,40 @@ namespace PathNav.ExperimentControl
                 return;
             }
 
+            
             _eyeData = TobiiXR.GetEyeTrackingData(TobiiXR_TrackingSpace.World);
-            SRanipal_Eye.GetGazeRay(GazeIndex.COMBINE, out Vector3 _, out Vector3 _, _pupilData);
+            double timestamp = LSL.local_clock();
+            SRanipal_Eye.GetVerboseData(out _pupilData);
+            
+            _gazeSample[4] = _eyeData.ConvergenceDistance;
+            _gazeSample[5] = Convert.ToSingle(_eyeData.ConvergenceDistanceIsValid);
+            
+            _gazeSample[6] = _eyeData.GazeRay.Origin.x;
+            _gazeSample[7] = _eyeData.GazeRay.Origin.y;
+            _gazeSample[8] = _eyeData.GazeRay.Origin.z;
 
-            _gazeData = new GazeDataFormat
-            {
-                ID = _userId,
-                BLOCK_ID = _blockId,
-                MODEL = _modelId,
-                METHOD = _methodId,
-                TIMESTAMP = LSL.local_clock(),
-                CONVERGENCE_DISTANCE = _eyeData.ConvergenceDistance,
-                CONVERGENCE_VALID = _eyeData.ConvergenceDistanceIsValid,
-                GAZERAY_ORIGIN_X = _eyeData.GazeRay.Origin.x,
-                GAZERAY_ORIGIN_Y = _eyeData.GazeRay.Origin.y,
-                GAZERAY_ORIGIN_Z = _eyeData.GazeRay.Origin.z,
-                GAZERAY_DIRECTION_X = _eyeData.GazeRay.Direction.x,
-                GAZERAY_DIRECTION_Y = _eyeData.GazeRay.Direction.y,
-                GAZERAY_DIRECTION_Z = _eyeData.GazeRay.Direction.z,
-                GAZERAY_VALID = _eyeData.GazeRay.IsValid,
-                LEFT_IS_BLINKING = _eyeData.IsLeftEyeBlinking,
-                RIGHT_IS_BLINKING = _eyeData.IsRightEyeBlinking,
-                LEFT_EYE_PUPIL_DIAMETER = _pupilData.verbose_data.left.pupil_diameter_mm,
-                RIGHT_EYE_PUPIL_DIAMETER = _pupilData.verbose_data.right.pupil_diameter_mm,
-            };
-
-            _gazeQueue.Enqueue(_gazeData);
+            _gazeSample[9] = _eyeData.GazeRay.Direction.x;
+            _gazeSample[10] = _eyeData.GazeRay.Direction.y;
+            _gazeSample[11] = _eyeData.GazeRay.Direction.z;
+            
+            _gazeSample[12] = Convert.ToSingle(_eyeData.GazeRay.IsValid);
+            _gazeSample[13] = Convert.ToSingle(_eyeData.IsLeftEyeBlinking);
+            _gazeSample[14] = Convert.ToSingle(_eyeData.IsRightEyeBlinking);
+            
+            _gazeSample[15] = _pupilData.left.pupil_diameter_mm;
+            _gazeSample[16] = _pupilData.right.pupil_diameter_mm;
+            
+            
+            _gazeOutlet.push_sample(_gazeSample, timestamp);
         }
 
-        public async Task RecordLuminanceData(IEnumerable<Data> luminanceQueue)
+        public void RecordLuminanceData(IEnumerable<Data> luminanceQueue)
         {
             foreach (Data data in luminanceQueue)
             {
-                _luminanceData = new LuminanceDataFormat
-                {
-                    ID = _userId,
-                    BLOCK_ID = _blockId,
-                    MODEL = _modelId,
-                    METHOD = _methodId,
-                    LUMINANCE = data.luminance,
-                    TIMESTAMP = data.timestamp,
-                };
-
-                _luminanceQueue.Enqueue(_luminanceData);
+                _luminanceSample[4] = data.luminance;
+                _luminanceOutlet.push_sample(_luminanceSample, data.timestamp);
             }
-
-            await WriteLuminanceData();
-            _luminanceQueue.Clear();    
         }
     }
 }

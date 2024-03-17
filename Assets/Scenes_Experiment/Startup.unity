@@ -2065,7 +2065,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2605788ba8d084b4c862797d0be7928d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _luminanceCompute: {fileID: 7200000, guid: eae453b8e3cb61947a966dedbf07f5c7, type: 3}
+  luminanceCompute: {fileID: 7200000, guid: eae453b8e3cb61947a966dedbf07f5c7, type: 3}
   dstTextureObject: {fileID: 8600000, guid: 77fcd6e2d562806468b423818fd0bfe2, type: 2}
 --- !u!1 &860788557
 GameObject:

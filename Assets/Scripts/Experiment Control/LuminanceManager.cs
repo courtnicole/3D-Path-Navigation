@@ -9,7 +9,7 @@ namespace PathNav.ExperimentControl
     
     public class LuminanceManager : MonoBehaviour
     {
-        [SerializeField] private ComputeShader _luminanceCompute;
+        [SerializeField] private ComputeShader luminanceCompute;
         [SerializeField] private RenderTexture dstTextureObject;
         
         private static LuminanceManager _instance;
@@ -51,17 +51,17 @@ namespace PathNav.ExperimentControl
             
             _tempDescriptor.width  = renderCamera.pixelWidth;
             _tempDescriptor.height = renderCamera.pixelHeight;
-            _luminosityPass = new LuminosityPass(_tempDescriptor, _dstTextureObject, _luminanceCompute, _luminanceBuffer, _luminanceQueue, name);
+            _luminosityPass = new LuminosityPass(_tempDescriptor, _dstTextureObject, luminanceCompute, _luminanceBuffer, _luminanceQueue, name);
             _luminosityPass.ConfigureInput(ScriptableRenderPassInput.Color);
             renderCamera.GetUniversalAdditionalCameraData().scriptableRenderer.EnqueuePass(_luminosityPass);
         }
 
-        private async void OnEndContext(ScriptableRenderContext context, List<Camera> renderCameras)
+        private void OnEndContext(ScriptableRenderContext context, List<Camera> renderCameras)
         {
             if (_instance == null) return;
             if (ExperimentDataLogger.Instance == null) return;
             
-            await ExperimentDataLogger.Instance.RecordLuminanceData(_luminanceQueue);
+            ExperimentDataLogger.Instance.RecordLuminanceData(_luminanceQueue);
             _luminanceQueue.Clear();
         }
 

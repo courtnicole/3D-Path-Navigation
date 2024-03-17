@@ -12,8 +12,7 @@ namespace PathNav.ExperimentControl
     using ViveSR.anipal.Eye;
 
     public class DataLogger : MonoBehaviour
-    {
-
+    { 
         public static DataLogger Instance { get; private set; }
         [Header("Data Logging Variables")]
         [SerializeField] private Transform playerTransform;
