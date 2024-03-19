@@ -13,6 +13,10 @@ namespace PathNav.ExperimentControl
     {
         public static ExperimentDataLogger Instance { get; private set; }
 
+        public Vector3 CurrentCombinedGazeDirection { get; private set; }
+        public Vector3 CurrentLeftGazeDirection { get; private set; }
+        public Vector3 CurrentRightGazeDirection { get; private set; }
+
         #region Logging Variables
         private static StreamOutlet _luminanceOutlet;
         private const string _luminanceStreamName = "LuminanceStream";
@@ -86,6 +90,7 @@ namespace PathNav.ExperimentControl
             Instance = this;
             _userId = userID;
             _blockId = blockId;
+            CurrentCombinedGazeDirection = Vector3.zero;
             
             CreateGazeStream();
             CreatePoseStream();
@@ -106,7 +111,7 @@ namespace PathNav.ExperimentControl
         
         private void CreateGazeStream()
         {
-            StreamInfo streamInfo = new (_gazeStreamName, _gazeStreamType, 18, LSL.IRREGULAR_RATE, channel_format_t.cf_float32, _gazeStreamID);
+            StreamInfo streamInfo = new (_gazeStreamName, _gazeStreamType, 17, LSL.IRREGULAR_RATE, channel_format_t.cf_float32, _gazeStreamID);
             XMLElement channels   = streamInfo.desc().append_child("channels");
 
             channels.append_child("channel").append_child_value("label", "UserID");
@@ -141,9 +146,9 @@ namespace PathNav.ExperimentControl
             _gazeSample[2] = _modelId;
             _gazeSample[3] = _methodId;
         }
-        public void CreatePoseStream()
+        private void CreatePoseStream()
         {
-            StreamInfo streamInfo = new (_poseStreamName, _poseStreamType, 47, LSL.IRREGULAR_RATE, channel_format_t.cf_float32, _poseStreamID);
+            StreamInfo streamInfo = new (_poseStreamName, _poseStreamType, 46, LSL.IRREGULAR_RATE, channel_format_t.cf_float32, _poseStreamID);
            
             XMLElement channels   = streamInfo.desc().append_child("channels");
             
@@ -203,9 +208,9 @@ namespace PathNav.ExperimentControl
             _poseSample = new float[46];
             _poseOutlet = new StreamOutlet(streamInfo);
         }
-        public void CreateNavigationStream()
+        private void CreateNavigationStream()
         {
-            StreamInfo streamInfo = new (_navigationStreamName, _navigationStreamType, 8, LSL.IRREGULAR_RATE, channel_format_t.cf_float32, _navigationStreamID);
+            StreamInfo streamInfo = new (_navigationStreamName, _navigationStreamType, 9, LSL.IRREGULAR_RATE, channel_format_t.cf_float32, _navigationStreamID);
             
             XMLElement channels = streamInfo.desc().append_child("channels");
             
@@ -228,9 +233,9 @@ namespace PathNav.ExperimentControl
             _navigationSample[2] = _modelId;
             _navigationSample[3] = _methodId;
         }
-        public void CreateLuminanceStream()
+        private void CreateLuminanceStream()
         {
-            StreamInfo streamInfo = new (_luminanceStreamName, _luminanceStreamType, 6, LSL.IRREGULAR_RATE, channel_format_t.cf_float32, _luminanceStreamID);
+            StreamInfo streamInfo = new (_luminanceStreamName, _luminanceStreamType, 5, LSL.IRREGULAR_RATE, channel_format_t.cf_float32, _luminanceStreamID);
             
             XMLElement channels = streamInfo.desc().append_child("channels");
             
@@ -349,11 +354,11 @@ namespace PathNav.ExperimentControl
             {
                 return;
             }
-
             
             _eyeData = TobiiXR.GetEyeTrackingData(TobiiXR_TrackingSpace.World);
             double timestamp = LSL.local_clock();
             SRanipal_Eye.GetVerboseData(out _pupilData);
+            CurrentCombinedGazeDirection = _eyeData.GazeRay.Direction;
             
             _gazeSample[4] = _eyeData.ConvergenceDistance;
             _gazeSample[5] = Convert.ToSingle(_eyeData.ConvergenceDistanceIsValid);
@@ -377,13 +382,15 @@ namespace PathNav.ExperimentControl
             _gazeOutlet.push_sample(_gazeSample, timestamp);
         }
 
-        public void RecordLuminanceData(IEnumerable<Data> luminanceQueue)
+        public void RecordLuminanceData(Data data)
         {
-            foreach (Data data in luminanceQueue)
-            {
-                _luminanceSample[4] = data.luminance;
-                _luminanceOutlet.push_sample(_luminanceSample, data.timestamp);
-            }
+            _luminanceSample[4] = data.luminance;
+            _luminanceOutlet.push_sample(_luminanceSample, data.timestamp);
+            // foreach (Data data in luminanceQueue)
+            // {
+            //     _luminanceSample[4] = data.luminance;
+            //     _luminanceOutlet.push_sample(_luminanceSample, data.timestamp);
+            // }
         }
     }
 }

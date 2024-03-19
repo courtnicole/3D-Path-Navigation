@@ -48,10 +48,10 @@ namespace PathNav
             _luminanceBuffer  = new ComputeBuffer(1, sizeof(float), ComputeBufferType.Structured);
             _luminanceQueue   = new Queue<Data>();
 
-            _luminosityPass = new LuminosityPass(_tempDescriptor,
-                                                 new RenderTargetIdentifier(_dstTextureObject),
-                                                 _luminanceCompute, _luminanceBuffer, _luminanceQueue,
-                                                 name);
+            // _luminosityPass = new LuminosityPass(_tempDescriptor,
+            //                                      new RenderTargetIdentifier(_dstTextureObject),
+            //                                      _luminanceCompute, _luminanceBuffer, _luminanceQueue,
+            //                                      name);
         }
 
         public override void AddRenderPasses(ScriptableRenderer renderer, ref RenderingData renderingData)
@@ -74,10 +74,6 @@ namespace PathNav
         protected override void Dispose(bool disposing)
         {
             if (!disposing) return;
-            if (ExperimentDataLogger.Instance != null)
-            {
-                ExperimentDataLogger.Instance.RecordLuminanceData(_luminanceQueue);
-            }
             _luminanceBuffer.Dispose();
             _luminanceQueue.Clear();
         }

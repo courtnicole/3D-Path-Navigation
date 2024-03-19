@@ -2,7 +2,7 @@
 
 #pragma kernel compute_luminance
 
-#define GROUP_SIZE 32
+#define GROUP_SIZE 256
 
 #define LINEAR_TO_XYZ_X float3(0.4124564, 0.3575761, 0.1804375)
 #define LINEAR_TO_XYZ_Y float3(0.2126729, 0.7151522, 0.0721750)
@@ -41,10 +41,10 @@ float2 tan_half_fov;
 static const uint radius_sq = 182726;
 RWStructuredBuffer<float3> average_luminance;
 
-groupshared float shared_partial_average[GROUP_SIZE * GROUP_SIZE];
-groupshared float shared_partial_fovea[GROUP_SIZE * GROUP_SIZE];
+groupshared float shared_partial_average[GROUP_SIZE];
+groupshared float shared_partial_fovea[GROUP_SIZE];
 
-[numthreads(GROUP_SIZE, GROUP_SIZE, 1)]
+[numthreads(GROUP_SIZE, 1, 1)]
 void compute_luminance(uint3 groupThreadID : SV_GroupThreadID, uint3 dispatchThreadID : SV_DispatchThreadID)
 {
     // Color value is already in Linear space, can skip conversion from sRGB (HDR processing occurs with sRGB values in linear space)
@@ -55,25 +55,21 @@ void compute_luminance(uint3 groupThreadID : SV_GroupThreadID, uint3 dispatchThr
     const float pixel_luminance = xyz_color.y;
     const float fovea_luminance = xyz_color.y * inside_fovea(fixation_point, dispatchThreadID.xy, radius_sq);
 
-    uint flattened_index = groupThreadID.y * GROUP_SIZE + groupThreadID.x;
-    shared_partial_average[flattened_index] = pixel_luminance;
-    shared_partial_fovea[flattened_index] = fovea_luminance;
+    shared_partial_average[groupThreadID.x] = pixel_luminance;
+    shared_partial_fovea[groupThreadID.x] = fovea_luminance;
     GroupMemoryBarrierWithGroupSync();
     
     [unroll]
     for (uint stride = GROUP_SIZE / 2; stride > 0; stride >>= 1)
     {
-        shared_partial_average[flattened_index] += (shared_partial_average[flattened_index + stride] * (flattened_index < stride));
-        shared_partial_fovea[flattened_index] += shared_partial_fovea[flattened_index + stride] * (flattened_index < stride);
+        shared_partial_average[groupThreadID.x] += (shared_partial_average[groupThreadID.x + stride] * (groupThreadID.x < stride));
+        shared_partial_fovea[groupThreadID.x] += (shared_partial_fovea[groupThreadID.x + stride] * (groupThreadID.x < stride));
         
         GroupMemoryBarrierWithGroupSync();
     }
     
-    //Sorry, lonely thread, the firstborn always does the work
-    if (flattened_index == 0)
+    if (groupThreadID.x == 0)
     {
-        const float total_pixels = source_size.x * source_size.y;
-        average_luminance[0] = shared_partial_average[0] / total_pixels;
-        average_luminance[0] = shared_partial_fovea[0] / total_pixels;
+        average_luminance[0] = average_luminance[0] + float3(shared_partial_average[0], shared_partial_fovea[0], 0.0f);
     }
 }

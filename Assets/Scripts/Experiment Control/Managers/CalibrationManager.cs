@@ -62,7 +62,7 @@ namespace PathNav.ExperimentControl
 
         protected void LateUpdate()
         {
-            ExperimentDataLogger.Instance.RecordGazeData();
+            //ExperimentDataLogger.Instance.RecordGazeData();
             ExperimentDataLogger.Instance.RecordPoseData();
         }
 
