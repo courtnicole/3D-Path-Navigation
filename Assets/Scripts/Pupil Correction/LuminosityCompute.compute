@@ -1,4 +1,4 @@
-#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
+#include "UnityShaderVariables.cginc"
 
 #pragma kernel compute_luminance
 

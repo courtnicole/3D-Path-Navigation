@@ -303,7 +303,37 @@ namespace PathNav.ExperimentControl
         #region Public Getters
         public int GetId()    => _userId;
         public int GetBlock() => _userInfo.BlockId;
+        
+        public int           GetModelInt()               => _modelIndex;
 
+        public int GetCreationMethodInt()
+        {
+            switch (_currentTrial.pathStrategy)
+            {
+                case PathStrategy.Bulldozer:
+                    return 0;
+                case PathStrategy.Spatula:
+                    return 1;
+                case PathStrategy.None:
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+
+        public int GetNavigationMethodInt()
+        {
+            switch (_currentTrial.locomotionDof)
+            {
+                case LocomotionDof.FourDoF:
+                    return 2;
+                case LocomotionDof.SixDof:
+                    return 3;
+                case LocomotionDof.None:
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+        
         public float         GetHeight()                 => _userInfo.Height;
         public PathStrategy  GetCreationMethod()         => _currentTrial.pathStrategy;
         public string        GetCreationMethodString()   => _currentTrial.GetPathStrategyString();

@@ -7,6 +7,7 @@ namespace PathNav.ExperimentControl
     using System.Collections.Generic;
     using System.Threading.Tasks;
     using UnityEngine;
+    using UnityEngine.InputSystem.XR;
     using UnityEngine.XR.OpenXR.Samples.ControllerSample;
 
     public class CreationManager : MonoBehaviour
@@ -19,13 +20,28 @@ namespace PathNav.ExperimentControl
         [SerializeField] private Overlay overlay;
         [SerializeField] private PointerEvaluator pointerLeft;
         [SerializeField] private PointerEvaluator pointerRight;
+        [Header("Data Logging Variables")] 
+        
+        [SerializeField] private Transform headTransform;
+        [SerializeField] private Transform leftHand;
+        [SerializeField] private Transform rightHand;
+        [SerializeField] private TrackedPoseDriver headPoseDriver;
+        [SerializeField] private TrackedPoseDriver leftHandPoseDriver;
+        [SerializeField] private TrackedPoseDriver rightHandPoseDriver;
 
         private bool _enableTeleportation;
+        private bool _recordData;
         internal void Enable()
         {
             _enableTeleportation            =  CheckTeleportation();
-            SubscribeToEvents();
             StartCreation();
+        }
+
+        private void LateUpdate()
+        {
+            if (!_recordData) return;
+
+            ExperimentDataLogger.Instance.RecordPoseData();
         }
         
         private void OnDisable()
@@ -71,6 +87,7 @@ namespace PathNav.ExperimentControl
 
         private void SplineComplete(object sender, SegmentEventArgs args)
         {
+            _recordData = false;
             ActionAssetEnabler actionController = FindObjectOfType<ActionAssetEnabler>();
             actionController.EnableUiInput();
             instructions.SetActive(false);
@@ -79,6 +96,29 @@ namespace PathNav.ExperimentControl
             pointerRight.Enable();
         }
 
+        
+        private async void StartCreation()
+        {
+            ExperimentDataLogger.Instance.SetTransformData(headTransform, leftHand, rightHand);
+            ExperimentDataLogger.Instance.SetPoseDriverData(headPoseDriver, leftHandPoseDriver, rightHandPoseDriver);
+            
+            await Task.Delay(50);
+            
+            if (_enableTeleportation)
+            {
+                teleporter.Teleport(teleportLocation);
+            }
+            
+            await Task.Delay(500);
+            
+            SubscribeToEvents();
+            
+            await Task.Delay(100);
+            ExperimentDataLogger.Instance.Enable(ExperimentDataManager.Instance.GetModelInt(), ExperimentDataManager.Instance.GetCreationMethodInt());
+            
+            overlay.FadeToClear();
+        }
+        
         private async void EndCreation()
         {
             await Task.Delay(100);
@@ -89,21 +129,11 @@ namespace PathNav.ExperimentControl
             
             ExperimentDataManager.Instance.CreationComplete();
         }
-
-        private async void StartCreation()
-        {
-            if (_enableTeleportation)
-            {
-                teleporter.Teleport(teleportLocation);
-            }
-            
-            await Task.Delay(500);
-            
-            overlay.FadeToClear();
-        }
         
         public void StopImmediately()
         {
+            _recordData = false;
+            ExperimentDataLogger.Instance.Disable();
             overlay.FadeToBlackImmediate();
             
             EventManager.Publish(EventId.PathCreationComplete, this, new ControllerEvaluatorEventArgs(null));

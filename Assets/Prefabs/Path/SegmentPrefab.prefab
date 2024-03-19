@@ -108,7 +108,7 @@ MonoBehaviour:
   - 0.9285714944257905
   - 1
   _is2D: 0
-  hasSamples: 0
+  hasSamples: 1
   _optimizeAngleThreshold: 0.5
   _space: 0
   _sampleMode: 1

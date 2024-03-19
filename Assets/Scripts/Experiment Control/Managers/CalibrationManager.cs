@@ -52,7 +52,7 @@ namespace PathNav.ExperimentControl
         protected void Update()
         {
             //Check if 6 seconds have elapsed
-            if (_calibrationStopwatch.ElapsedMilliseconds > 3000)
+            if (_calibrationStopwatch.ElapsedMilliseconds > 6000)
             {
                 UpdateCalibrationColor();
                 _calibrationStopwatch.Reset();
@@ -62,7 +62,6 @@ namespace PathNav.ExperimentControl
 
         protected void LateUpdate()
         {
-            //ExperimentDataLogger.Instance.RecordGazeData();
             ExperimentDataLogger.Instance.RecordPoseData();
         }
 

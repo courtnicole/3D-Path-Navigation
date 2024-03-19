@@ -1,36 +1,27 @@
 namespace PathNav.ExperimentControl
 {
-    using CsvHelper;
-    using CsvHelper.Configuration;
     using Dreamteck.Splines;
     using Events;
     using Interaction;
     using SceneManagement;
     using System;
-    using System.Collections;
     using System.Collections.Generic;
     using System.Diagnostics;
-    using System.Globalization;
-    using System.IO;
     using System.Threading.Tasks;
-    using Tobii.XR;
     using UnityEngine;
     using UnityEngine.Animations;
     using UnityEngine.InputSystem.XR;
     using UnityEngine.XR.OpenXR.Samples.ControllerSample;
-    using ViveSR.anipal.Eye;
     using Debug = UnityEngine.Debug;
-
 
     public class NavigationManager : MonoBehaviour
     {
         #region Variables
-        
         [SerializeField] private List<AudioClipMap> audioMap;
         [SerializeField] private SplineComputer targetSpline;
         [SerializeField] private SplineFollower follower;
         [SerializeField] private SplineProjector projector;
-        
+
         [SerializeField] private Transform teleportLocation;
         [SerializeField] private Teleporter teleporter;
         [SerializeField] private ParentConstraint parentConstraint;
@@ -42,15 +33,15 @@ namespace PathNav.ExperimentControl
         [SerializeField] private NavigationEndPoint endPoint;
         [SerializeField] private Transform footVisualMarker;
 
-        
-        [Header("Data Logging Variables")]
-        [SerializeField] private Transform playerTransform;
+        [Header("Data Logging Variables")] [SerializeField]
+        private Transform headTransform;
+
         [SerializeField] private Transform leftHand;
         [SerializeField] private Transform rightHand;
         [SerializeField] private TrackedPoseDriver headPoseDriver;
         [SerializeField] private TrackedPoseDriver leftHandPoseDriver;
         [SerializeField] private TrackedPoseDriver rightHandPoseDriver;
-        
+
         private SplineComputer _splineComputer;
         private SplinePoint[] _spline;
         private Vector3 _deltaTranslation;
@@ -58,40 +49,12 @@ namespace PathNav.ExperimentControl
         private LocomotionDof _locomotionDof;
 
         private Stopwatch _taskTimerTotal;
-        
-        private NavigationDataFormat _navigationData;
-        private GazeDataFormat _gazeData;
-        private PoseDataFormat _poseData;
-        
-        private static string _navFile, _gazeFile, _poseFile;
-        private static EyeData _pupilData = new();
-        private static TobiiXR_EyeTrackingData _eyeData = new();
-        private static readonly CsvConfiguration Config = new(CultureInfo.InvariantCulture);
         private bool _recordData;
 
         private int _userId, _blockId;
         private string _modelId, _methodId;
-        
-        private Queue<GazeDataFormat> _gazeQueue;
-        private Queue<PoseDataFormat> _poseQueue;
-        private Queue<NavigationDataFormat> _navigationQueue;
-        
-        private Vector3    HeadPosition      => playerTransform.position;
-        private Quaternion HeadRotation      => playerTransform.rotation;
-        private Vector3    LeftHandPosition  => leftHand.position;
-        private Quaternion LeftHandRotation  => leftHand.rotation;
-        private Vector3    RightHandPosition => rightHand.position;
-        private Quaternion RightHandRotation => rightHand.rotation;
-        
-        private Vector3    TrackedHeadPosition      => headPoseDriver.positionInput.action.ReadValue<Vector3>();
-        private Vector3    TrackedRightHandPosition => rightHandPoseDriver.positionInput.action.ReadValue<Vector3>();
-        private Vector3    TrackedLeftHandPosition  => leftHandPoseDriver.positionInput.action.ReadValue<Vector3>();
-        private Quaternion TrackedHeadRotation      => headPoseDriver.rotationInput.action.ReadValue<Quaternion>();
-        private Quaternion TrackedRightHandRotation => rightHandPoseDriver.rotationInput.action.ReadValue<Quaternion>();
-        private Quaternion TrackedLeftHandRotation  => leftHandPoseDriver.rotationInput.action.ReadValue<Quaternion>();
-        
         #endregion
-        
+
         #region Enable/Disable/Update
         internal void Enable()
         {
@@ -101,61 +64,20 @@ namespace PathNav.ExperimentControl
             StartNavigation();
         }
 
-        private async void OnDisable()
+        private void OnDisable()
         {
             UnsubscribeToEvents();
-            
-            if (_gazeQueue.Count > 0)
-            {
-                Config.BufferSize = 2048;
-                await WriteData<GazeDataFormatMap>(_gazeFile, _gazeQueue);
-                _gazeQueue.Clear();
-            }
-            
-            if (_poseQueue.Count > 0)
-            {
-                Config.BufferSize = 2048;
-                await WriteData<PoseDataFormatMap>(_poseFile, _poseQueue);
-                _poseQueue.Clear();
-            }
-            
-            if (_navigationQueue.Count > 0)
-            {
-                Config.BufferSize = 2048;
-                await WriteData<NavigationDataFormatMap>(_navFile, _navigationQueue);
-                _navigationQueue.Clear();
-            }
-        }
-
-        private async void OnApplicationQuit()
-        {
-            if (_gazeQueue.Count > 0)
-            {
-                Config.BufferSize = 2048;
-                await WriteData<GazeDataFormatMap>(_gazeFile, _gazeQueue);
-                _gazeQueue.Clear();
-            }
-            
-            if (_poseQueue.Count > 0)
-            {
-                Config.BufferSize = 2048;
-                await WriteData<PoseDataFormatMap>(_poseFile, _poseQueue);
-                _poseQueue.Clear();
-            }
-            
-            if (_navigationQueue.Count > 0)
-            {
-                Config.BufferSize = 2048;
-                await WriteData<NavigationDataFormatMap>(_navFile, _navigationQueue);
-                _navigationQueue.Clear();
-            }
         }
 
         private void LateUpdate()
         {
             if (!_recordData) return;
 
-            QueueData();
+            ExperimentDataLogger.Instance.RecordPoseData();
+
+            ExperimentDataLogger.Instance.RecordNavigationData(follower.followSpeed,
+                                                               _locomotionDof == LocomotionDof.FourDoF ? follower.result.percent : projector.result.percent,
+                                                               _locomotionDof == LocomotionDof.FourDoF ? follower.result.position : projector.result.position);
         }
         #endregion
 
@@ -218,20 +140,22 @@ namespace PathNav.ExperimentControl
         #region Logic
         private async void StartNavigation()
         {
-            InitializeDataFiles();
-            
+            ExperimentDataLogger.Instance.SetTransformData(headTransform, leftHand, rightHand);
+            ExperimentDataLogger.Instance.SetPoseDriverData(headPoseDriver, leftHandPoseDriver, rightHandPoseDriver);
+            ExperimentDataLogger.Instance.Enable(ExperimentDataManager.Instance.GetModelInt(), ExperimentDataManager.Instance.GetNavigationMethodInt());
+
             await Task.Delay(10);
 
             SetSpline();
-            
+
             await Task.Delay(50);
 
             SubscribeToEvents();
-            
+
             await Task.Delay(10);
 
             SetupNavigation();
-            
+
             await Task.Delay(500);
 
             follower.followSpeed              = 0;
@@ -254,12 +178,15 @@ namespace PathNav.ExperimentControl
 
         private async void EndNavigation()
         {
+            ExperimentDataLogger.Instance.Disable();
+
             await Task.Delay(100);
 
             overlay.FadeToBlack();
 
             await Task.Delay(500);
 
+            ExperimentDataManager.Instance.RecordNavigationData(_taskTimerTotal.Elapsed);
             ExperimentDataManager.Instance.NavigationComplete();
         }
 
@@ -311,6 +238,7 @@ namespace PathNav.ExperimentControl
         public void StopImmediately()
         {
             _recordData = false;
+            ExperimentDataLogger.Instance.Disable();
             overlay.FadeToBlackImmediate();
             _taskTimerTotal.Stop();
 
@@ -355,185 +283,6 @@ namespace PathNav.ExperimentControl
             sample = follower.spline.Evaluate(follower.spline.pointCount - 1);
             endPoint.Place(sample.position);
         }
-        #endregion
-
-        #region Data Logging
-        private void InitializeDataFiles()
-        {
-            _gazeQueue       = new Queue<GazeDataFormat>();
-            _poseQueue       = new Queue<PoseDataFormat>();
-            _navigationQueue = new Queue<NavigationDataFormat>();
-            
-            _navFile = InitializeDataLog<NavigationDataFormatMap, NavigationDataFormat>(ExperimentDataManager.Instance.GetLogDirectory(), ExperimentDataManager.Instance.GetNavigationLogFilePath());
-            _gazeFile = InitializeDataLog<GazeDataFormatMap, GazeDataFormat>(ExperimentDataManager.Instance.GetLogDirectory(), ExperimentDataManager.Instance.GetGazeLogFilePath());
-            _poseFile = InitializeDataLog<PoseDataFormatMap, PoseDataFormat>(ExperimentDataManager.Instance.GetLogDirectory(), ExperimentDataManager.Instance.GetPoseLogFilePath());
-            
-            Config.HasHeaderRecord = true;
-            _userId                = ExperimentDataManager.Instance.GetId();
-            _blockId               = ExperimentDataManager.Instance.GetBlock();
-            _modelId               = ExperimentDataManager.Instance.GetModel();
-            _methodId              = ExperimentDataManager.Instance.GetNavigationMethodString();
-        }
-
-        private static string InitializeDataLog<T1, T2>(string logDirectory, string filePath) where T1 : ClassMap<T2>
-        {
-            if (!Directory.Exists(logDirectory))
-            {
-                Directory.CreateDirectory(logDirectory);
-            }
-
-            if (File.Exists(filePath))
-            {
-                return filePath;
-            }
-
-            using StreamWriter streamWriter = new(filePath);
-            using CsvWriter    csvWriter    = new(streamWriter, Config);
-            
-            csvWriter.Context.RegisterClassMap<T1>();
-            csvWriter.WriteHeader<T2>();
-            csvWriter.NextRecord();
-            
-            return filePath;
-        }
-        
-        private void QueueData()
-        {
-            _gazeData = new GazeDataFormat
-            {
-                ID       = _userId,
-                BLOCK_ID = _blockId,
-                MODEL    = _modelId,
-                METHOD   = _methodId,
-            };
-            
-            _poseData = new PoseDataFormat
-            {
-                ID       = _userId,
-                BLOCK_ID = _blockId,
-                MODEL    = _modelId,
-                METHOD   = _methodId,
-            };
-            
-            _navigationData = new NavigationDataFormat
-            {
-                ID       = _userId,
-                BLOCK_ID = _blockId,
-                MODEL    = _modelId,
-                METHOD   = _methodId,
-            };
-            
-            double time = LSL.LSL.local_clock();
-            GetGazeData();
-            GetPoseData();
-            GetNavigationData();
-            
-            _gazeData.TIMESTAMP       = time;
-            _poseData.TIMESTAMP       = time;
-            _navigationData.TIMESTAMP = time;
-            
-            _gazeQueue.Enqueue(_gazeData);
-            _poseQueue.Enqueue(_poseData);
-            _navigationQueue.Enqueue(_navigationData);
-        }
-
-        private void GetGazeData()
-        {
-            _eyeData = TobiiXR.GetEyeTrackingData(TobiiXR_TrackingSpace.World);
-            SRanipal_Eye.GetGazeRay(GazeIndex.COMBINE, out Vector3 _, out Vector3 _, _pupilData);
-            
-            _gazeData.CONVERGENCE_DISTANCE = _eyeData.ConvergenceDistance;
-            _gazeData.CONVERGENCE_VALID    = _eyeData.ConvergenceDistanceIsValid;
-            
-            _gazeData.GAZERAY_ORIGIN_X     = _eyeData.GazeRay.Origin.x;
-            _gazeData.GAZERAY_ORIGIN_Y     = _eyeData.GazeRay.Origin.y;
-            _gazeData.GAZERAY_ORIGIN_Z     = _eyeData.GazeRay.Origin.z;
-            _gazeData.GAZERAY_DIRECTION_X  = _eyeData.GazeRay.Direction.x;
-            _gazeData.GAZERAY_DIRECTION_Y  = _eyeData.GazeRay.Direction.y;
-            _gazeData.GAZERAY_DIRECTION_Z  = _eyeData.GazeRay.Direction.z;
-            _gazeData.GAZERAY_VALID        = _eyeData.GazeRay.IsValid;
-            
-            _gazeData.LEFT_IS_BLINKING     = _eyeData.IsLeftEyeBlinking;
-            _gazeData.RIGHT_IS_BLINKING     = _eyeData.IsRightEyeBlinking;
-            
-            _gazeData.LEFT_EYE_PUPIL_DIAMETER = _pupilData.verbose_data.left.pupil_diameter_mm;
-            _gazeData.RIGHT_EYE_PUPIL_DIAMETER = _pupilData.verbose_data.right.pupil_diameter_mm;
-        }
-
-        private void GetPoseData()
-        {
-            _poseData.HEAD_POSITION_X = HeadPosition.x;
-            _poseData.HEAD_POSITION_Y = HeadPosition.y;
-            _poseData.HEAD_POSITION_Z = HeadPosition.z;
-            
-            _poseData.HEAD_ROTATION_X = HeadRotation.x;
-            _poseData.HEAD_ROTATION_Y = HeadRotation.y;
-            _poseData.HEAD_ROTATION_Z = HeadRotation.z;
-            _poseData.HEAD_ROTATION_W = HeadRotation.w;
-
-            _poseData.LEFT_POSITION_X = LeftHandPosition.x;
-            _poseData.LEFT_POSITION_Y = LeftHandPosition.y;
-            _poseData.LEFT_POSITION_Z = LeftHandPosition.z;
-
-            _poseData.LEFT_ROTATION_X = LeftHandRotation.x;
-            _poseData.LEFT_ROTATION_Y = LeftHandRotation.y;
-            _poseData.LEFT_ROTATION_Z = LeftHandRotation.z;
-            _poseData.LEFT_ROTATION_W = LeftHandRotation.w;
-
-            _poseData.RIGHT_POSITION_X = RightHandPosition.x;
-            _poseData.RIGHT_POSITION_Y = RightHandPosition.y;
-            _poseData.RIGHT_POSITION_Z = RightHandPosition.z;
-            
-            _poseData.RIGHT_ROTATION_X = RightHandRotation.x;
-            _poseData.RIGHT_ROTATION_Y = RightHandRotation.y;
-            _poseData.RIGHT_ROTATION_Z = RightHandRotation.z;
-            _poseData.RIGHT_ROTATION_W = RightHandRotation.w;
-
-            
-            _poseData.TRACKED_HEAD_POSITION_X = TrackedHeadPosition.x;
-            _poseData.TRACKED_HEAD_POSITION_Y = TrackedHeadPosition.y;
-            _poseData.TRACKED_HEAD_POSITION_Z = TrackedHeadPosition.z;
-            
-            _poseData.TRACKED_HEAD_ROTATION_X = TrackedHeadRotation.x;
-            _poseData.TRACKED_HEAD_ROTATION_Y = TrackedHeadRotation.y;
-            _poseData.TRACKED_HEAD_ROTATION_Z = TrackedHeadRotation.z;
-            _poseData.TRACKED_HEAD_ROTATION_W = TrackedHeadRotation.w;
-            
-            _poseData.TRACKED_LEFT_POSITION_X = TrackedLeftHandPosition.x;
-            _poseData.TRACKED_LEFT_POSITION_Y = TrackedLeftHandPosition.y;
-            _poseData.TRACKED_LEFT_POSITION_Z = TrackedLeftHandPosition.z;
-            
-            _poseData.TRACKED_LEFT_ROTATION_X = TrackedLeftHandRotation.x;
-            _poseData.TRACKED_LEFT_ROTATION_Y = TrackedLeftHandRotation.y;
-            _poseData.TRACKED_LEFT_ROTATION_Z = TrackedLeftHandRotation.z;
-            _poseData.TRACKED_LEFT_ROTATION_W = TrackedLeftHandRotation.w;
-            
-            _poseData.TRACKED_RIGHT_POSITION_X = TrackedRightHandPosition.x;
-            _poseData.TRACKED_RIGHT_POSITION_Y = TrackedRightHandPosition.y;
-            _poseData.TRACKED_RIGHT_POSITION_Z = TrackedRightHandPosition.z;
-            
-            _poseData.TRACKED_RIGHT_ROTATION_X = TrackedRightHandRotation.x;
-            _poseData.TRACKED_RIGHT_ROTATION_Y = TrackedRightHandRotation.y;
-            _poseData.TRACKED_RIGHT_ROTATION_Z = TrackedRightHandRotation.z;
-            _poseData.TRACKED_RIGHT_ROTATION_W = TrackedRightHandRotation.w;
-        }
-
-        private void GetNavigationData()
-        {
-            _navigationData.SPEED = follower.followSpeed;
-            _navigationData.SPLINE_POSITION = _locomotionDof == LocomotionDof.FourDoF ? follower.result.position.ToString("F3") : projector.result.position.ToString("F3");
-            _navigationData.SPLINE_PERCENT = _locomotionDof == LocomotionDof.FourDoF ? follower.result.percent : projector.result.percent;
-        }
-        
-        private static async Task WriteData<T>(string file, IEnumerable queue) where T : ClassMap
-        {
-            await using StreamWriter streamWriter = new(file, true);
-            await using CsvWriter    csvWriter    = new(streamWriter, Config);
-            
-            csvWriter.Context.RegisterClassMap<T>();
-            await csvWriter.WriteRecordsAsync(queue);
-        }
-        
         #endregion
     }
 }

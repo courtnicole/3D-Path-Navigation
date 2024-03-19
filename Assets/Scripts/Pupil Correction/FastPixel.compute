@@ -1,31 +1,22 @@
-/*
- * Assuming D65 white point:
- * 
- * X: 0.4124564  0.3575761  0.1804375
- * Y: 0.2126729  0.7151522  0.0721750
- * Z: 0.0193339  0.1191920  0.9503041
- */
-float3 get_linear_to_xyz(const float3 color)
-{
-    return float3(
-        dot(color, float3(0.4124564, 0.3575761, 0.1804375)),
-        dot(color, float3(0.2126729, 0.7151522, 0.0721750)),
-        dot(color, float3(0.0193339, 0.1191920, 0.9503041))
-    );
-}
+#include "Luminosity.cginc"
+#include "UnityShaderVariables.cginc"
+
 
 #pragma kernel linear_to_xyz
 #define GROUP_SIZE 8
 
-RWTexture2D<float4> linear_source;
-RWStructuredBuffer<float> luminance;
-uint2 source_size;
+Texture2D linear_source;
+RWTexture2D<float4> xyz_source;
 
-groupshared float shared_average[GROUP_SIZE*GROUP_SIZE];
 [numthreads(GROUP_SIZE, GROUP_SIZE, 1)]
-void linear_to_xyz(uint3 globalId : SV_DispatchThreadID, uint3 localId : SV_GroupThreadID, uint3 groupId : SV_GroupID)
+void linear_to_xyz(uint3 globalId : SV_DispatchThreadID)
 {
-    if (globalId.x >= source_size.x || globalId.y >= source_size.y)
+    //uint3 corrected_xyz = globalId;
+    // corrected_xyz.y = _ReverseY * (_ScreenParams.y - corrected_xyz.y) + (1 - _ReverseY) * corrected_xyz.y;
+    // float2 uv = float2(corrected_xyz.xy) / _ScreenParams.xy;
+    // float4 coords = screenCoords(uv, unity_StereoEyeIndex);
+
+    if (globalId.x >= _ScreenParams.x || globalId.y >= _ScreenParams.y)
     {
         return;
     }
@@ -33,37 +24,17 @@ void linear_to_xyz(uint3 globalId : SV_DispatchThreadID, uint3 localId : SV_Grou
     // Color value is already in Linear space, can skip conversion from sRGB
     // (HDR processing occurs with sRGB values in linear space)
     const float4 color = linear_source[globalId.xy];
-    const float4 xyz = float4(0.0, 1.0, 0.0, 1.0);//get_linear_to_xyz(color);
-    luminance[0] = 0.123456;
-
-    // uint flattened_index = localId.y * GROUP_SIZE + localId.x;
-    // GroupMemoryBarrier();
-    // shared_average[flattened_index] = xyz.y;
-    //
-    // [unroll]
-    // for (uint stride = GROUP_SIZE / 2; stride > 0; stride >>= 1)
-    // {
-    //     if(globalId.x < stride)
-    //     {
-    //         shared_average[flattened_index] += shared_average[flattened_index + stride] ;
-    //     }
-    //     GroupMemoryBarrier();
-    // }
-    // GroupMemoryBarrier();
-    //
-    // if (localId.x == 0 && localId.y == 0)
-    // {
-    //     luminance[0] = 0.123456;
-    // }
+    const float alpha = color.x * color.y * color.z == 1.0f ? 0.0f : 1.0f;
+    const float4 xyz = float4(get_linear_to_xyz(color), alpha);
+    xyz_source[globalId.xy] = xyz;
+    //    xyz_source[globalId.xy] = float4(xyz.y, xyz.y, xyz.y, 1.0f);
 }
 
 #pragma kernel read_luminance
-Texture2D<float3> mip_source;
-
-
+RWTexture2D<float4> mip_source;
+RWStructuredBuffer<float> luminance;
 [numthreads(1,1,1)]
 void read_luminance(uint3 globalId : SV_DispatchThreadID)
 {
-    //const float3 color = mip_source[uint2(0,0)];
-    //luminance[0] = color.y;
+    luminance[0] = mip_source[uint2(0,0)].y;
 }
