@@ -10,7 +10,6 @@ namespace PathNav.ExperimentControl
     using System.Threading.Tasks;
     using UnityEngine;
     using UnityEngine.Animations;
-    using UnityEngine.InputSystem.XR;
     using UnityEngine.XR.OpenXR.Samples.ControllerSample;
     using Debug = UnityEngine.Debug;
 
@@ -32,16 +31,7 @@ namespace PathNav.ExperimentControl
         [SerializeField] private PointerEvaluator pointerRight;
         [SerializeField] private NavigationEndPoint endPoint;
         [SerializeField] private Transform footVisualMarker;
-
-        [Header("Data Logging Variables")] [SerializeField]
-        private Transform headTransform;
-
-        [SerializeField] private Transform leftHand;
-        [SerializeField] private Transform rightHand;
-        [SerializeField] private TrackedPoseDriver headPoseDriver;
-        [SerializeField] private TrackedPoseDriver leftHandPoseDriver;
-        [SerializeField] private TrackedPoseDriver rightHandPoseDriver;
-
+        
         private SplineComputer _splineComputer;
         private SplinePoint[] _spline;
         private Vector3 _deltaTranslation;
@@ -72,9 +62,6 @@ namespace PathNav.ExperimentControl
         private void LateUpdate()
         {
             if (!_recordData) return;
-
-            ExperimentDataLogger.Instance.RecordPoseData();
-
             ExperimentDataLogger.Instance.RecordNavigationData(follower.followSpeed,
                                                                _locomotionDof == LocomotionDof.FourDoF ? follower.result.percent : projector.result.percent,
                                                                _locomotionDof == LocomotionDof.FourDoF ? follower.result.position : projector.result.position);
@@ -139,12 +126,6 @@ namespace PathNav.ExperimentControl
         #region Logic
         private async void StartNavigation()
         {
-            ExperimentDataLogger.Instance.SetTransformData(headTransform, leftHand, rightHand);
-            ExperimentDataLogger.Instance.SetPoseDriverData(headPoseDriver, leftHandPoseDriver, rightHandPoseDriver);
-            ExperimentDataLogger.Instance.Enable(ExperimentDataManager.Instance.GetModelInt(), ExperimentDataManager.Instance.GetNavigationMethodInt());
-
-            await Task.Delay(10);
-
             SetSpline();
 
             await Task.Delay(50);
@@ -177,9 +158,7 @@ namespace PathNav.ExperimentControl
 
         private async void EndNavigation()
         {
-            ExperimentDataLogger.Instance.Disable();
-
-            await Task.Delay(100);
+            await Task.Delay(50);
 
             overlay.FadeToBlack();
 
@@ -232,18 +211,17 @@ namespace PathNav.ExperimentControl
             targetSpline.SetPoints(newPoints);
             EventManager.Publish(EventId.FollowPathReady, this, GetSceneControlEventArgs());
         }
-
+        
         public void StopImmediately()
         {
             _recordData = false;
-            ExperimentDataLogger.Instance.Disable();
             overlay.FadeToBlackImmediate();
             _taskTimerTotal.Stop();
 
             EventManager.Publish(EventId.SplineNavigationComplete, this, GetSceneControlEventArgs());
             UnsubscribeToEvents();
 
-            ExperimentDataManager.Instance.RecordDiscomfortScore(10);
+            ExperimentDataLogger.Instance.RecordSurveyData("Discomfort", "10");
             ExperimentDataManager.Instance.EndExperimentImmediately();
         }
 

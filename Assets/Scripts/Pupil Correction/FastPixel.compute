@@ -25,7 +25,7 @@ void linear_to_xyz(uint3 globalId : SV_DispatchThreadID)
     // (HDR processing occurs with sRGB values in linear space)
     const float4 color = linear_source[globalId.xy];
     const float alpha = color.x * color.y * color.z == 1.0f ? 0.0f : 1.0f;
-    const float4 xyz = float4(get_linear_to_xyz(color), alpha);
+    const float4 xyz = float4(get_linear_to_xyz(color.xyz), alpha);
     xyz_source[globalId.xy] = xyz;
     //    xyz_source[globalId.xy] = float4(xyz.y, xyz.y, xyz.y, 1.0f);
 }

@@ -27,7 +27,7 @@ namespace PathNav.SceneManagement
 
         public void RecordResponse()
         {
-            ExperimentDataManager.Instance.RecordSeqScore(_value);
+            ExperimentDataLogger.Instance.RecordSurveyData("SEQ", _value.ToString());
             EventManager.Publish(EventId.SeqComplete, this, new SceneControlEventArgs());
         }
     }

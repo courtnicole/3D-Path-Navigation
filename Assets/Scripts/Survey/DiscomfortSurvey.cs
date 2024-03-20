@@ -49,7 +49,7 @@ namespace PathNav.SceneManagement
 
         public void RecordResponse()
         {
-            ExperimentDataManager.Instance.RecordDiscomfortScore(_value);
+            ExperimentDataLogger.Instance.RecordSurveyData("Discomfort", _value.ToString());
             EventManager.Publish(EventId.DiscomfortScoreComplete, this, new SceneControlEventArgs());
         }
     }

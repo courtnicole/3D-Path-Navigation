@@ -65,7 +65,7 @@ namespace PathNav.ExperimentControl
         private static int _currentTrialStageIndex;
 
         private static string _activeSceneName;
-        private const int _totalTrialCount = 1;
+        private const int _totalTrialCount = 4;
         private const int _totalTrialStages = 4;
 
         protected void Awake()
@@ -75,7 +75,7 @@ namespace PathNav.ExperimentControl
                 Instance = this;
                 DontDestroyOnLoad(this);
                 TobiiXR.Start(settings);
-                _logDirectory                   =  Application.dataPath + "/Data/";
+                _logDirectory                   =  Application.persistentDataPath + "/Data/";
                 SceneManager.activeSceneChanged += OnActiveSceneChanged;
             }
             else
@@ -92,31 +92,20 @@ namespace PathNav.ExperimentControl
 
             _logDirectorySpline = $"{_logDirectory}{_userId}_splines/";
             
-            ExperimentDataLogger logger = new ExperimentDataLogger(_userId, _userInfo.BlockId);
+            ExperimentDataLogger logger = new (_userId, _userInfo.BlockId);
         }
 
         public void RecordHandedness(bool useLeftHand)
         {
             _handedness = useLeftHand ? Handedness.Left : Handedness.Right;
+            ExperimentDataLogger.Instance.RecordExperimentEvent($"HandednessSet_{(useLeftHand ? "Left" : "Right")}", "Handedness");
         }
 
         public void BeginSession()
         {
             RunGazeCalibration();
         }
-
-        #region Data Recording
-        public void RecordSeqScore(int value)
-        {
-            ExperimentDataLogger.Instance.RecordSurveyData("SEQ", value.ToString());
-        }
-
-        public void RecordDiscomfortScore(int value)
-        {
-            ExperimentDataLogger.Instance.RecordSurveyData("Discomfort", value.ToString());
-        }
-        #endregion
-
+        
         #region Spline
         public void SaveSplineComputer(SplineComputer splineToSave)
         {
@@ -245,13 +234,32 @@ namespace PathNav.ExperimentControl
         public Model GetSplineModel() => _savedModel;
         #endregion
 
-        #region Public Getters
-        public int GetId()    => _userId;
-        public int GetBlock() => _userInfo.BlockId;
+        #region Getters
+        //Model Map:
+        //Model_A: 0
+        //Model_B: 1
+        //Model_C: 2
+        //Model_D: 3
+        //Tutorial: 4
+        //Calibration: 99
         
-        public int           GetModelInt()               => _modelIndex;
+        //Method Map:
+        //Bulldozer: 0
+        //Spatula: 1
+        //FourDoF: 2
+        //SixDoF: 3
+        //Calibration: 99
+        private int GetModelInt()
+        {
+            return _trialState switch
+                   {
+                       TrialState.Tutorial => 4,
+                       TrialState.Trial    => _modelIndex,
+                       _                   => throw new ArgumentOutOfRangeException()
+                   };
+        }
 
-        public int GetCreationMethodInt()
+        private int GetCreationMethodInt()
         {
             switch (_currentTrial.pathStrategy)
             {
@@ -265,7 +273,7 @@ namespace PathNav.ExperimentControl
             }
         }
 
-        public int GetNavigationMethodInt()
+        private int GetNavigationMethodInt()
         {
             switch (_currentTrial.locomotionDof)
             {
@@ -281,21 +289,21 @@ namespace PathNav.ExperimentControl
         
         public float         GetHeight()                 => _userInfo.Height;
         public PathStrategy  GetCreationMethod()         => _currentTrial.pathStrategy;
-        public string        GetCreationMethodString()   => _currentTrial.GetPathStrategyString();
         public LocomotionDof GetNavigationMethod()       => _currentTrial.locomotionDof;
-        public string        GetNavigationMethodString() => _currentTrial.GetLocomotionDofString();
-        public string        GetModel()                  => _conditionBlock.GetCurrentModel(_currentTrialStageIndex, _modelIndex).Id;
         public bool UseTargetPoints1()
         {
+            bool useTargetSet1;
             if (_userId % 2 == 0)
             {
-                return _currentTrialStageIndex == 0;
+                useTargetSet1 = _currentTrialStageIndex == 0;
+                ExperimentDataLogger.Instance.RecordExperimentEvent($"TargetsLoaded_Set{(useTargetSet1 ? "1" : "2")}", "TargetPointsSet");
+                return useTargetSet1;
             }
 
-            return _currentTrialStageIndex != 0;
+            useTargetSet1 = _currentTrialStageIndex != 0;
+            ExperimentDataLogger.Instance.RecordExperimentEvent($"TargetsLoaded_Set{(useTargetSet1 ? "1" : "2")}", "TargetPointsSet");
+            return useTargetSet1;
         }
-        public Handedness GetHandedness() => _handedness;
-
         public bool CreationTutorialActive()
         {
             if (_currentTrial.trialType != TrialType.PathCreation) return false;
@@ -307,7 +315,7 @@ namespace PathNav.ExperimentControl
         #region Scene Control
         private void SetupTutorialCreation()
         {
-            
+            ExperimentDataLogger.Instance.RecordExperimentEvent($"SetupTutorialCreation", "Setup");
             
             TutorialCreation tutorialCreation = FindObjectOfType<TutorialCreation>();
             tutorialCreation.Enable();
@@ -317,6 +325,8 @@ namespace PathNav.ExperimentControl
 
         private void SetupTutorialNavigation()
         {
+            ExperimentDataLogger.Instance.RecordExperimentEvent($"SetupTutorialNavigation", "Setup");
+            
             TutorialNavigation tutorialNavigation = FindObjectOfType<TutorialNavigation>();
             tutorialNavigation.Enable();
 
@@ -325,6 +335,8 @@ namespace PathNav.ExperimentControl
 
         private void SetupCreation()
         {
+            ExperimentDataLogger.Instance.RecordExperimentEvent($"SetupCreation", "Setup");
+            
             GameObject holder = new();
 
             CreationActionMonitor creationActionMonitor = holder.AddComponent<CreationActionMonitor>();
@@ -338,6 +350,8 @@ namespace PathNav.ExperimentControl
 
         private void SetupNavigation()
         {
+            ExperimentDataLogger.Instance.RecordExperimentEvent($"SetupNavigation", "Setup");
+            
             NavigationManager navigationManager = FindObjectOfType<NavigationManager>();
             navigationManager.Enable();
 
@@ -353,6 +367,15 @@ namespace PathNav.ExperimentControl
 
         internal void TutorialComplete()
         {
+            string trialType = _currentTrial.trialType switch
+                               {
+                                   TrialType.PathCreation   => "Creation",
+                                   TrialType.PathNavigation => "Navigation",
+                                   _                        => throw new ArgumentOutOfRangeException()
+                               };
+            ExperimentDataLogger.Instance.RecordExperimentEvent($"{trialType}_Tutorial_Complete", "Completion");
+            ExperimentDataLogger.Instance.ResetSceneVariables();
+            
             _trialState        = TrialState.Trial;
             _currentTrialCount = 0;
             _modelIndex        = 0;
@@ -361,6 +384,9 @@ namespace PathNav.ExperimentControl
 
         internal void CalibrationComplete()
         {
+            ExperimentDataLogger.Instance.RecordExperimentEvent("CalibrationComplete", "Completion");
+            ExperimentDataLogger.Instance.ResetSceneVariables();
+            
             _currentTrialStageIndex = 0;
             _currentTrialCount      = 0;
             _modelIndex             = 0;
@@ -374,11 +400,15 @@ namespace PathNav.ExperimentControl
 
         internal void CreationComplete()
         {
+            ExperimentDataLogger.Instance.RecordExperimentEvent("CreationComplete", "Completion");
+            ExperimentDataLogger.Instance.ResetSceneVariables();
             IncrementTrial();
         }
 
         internal void NavigationComplete()
         {
+            ExperimentDataLogger.Instance.RecordExperimentEvent("NavigationComplete", "Completion");
+            ExperimentDataLogger.Instance.ResetSceneVariables();
             IncrementTrial();
         }
 
@@ -442,7 +472,21 @@ namespace PathNav.ExperimentControl
 
             StartCoroutine(PlayNextScene(sceneId));
         }
-
+        
+        //Model Map:
+        //Model_A: 0
+        //Model_B: 1
+        //Model_C: 2
+        //Model_D: 3
+        //Tutorial: 4
+        //Calibration: 99
+        
+        //Method Map:
+        //Bulldozer: 0
+        //Spatula: 1
+        //FourDoF: 2
+        //SixDoF: 3
+        //Calibration: 99
         private void OnActiveSceneChanged(Scene replaced, Scene next)
         {
             _activeSceneName = next.name;
@@ -450,20 +494,22 @@ namespace PathNav.ExperimentControl
             if (_activeSceneName.Contains("Loading")) return;
             if (_activeSceneName.Contains("Calibration"))
             {
+                ExperimentDataLogger.Instance.SetSceneVariables(99.0f, 99.0f);
                 ExperimentDataLogger.Instance.RecordExperimentEvent("Calibration", "SceneLoaded");
                 return;
             }
 
             if (_activeSceneName.Contains("Creation_Tutorial"))
             {
+                ExperimentDataLogger.Instance.SetSceneVariables(GetModelInt(), GetCreationMethodInt());
                 ExperimentDataLogger.Instance.RecordExperimentEvent("Creation_Tutorial", "SceneLoaded");
-
                 SetupTutorialCreation();
                 return;
             }
 
             if (_activeSceneName.Contains("Navigation_Tutorial"))
             {
+                ExperimentDataLogger.Instance.SetSceneVariables(GetModelInt(), GetNavigationMethodInt());
                 ExperimentDataLogger.Instance.RecordExperimentEvent("Navigation_Tutorial", "SceneLoaded");
                 SetupTutorialNavigation();
                 return;
@@ -471,6 +517,7 @@ namespace PathNav.ExperimentControl
 
             if (_activeSceneName.Contains("Creation"))
             {
+                ExperimentDataLogger.Instance.SetSceneVariables(GetModelInt(), GetCreationMethodInt());
                 ExperimentDataLogger.Instance.RecordExperimentEvent("Creation_Trial", "SceneLoaded");
                 SetupCreation();
                 return;
@@ -478,6 +525,7 @@ namespace PathNav.ExperimentControl
 
             if (_activeSceneName.Contains("Navigation"))
             {
+                ExperimentDataLogger.Instance.SetSceneVariables(GetModelInt(), GetNavigationMethodInt());
                 ExperimentDataLogger.Instance.RecordExperimentEvent("Navigation_Trial", "SceneLoaded");
                 SetupNavigation();
             }

@@ -2018,11 +2018,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   conditionBlocks:
-  - {fileID: 11400000, guid: fe3f9c38c00d4174aa72a3736900fd2f, type: 2}
-  - {fileID: 11400000, guid: fe3f9c38c00d4174aa72a3736900fd2f, type: 2}
-  - {fileID: 11400000, guid: fe3f9c38c00d4174aa72a3736900fd2f, type: 2}
-  - {fileID: 11400000, guid: fe3f9c38c00d4174aa72a3736900fd2f, type: 2}
-  Settings:
+  - {fileID: 11400000, guid: 49e9f96d1a9bc424388553081f7a43eb, type: 2}
+  - {fileID: 11400000, guid: 1e362c0f1a9c68b40899022b3d36d62c, type: 2}
+  - {fileID: 11400000, guid: ddde54d829f9dbf4db97ae52f2e2e72c, type: 2}
+  - {fileID: 11400000, guid: bc57b9ed207ea69418803b805973561c, type: 2}
+  settings:
     EyeTrackingFilter: {fileID: 0}
     StandaloneEyeTrackingProviders:
     - TypeName: HTCProvider
@@ -2034,7 +2034,7 @@ MonoBehaviour:
     - TypeName: Tobii.XR.MouseProvider
     LayerMask:
       serializedVersion: 2
-      m_Bits: 0
+      m_Bits: 4294967295
     HowLongToKeepCandidatesInSeconds: 1
     AdvancedEnabled: 0
     OcumenLicense: 
@@ -3588,6 +3588,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   luminanceComputeShader: {fileID: 7200000, guid: eae453b8e3cb61947a966dedbf07f5c7, type: 3}
   permanentTexture: {fileID: 8600000, guid: 77fcd6e2d562806468b423818fd0bfe2, type: 2}
+  headTransform: {fileID: 0}
+  leftHand: {fileID: 0}
+  rightHand: {fileID: 0}
+  headPoseDriver: {fileID: 0}
+  leftHandPoseDriver: {fileID: 0}
+  rightHandPoseDriver: {fileID: 0}
 --- !u!4 &8572805119614256447
 Transform:
   m_ObjectHideFlags: 0

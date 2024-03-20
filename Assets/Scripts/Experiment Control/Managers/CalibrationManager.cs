@@ -1,5 +1,3 @@
-using UnityEngine.InputSystem.XR;
-
 namespace PathNav.ExperimentControl
 {
     using System.Diagnostics;
@@ -8,17 +6,10 @@ namespace PathNav.ExperimentControl
     public class CalibrationManager : MonoBehaviour
     {
         [SerializeField] private Image calibrationImage;
-        
-        [Header("Data Logging Variables")]
-        [SerializeField] private Transform headTransform;
-        [SerializeField] private Transform leftHand;
-        [SerializeField] private Transform rightHand;
-        [SerializeField] private TrackedPoseDriver headPoseDriver;
-        [SerializeField] private TrackedPoseDriver leftHandPoseDriver;
-        [SerializeField] private TrackedPoseDriver rightHandPoseDriver;
 
         private Color[] _calibrationColors = new Color[]
         {
+            
             new(127.0f / 255.0f, 127.0f / 255.0f, 127.0f / 255.0f, 1.0f),
             new(27.0f  / 255.0f, 27.0f  / 255.0f, 27.0f  / 255.0f, 1.0f),
             new(190.0f / 255.0f, 190.0f / 255.0f, 190.0f / 255.0f, 1.0f),
@@ -41,9 +32,7 @@ namespace PathNav.ExperimentControl
                 enabled = false;
                 return;
             }
-            ExperimentDataLogger.Instance.SetTransformData(headTransform, leftHand, rightHand);
-            ExperimentDataLogger.Instance.SetPoseDriverData(headPoseDriver, leftHandPoseDriver, rightHandPoseDriver);
-            ExperimentDataLogger.Instance.Enable(99.9f, 99.9f);
+            
             calibrationImage.color = _calibrationColors[_calibrationIndex];
             _calibrationStopwatch  = new Stopwatch();
             _calibrationStopwatch.Start();
@@ -60,11 +49,6 @@ namespace PathNav.ExperimentControl
             }
         }
 
-        protected void LateUpdate()
-        {
-            ExperimentDataLogger.Instance.RecordPoseData();
-        }
-
         private void UpdateCalibrationColor()
         {
             _calibrationIndex++;
@@ -72,6 +56,7 @@ namespace PathNav.ExperimentControl
             if (_calibrationIndex < _calibrationColors.Length)
             {
                 calibrationImage.color = _calibrationColors[_calibrationIndex];
+                ExperimentDataLogger.Instance.RecordExperimentEvent($"CalibrationColor_{_calibrationIndex.ToString()}", "CalibrationColorChange");
             }
             else
             {
@@ -81,7 +66,6 @@ namespace PathNav.ExperimentControl
 
         private void EndCalibration()
         {
-            ExperimentDataLogger.Instance.Disable();
             ExperimentDataManager.Instance.CalibrationComplete();
         }
     }

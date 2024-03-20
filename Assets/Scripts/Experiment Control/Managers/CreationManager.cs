@@ -22,18 +22,10 @@ namespace PathNav.ExperimentControl
         [SerializeField] private PointerEvaluator pointerRight;
         
         private bool _enableTeleportation;
-        private bool _recordData;
         internal void Enable()
         {
             _enableTeleportation            =  CheckTeleportation();
             StartCreation();
-        }
-
-        private void LateUpdate()
-        {
-            if (!_recordData) return;
-
-            ExperimentDataLogger.Instance.RecordPoseData();
         }
         
         private void OnDisable()
@@ -79,7 +71,6 @@ namespace PathNav.ExperimentControl
 
         private void SplineComplete(object sender, SegmentEventArgs args)
         {
-            _recordData = false;
             ActionAssetEnabler actionController = FindObjectOfType<ActionAssetEnabler>();
             actionController.EnableUiInput();
             instructions.SetActive(false);
@@ -91,8 +82,6 @@ namespace PathNav.ExperimentControl
         
         private async void StartCreation()
         {
-            
-            
             await Task.Delay(50);
             
             if (_enableTeleportation)
@@ -105,7 +94,6 @@ namespace PathNav.ExperimentControl
             SubscribeToEvents();
             
             await Task.Delay(100);
-            ExperimentDataLogger.Instance.Enable(ExperimentDataManager.Instance.GetModelInt(), ExperimentDataManager.Instance.GetCreationMethodInt());
             
             overlay.FadeToClear();
         }
@@ -123,8 +111,6 @@ namespace PathNav.ExperimentControl
         
         public void StopImmediately()
         {
-            _recordData = false;
-            ExperimentDataLogger.Instance.Disable();
             overlay.FadeToBlackImmediate();
             
             EventManager.Publish(EventId.PathCreationComplete, this, new ControllerEvaluatorEventArgs(null));

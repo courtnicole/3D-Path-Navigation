@@ -12,7 +12,7 @@ namespace  PathNav.ExperimentControl
         [SerializeField] private GameObject idButtons;
         [SerializeField] private GameObject beginButton;    
         [SerializeField] private GameObject handednessButtons;   
-        [SerializeField] private string fileName = "test.json";
+        [SerializeField] private string fileName = "user_id_list.json";
         [SerializeField] private Transform headPose;
         private string _filePath = Application.streamingAssetsPath + "/";
         private string File => _filePath + fileName;

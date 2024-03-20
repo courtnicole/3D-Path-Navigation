@@ -444,6 +444,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   luminanceComputeShader: {fileID: 7200000, guid: eae453b8e3cb61947a966dedbf07f5c7, type: 3}
   permanentTexture: {fileID: 8600000, guid: 77fcd6e2d562806468b423818fd0bfe2, type: 2}
+  headTransform: {fileID: 2433871860921553073}
+  leftHand: {fileID: 7350544130651808461}
+  rightHand: {fileID: 8089301154263060020}
+  headPoseDriver: {fileID: 2435147723244283052}
+  leftHandPoseDriver: {fileID: 7350544130651808458}
+  rightHandPoseDriver: {fileID: 8089301154263060021}
 --- !u!1 &3573516203907475845
 GameObject:
   m_ObjectHideFlags: 0
@@ -1529,6 +1535,31 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 881dfc8a70ec1cf4884a304b5ab09442, type: 3}
+--- !u!1 &8089301153124165894 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7736053324815910871, guid: 881dfc8a70ec1cf4884a304b5ab09442, type: 3}
+  m_PrefabInstance: {fileID: 1952595249628868305}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &50104682416986393
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8089301153124165894}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 72162874f4a64634784b3231c9e9754e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  luminanceComputeShader: {fileID: 7200000, guid: eae453b8e3cb61947a966dedbf07f5c7, type: 3}
+  permanentTexture: {fileID: 8600000, guid: 77fcd6e2d562806468b423818fd0bfe2, type: 2}
+  headTransform: {fileID: 2433871860921553073}
+  leftHand: {fileID: 0}
+  rightHand: {fileID: 0}
+  headPoseDriver: {fileID: 2435147723244283052}
+  leftHandPoseDriver: {fileID: 0}
+  rightHandPoseDriver: {fileID: 0}
 --- !u!4 &8089301153124165895 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7736053324815910870, guid: 881dfc8a70ec1cf4884a304b5ab09442, type: 3}

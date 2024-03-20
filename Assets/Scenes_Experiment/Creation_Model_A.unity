@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 1081827739102736598}
-  m_IndirectSpecularColor: {r: 0.209047, g: 0.27270508, b: 0.28239626, a: 1}
+  m_IndirectSpecularColor: {r: 0.21049023, g: 0.2731333, b: 0.28224593, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -1747,7 +1747,6 @@ GameObject:
   m_Component:
   - component: {fileID: 2072060980}
   - component: {fileID: 2072060982}
-  - component: {fileID: 2072060981}
   m_Layer: 9
   m_Name: Area Light
   m_TagString: Untagged
@@ -1770,26 +1769,6 @@ Transform:
   m_Father: {fileID: 296378577}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
---- !u!114 &2072060981
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2072060979}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 474bcb49853aa07438625e644c072ee6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Version: 1
-  m_UsePipelineSettings: 1
-  m_AdditionalLightsShadowResolutionTier: 2
-  m_LightLayerMask: 1
-  m_CustomShadowLayers: 0
-  m_ShadowLayerMask: 1
-  m_LightCookieSize: {x: 1, y: 1}
-  m_LightCookieOffset: {x: 0, y: 0}
 --- !u!108 &2072060982
 Light:
   m_ObjectHideFlags: 0
@@ -2373,7 +2352,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1081827739102736599}
   - component: {fileID: 1081827739102736598}
-  - component: {fileID: 1081827739102736596}
   m_Layer: 9
   m_Name: Directional Light
   m_TagString: Untagged
@@ -2381,26 +2359,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 2147483647
   m_IsActive: 1
---- !u!114 &1081827739102736596
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1081827739102736593}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 474bcb49853aa07438625e644c072ee6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Version: 1
-  m_UsePipelineSettings: 1
-  m_AdditionalLightsShadowResolutionTier: 2
-  m_LightLayerMask: 1
-  m_CustomShadowLayers: 0
-  m_ShadowLayerMask: 1
-  m_LightCookieSize: {x: 1, y: 1}
-  m_LightCookieOffset: {x: 0, y: 0}
 --- !u!108 &1081827739102736598
 Light:
   m_ObjectHideFlags: 0
