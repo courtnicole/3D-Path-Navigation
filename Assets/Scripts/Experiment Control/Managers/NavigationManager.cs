@@ -128,7 +128,6 @@ namespace PathNav.ExperimentControl
         {
             _taskTimerTotal.Stop();
             EventManager.Publish(EventId.SplineNavigationComplete, this, GetSceneControlEventArgs());
-            ExperimentDataManager.Instance.RecordNavigationData(_taskTimerTotal.Elapsed);
             ActionAssetEnabler actionController = FindObjectOfType<ActionAssetEnabler>();
             actionController.EnableUiInput();
             discomfortScore.SetActive(true);
@@ -185,8 +184,7 @@ namespace PathNav.ExperimentControl
             overlay.FadeToBlack();
 
             await Task.Delay(500);
-
-            ExperimentDataManager.Instance.RecordNavigationData(_taskTimerTotal.Elapsed);
+            
             ExperimentDataManager.Instance.NavigationComplete();
         }
 
@@ -245,7 +243,6 @@ namespace PathNav.ExperimentControl
             EventManager.Publish(EventId.SplineNavigationComplete, this, GetSceneControlEventArgs());
             UnsubscribeToEvents();
 
-            ExperimentDataManager.Instance.RecordNavigationData(_taskTimerTotal.Elapsed);
             ExperimentDataManager.Instance.RecordDiscomfortScore(10);
             ExperimentDataManager.Instance.EndExperimentImmediately();
         }

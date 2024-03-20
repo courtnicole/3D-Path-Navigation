@@ -20,15 +20,7 @@ namespace PathNav.ExperimentControl
         [SerializeField] private Overlay overlay;
         [SerializeField] private PointerEvaluator pointerLeft;
         [SerializeField] private PointerEvaluator pointerRight;
-        [Header("Data Logging Variables")] 
         
-        [SerializeField] private Transform headTransform;
-        [SerializeField] private Transform leftHand;
-        [SerializeField] private Transform rightHand;
-        [SerializeField] private TrackedPoseDriver headPoseDriver;
-        [SerializeField] private TrackedPoseDriver leftHandPoseDriver;
-        [SerializeField] private TrackedPoseDriver rightHandPoseDriver;
-
         private bool _enableTeleportation;
         private bool _recordData;
         internal void Enable()
@@ -99,8 +91,7 @@ namespace PathNav.ExperimentControl
         
         private async void StartCreation()
         {
-            ExperimentDataLogger.Instance.SetTransformData(headTransform, leftHand, rightHand);
-            ExperimentDataLogger.Instance.SetPoseDriverData(headPoseDriver, leftHandPoseDriver, rightHandPoseDriver);
+            
             
             await Task.Delay(50);
             

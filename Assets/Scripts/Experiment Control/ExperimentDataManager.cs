@@ -1,3 +1,4 @@
+using UnityEngine.XR;
 namespace PathNav.ExperimentControl
 {
     #region Imports
@@ -26,7 +27,7 @@ namespace PathNav.ExperimentControl
         }
 
         [SerializeField] private ConditionBlock[] conditionBlocks;
-        public TobiiXR_Settings Settings;
+        public TobiiXR_Settings settings;
         public static ExperimentDataManager Instance { get; private set; }
 
         private static UserInfo _userInfo;
@@ -51,21 +52,13 @@ namespace PathNav.ExperimentControl
         private static TrialState _trialState;
         private static Trial _currentTrial;
         private static ConditionBlock _conditionBlock;
-
-        private static SceneDataFormat _sceneData;
+        
         private static string _logDirectory;
-        private static string _logFilePath;
-        private static string _logFilePathActions;
-        private static string _logFilePathNavigation;
-        private static string _logFilePathPose;
-        private static string _logFilePathGaze;
-        private static string _logFilePathLuminance;
         private static string _logDirectorySpline;
         private static string _logFilePathSpline;
 
         //trialCount
         private static int _currentTrialCount;
-
         private static int _modelIndex;
 
         //trialIndex
@@ -81,7 +74,7 @@ namespace PathNav.ExperimentControl
             {
                 Instance = this;
                 DontDestroyOnLoad(this);
-                TobiiXR.Start(Settings);
+                TobiiXR.Start(settings);
                 _logDirectory                   =  Application.dataPath + "/Data/";
                 SceneManager.activeSceneChanged += OnActiveSceneChanged;
             }
@@ -99,7 +92,7 @@ namespace PathNav.ExperimentControl
 
             _logDirectorySpline = $"{_logDirectory}{_userId}_splines/";
             
-            var logger = new ExperimentDataLogger(_userId, _userInfo.BlockId);
+            ExperimentDataLogger logger = new ExperimentDataLogger(_userId, _userInfo.BlockId);
         }
 
         public void RecordHandedness(bool useLeftHand)
@@ -107,68 +100,20 @@ namespace PathNav.ExperimentControl
             _handedness = useLeftHand ? Handedness.Left : Handedness.Right;
         }
 
-        public async void BeginSession()
+        public void BeginSession()
         {
-            _logFilePath           = _logDirectory + _userInfo.DataFile;
-            _logFilePathActions    = _logDirectory + _userInfo.ActionFile;
-            _logFilePathNavigation = _logDirectory + _userInfo.NavigationFile;
-            _logFilePathGaze       = _logDirectory + _userInfo.GazeFile;
-            _logFilePathPose       = _logDirectory + _userInfo.PoseFile;
-            _logFilePathLuminance  = _logDirectory + _userInfo.LuminanceFile;
-
-            _sceneData = new SceneDataFormat
-            {
-                ID       = _userInfo.UserId,
-                BLOCK_ID = _userInfo.BlockId,
-            };
-
-            await CsvLogger.InitSceneDataLog(_logDirectory, _logFilePath);
-
             RunGazeCalibration();
         }
 
         #region Data Recording
         public void RecordSeqScore(int value)
         {
-            _sceneData.SEQ_SCORE = value;
+            ExperimentDataLogger.Instance.RecordSurveyData("SEQ", value.ToString());
         }
 
         public void RecordDiscomfortScore(int value)
         {
-            _sceneData.DISCOMFORT_SCORE = value;
-        }
-
-        private void InitSceneData()
-        {
-            _sceneData.TRIAL_TYPE = _currentTrial.GetTrialTypeString();
-            _sceneData.TRIAL_ID   = _currentTrialCount;
-            _sceneData.SCENE_ID   = GetSceneId();
-
-            _sceneData.METHOD = _currentTrial.trialType == TrialType.PathCreation
-                ? _currentTrial.GetPathStrategyString()
-                : _currentTrial.GetLocomotionDofString();
-            _sceneData.MODEL            = _conditionBlock.GetCurrentModel(_currentTrialStageIndex, _modelIndex).Id;
-            _sceneData.ACTIONS_TOTAL    = -99;
-            _sceneData.ACTIONS_EDIT     = -99;
-            _sceneData.TASK_TIME_TOTAL  = -99;
-            _sceneData.TASK_TIME_EDIT   = -99;
-            _sceneData.TASK_TIME_CREATE = -99;
-            _sceneData.SEQ_SCORE        = -99;
-            _sceneData.DISCOMFORT_SCORE = -99;
-        }
-
-        public void RecordActionData(int totalActions, int editActions, TimeSpan taskTimeTotal, TimeSpan taskTimeEdit, TimeSpan taskTimeCreate)
-        {
-            _sceneData.ACTIONS_TOTAL    = totalActions;
-            _sceneData.ACTIONS_EDIT     = editActions;
-            _sceneData.TASK_TIME_TOTAL  = taskTimeTotal.Seconds;
-            _sceneData.TASK_TIME_EDIT   = taskTimeEdit.Seconds;
-            _sceneData.TASK_TIME_CREATE = taskTimeCreate.Seconds;
-        }
-
-        public void RecordNavigationData(TimeSpan taskTimeTotal)
-        {
-            _sceneData.TASK_TIME_TOTAL = taskTimeTotal.Seconds;
+            ExperimentDataLogger.Instance.RecordSurveyData("Discomfort", value.ToString());
         }
         #endregion
 
@@ -340,13 +285,6 @@ namespace PathNav.ExperimentControl
         public LocomotionDof GetNavigationMethod()       => _currentTrial.locomotionDof;
         public string        GetNavigationMethodString() => _currentTrial.GetLocomotionDofString();
         public string        GetModel()                  => _conditionBlock.GetCurrentModel(_currentTrialStageIndex, _modelIndex).Id;
-        public string        GetLogDirectory()           => _logDirectory;
-        public string        GetActionLogFilePath()      => _logFilePathActions;
-        public string        GetNavigationLogFilePath()  => _logFilePathNavigation;
-        public string        GetPoseLogFilePath()        => _logFilePathPose;
-        public string        GetGazeLogFilePath()        => _logFilePathGaze;
-        public string        GetLuminanceLogFilePath()   => _logFilePathLuminance;
-
         public bool UseTargetPoints1()
         {
             if (_userId % 2 == 0)
@@ -356,7 +294,6 @@ namespace PathNav.ExperimentControl
 
             return _currentTrialStageIndex != 0;
         }
-
         public Handedness GetHandedness() => _handedness;
 
         public bool CreationTutorialActive()
@@ -370,6 +307,8 @@ namespace PathNav.ExperimentControl
         #region Scene Control
         private void SetupTutorialCreation()
         {
+            
+            
             TutorialCreation tutorialCreation = FindObjectOfType<TutorialCreation>();
             tutorialCreation.Enable();
 
@@ -386,8 +325,6 @@ namespace PathNav.ExperimentControl
 
         private void SetupCreation()
         {
-            InitSceneData();
-
             GameObject holder = new();
 
             CreationActionMonitor creationActionMonitor = holder.AddComponent<CreationActionMonitor>();
@@ -401,8 +338,6 @@ namespace PathNav.ExperimentControl
 
         private void SetupNavigation()
         {
-            InitSceneData();
-
             NavigationManager navigationManager = FindObjectOfType<NavigationManager>();
             navigationManager.Enable();
 
@@ -437,29 +372,20 @@ namespace PathNav.ExperimentControl
             LoadNextScene();
         }
 
-        internal async void CreationComplete()
+        internal void CreationComplete()
         {
-            await CsvLogger.LogSceneData(_sceneData);
             IncrementTrial();
         }
 
-        internal async void NavigationComplete()
+        internal void NavigationComplete()
         {
-            await CsvLogger.LogSceneData(_sceneData);
             IncrementTrial();
         }
 
-        internal async void EndExperimentImmediately()
+        internal void EndExperimentImmediately()
         {
-            Task<bool> writeData = CsvLogger.LogSceneData(_sceneData);
-            bool       result    = await writeData;
-
-            if (!result) return;
-
-            Task<bool> endLog = CsvLogger.FinalizeDataLog();
-            result = await endLog;
-
-            if (!result) return;
+            
+            ExperimentDataLogger.Instance.RecordExperimentEvent("EarlyTermination", "EndExperiment");
 
 #if UNITY_EDITOR
             UnityEditor.EditorApplication.isPlaying = false;
@@ -522,28 +448,37 @@ namespace PathNav.ExperimentControl
             _activeSceneName = next.name;
 
             if (_activeSceneName.Contains("Loading")) return;
-            if (_activeSceneName.Contains("Calibration")) return;
+            if (_activeSceneName.Contains("Calibration"))
+            {
+                ExperimentDataLogger.Instance.RecordExperimentEvent("Calibration", "SceneLoaded");
+                return;
+            }
 
             if (_activeSceneName.Contains("Creation_Tutorial"))
             {
+                ExperimentDataLogger.Instance.RecordExperimentEvent("Creation_Tutorial", "SceneLoaded");
+
                 SetupTutorialCreation();
                 return;
             }
 
             if (_activeSceneName.Contains("Navigation_Tutorial"))
             {
+                ExperimentDataLogger.Instance.RecordExperimentEvent("Navigation_Tutorial", "SceneLoaded");
                 SetupTutorialNavigation();
                 return;
             }
 
             if (_activeSceneName.Contains("Creation"))
             {
+                ExperimentDataLogger.Instance.RecordExperimentEvent("Creation_Trial", "SceneLoaded");
                 SetupCreation();
                 return;
             }
 
             if (_activeSceneName.Contains("Navigation"))
             {
+                ExperimentDataLogger.Instance.RecordExperimentEvent("Navigation_Trial", "SceneLoaded");
                 SetupNavigation();
             }
         }
@@ -563,12 +498,10 @@ namespace PathNav.ExperimentControl
             }
         }
 
-        private async void EndExperiment()
+        private void EndExperiment()
         {
-            Task<bool> writeData = CsvLogger.FinalizeDataLog();
-            bool       result    = await writeData;
-
-            if (!result) return;
+            ExperimentDataLogger.Instance.RecordExperimentEvent("ExperimentCompleted", "EndExperiment");
+            
 #if UNITY_EDITOR
             UnityEditor.EditorApplication.isPlaying = false;
 #else

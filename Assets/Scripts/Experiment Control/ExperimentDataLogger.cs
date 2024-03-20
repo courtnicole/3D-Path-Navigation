@@ -1,9 +1,10 @@
 using System;
+using LSL4Unity.Utils;
+using System.Globalization;
 
 namespace PathNav.ExperimentControl
 {
     using LSL;
-    using System.Collections.Generic;
     using Tobii.XR;
     using UnityEngine;
     using UnityEngine.InputSystem.XR;
@@ -39,11 +40,30 @@ namespace PathNav.ExperimentControl
         private const string _navigationStreamType = "Navigation";
         private const string _navigationStreamID = "XRData_Navigation_01";
         private static float[] _navigationSample;
+
+        private static StreamOutlet _creationOutlet;
+        private const string _creationStreamName = "CreationStream";
+        private const string _creationStreamType = "Creation";
+        private const string _creationStreamID = "XRData_Creation_01";
+        private static string[] _creationSample;
+
+        private static StreamOutlet _surveyOutlet;
+        private const string _surveyStreamName = "SurveyStream";
+        private const string _surveyStreamType = "Survey";
+        private const string _surveyStreamID = "XRData_Survey_01";
+        private static string[] _surveySample;
+
+        private static StreamOutlet _experimentOutlet;
+        private const string _experimentStreamName = "ExperimentStream";
+        private const string _experimentStreamType = "Experiment";
+        private const string _experimentStreamID = "XRData_Experiment_01";
+        private static string[] _experimentSample;
+        
         #endregion
 
         #region Experiment Data
-        private float _userId;
-        private float _blockId;
+        private readonly float _userId;
+        private readonly float _blockId;
         private float _modelId;
         private float _methodId;
 
@@ -58,17 +78,17 @@ namespace PathNav.ExperimentControl
         private static VerboseData _pupilData = new();
         private static TobiiXR_EyeTrackingData _eyeData = new();
 
-        private Vector3    HeadPosition      => _playerTransform.position;
-        private Quaternion HeadRotation      => _playerTransform.rotation;
-        private Vector3    LeftHandPosition  => _leftHand.position;
-        private Quaternion LeftHandRotation  => _leftHand.rotation;
-        private Vector3    RightHandPosition => _rightHand.position;
+        private Vector3 HeadPosition => _playerTransform.position;
+        private Quaternion HeadRotation => _playerTransform.rotation;
+        private Vector3 LeftHandPosition => _leftHand.position;
+        private Quaternion LeftHandRotation => _leftHand.rotation;
+        private Vector3 RightHandPosition => _rightHand.position;
         private Quaternion RightHandRotation => _rightHand.rotation;
 
-        private Vector3    TrackedHeadPosition      => _headPoseDriver.positionInput.action.ReadValue<Vector3>();
-        private Vector3    TrackedRightHandPosition => _rightHandPoseDriver.positionInput.action.ReadValue<Vector3>();
-        private Vector3    TrackedLeftHandPosition  => _leftHandPoseDriver.positionInput.action.ReadValue<Vector3>();
-        private Quaternion TrackedHeadRotation      => _headPoseDriver.rotationInput.action.ReadValue<Quaternion>();
+        private Vector3 TrackedHeadPosition => _headPoseDriver.positionInput.action.ReadValue<Vector3>();
+        private Vector3 TrackedRightHandPosition => _rightHandPoseDriver.positionInput.action.ReadValue<Vector3>();
+        private Vector3 TrackedLeftHandPosition => _leftHandPoseDriver.positionInput.action.ReadValue<Vector3>();
+        private Quaternion TrackedHeadRotation => _headPoseDriver.rotationInput.action.ReadValue<Quaternion>();
 
         private Quaternion TrackedRightHandRotation => _rightHandPoseDriver.rotationInput.action.ReadValue<Quaternion>();
 
@@ -81,22 +101,25 @@ namespace PathNav.ExperimentControl
 
         public ExperimentDataLogger(float userID, float blockId)
         {
-            Instance                     = this;
-            _userId                      = userID;
-            _blockId                     = blockId;
+            Instance = this;
+            _userId = userID;
+            _blockId = blockId;
             CurrentCombinedGazeDirection = Vector3.zero;
 
+            CreateExperimentStream();
+            CreateSurveyStream();
             CreateGazeStream();
             CreatePoseStream();
             CreateNavigationStream();
+            CreateCreationStream();
             CreateLuminanceStream();
         }
 
         public void Enable(float model, float method)
         {
-            _modelId  = model;
+            _modelId = model;
             _methodId = method;
-            _enabled  = true;
+            _enabled = true;
         }
 
         public void Disable()
@@ -106,8 +129,8 @@ namespace PathNav.ExperimentControl
 
         private void CreateGazeStream()
         {
-            StreamInfo streamInfo = new(_gazeStreamName, _gazeStreamType, 17, LSL.IRREGULAR_RATE, channel_format_t.cf_float32, _gazeStreamID);
-            XMLElement channels   = streamInfo.desc().append_child("channels");
+            StreamInfo streamInfo = new(_gazeStreamName, _gazeStreamType, 17, LSLCommon.GetSamplingRateFor(MomentForSampling.LateUpdate), channel_format_t.cf_float32, _gazeStreamID);
+            XMLElement channels = streamInfo.desc().append_child("channels");
 
             channels.append_child("channel").append_child_value("label", "UserID");
             channels.append_child("channel").append_child_value("label", "BlockID");
@@ -117,21 +140,21 @@ namespace PathNav.ExperimentControl
             channels.append_child("channel").append_child_value("label", "ConvergenceDistance");
             channels.append_child("channel").append_child_value("label", "ConvergenceDistanceIsValid");
 
-            channels.append_child("channel").append_child_value("label", "GazeOriginX");
-            channels.append_child("channel").append_child_value("label", "GazeOriginY");
-            channels.append_child("channel").append_child_value("label", "GazeOriginZ");
+            channels.append_child("channel").append_child_value("label", "GazeOriginX").append_child_value("eye", "Both").append_child_value("type", "PositionX").append_child_value("coordinate_system", "world-space");
+            channels.append_child("channel").append_child_value("label", "GazeOriginY").append_child_value("eye", "Both").append_child_value("type", "PositionY").append_child_value("coordinate_system", "world-space");
+            channels.append_child("channel").append_child_value("label", "GazeOriginZ").append_child_value("eye", "Both").append_child_value("type", "PositionZ").append_child_value("coordinate_system", "world-space");
 
-            channels.append_child("channel").append_child_value("label", "GazeDirectionNormalizedX");
-            channels.append_child("channel").append_child_value("label", "GazeDirectionNormalizedY");
-            channels.append_child("channel").append_child_value("label", "GazeDirectionNormalizedZ");
+            channels.append_child("channel").append_child_value("label", "GazeDirectionNormalizedX").append_child_value("eye", "Both").append_child_value("type", "DirectionX").append_child_value("coordinate_system", "world-space").append_child_value("unit", "Normalized");
+            channels.append_child("channel").append_child_value("label", "GazeDirectionNormalizedY").append_child_value("eye", "Both").append_child_value("type", "DirectionY").append_child_value("coordinate_system", "world-space").append_child_value("unit", "Normalized");
+            channels.append_child("channel").append_child_value("label", "GazeDirectionNormalizedZ").append_child_value("eye", "Both").append_child_value("type", "DirectionZ").append_child_value("coordinate_system", "world-space").append_child_value("unit", "Normalized");
 
             channels.append_child("channel").append_child_value("label", "GazeRayIsValid");
 
-            channels.append_child("channel").append_child_value("label", "LeftEyeIsBlinking");
-            channels.append_child("channel").append_child_value("label", "RightEyeIsBlinking");
+            channels.append_child("channel").append_child_value("label", "LeftEyeIsBlinking").append_child_value("eye", "Left");
+            channels.append_child("channel").append_child_value("label", "RightEyeIsBlinking").append_child_value("eye", "Right");
 
-            channels.append_child("channel").append_child_value("label", "LeftPupilDiameter");
-            channels.append_child("channel").append_child_value("label", "RightPupilDiameter");
+            channels.append_child("channel").append_child_value("label", "LeftPupilDiameter").append_child_value("eye", "Left").append_child_value("type", "Diameter");
+            channels.append_child("channel").append_child_value("label", "RightPupilDiameter").append_child_value("eye", "Right").append_child_value("type", "Diameter");
 
             _gazeSample = new float[17];
             _gazeOutlet = new StreamOutlet(streamInfo);
@@ -144,7 +167,7 @@ namespace PathNav.ExperimentControl
 
         private void CreatePoseStream()
         {
-            StreamInfo streamInfo = new(_poseStreamName, _poseStreamType, 46, LSL.IRREGULAR_RATE, channel_format_t.cf_float32, _poseStreamID);
+            StreamInfo streamInfo = new(_poseStreamName, _poseStreamType, 46, LSLCommon.GetSamplingRateFor(MomentForSampling.LateUpdate), channel_format_t.cf_float32, _poseStreamID);
 
             XMLElement channels = streamInfo.desc().append_child("channels");
 
@@ -207,7 +230,7 @@ namespace PathNav.ExperimentControl
 
         private void CreateNavigationStream()
         {
-            StreamInfo streamInfo = new(_navigationStreamName, _navigationStreamType, 9, LSL.IRREGULAR_RATE, channel_format_t.cf_float32, _navigationStreamID);
+            StreamInfo streamInfo = new(_navigationStreamName, _navigationStreamType, 9, LSLCommon.GetSamplingRateFor(MomentForSampling.LateUpdate), channel_format_t.cf_float32, _navigationStreamID);
 
             XMLElement channels = streamInfo.desc().append_child("channels");
 
@@ -231,9 +254,56 @@ namespace PathNav.ExperimentControl
             _navigationSample[3] = _methodId;
         }
 
+        private void CreateSurveyStream()
+        {
+            StreamInfo streamInfo = new(_surveyStreamName, _surveyStreamType, 6, LSL.IRREGULAR_RATE, channel_format_t.cf_string, _surveyStreamID);
+
+            XMLElement channels = streamInfo.desc().append_child("channels");
+
+            channels.append_child("channel").append_child_value("label", "UserID");
+            channels.append_child("channel").append_child_value("label", "BlockID");
+            channels.append_child("channel").append_child_value("label", "ModelID");
+            channels.append_child("channel").append_child_value("label", "MethodID");
+
+            channels.append_child("channel").append_child_value("label", "SurveyType");
+            channels.append_child("channel").append_child_value("label", "Value");
+
+            _surveySample = new string[6];
+            _surveyOutlet = new StreamOutlet(streamInfo);
+
+            _surveySample[0] = _userId.ToString(CultureInfo.InvariantCulture);
+            _surveySample[1] = _blockId.ToString(CultureInfo.InvariantCulture);
+            _surveySample[2] = _modelId.ToString(CultureInfo.InvariantCulture);
+            _surveySample[3] = _methodId.ToString(CultureInfo.InvariantCulture);
+        }
+
+        private void CreateCreationStream()
+        {
+            StreamInfo streamInfo = new(_creationStreamName, _creationStreamType, 7, LSL.IRREGULAR_RATE, channel_format_t.cf_string, _creationStreamID);
+
+            XMLElement channels = streamInfo.desc().append_child("channels");
+
+            channels.append_child("channel").append_child_value("label", "UserID");
+            channels.append_child("channel").append_child_value("label", "BlockID");
+            channels.append_child("channel").append_child_value("label", "ModelID");
+            channels.append_child("channel").append_child_value("label", "MethodID");
+
+            channels.append_child("channel").append_child_value("label", "EventName");
+            channels.append_child("channel").append_child_value("label", "EventType");
+            channels.append_child("channel").append_child_value("label", "Duration");
+
+            _creationSample = new string[7];
+            _creationOutlet = new StreamOutlet(streamInfo);
+
+            _creationSample[0] = _userId.ToString(CultureInfo.InvariantCulture);
+            _creationSample[1] = _blockId.ToString(CultureInfo.InvariantCulture);
+            _creationSample[2] = _modelId.ToString(CultureInfo.InvariantCulture);
+            _creationSample[3] = _methodId.ToString(CultureInfo.InvariantCulture);
+        }
+
         private void CreateLuminanceStream()
         {
-            StreamInfo streamInfo = new(_luminanceStreamName, _luminanceStreamType, 5, LSL.IRREGULAR_RATE, channel_format_t.cf_float32, _luminanceStreamID);
+            StreamInfo streamInfo = new(_luminanceStreamName, _luminanceStreamType, 5, LSLCommon.GetSamplingRateFor(MomentForSampling.LateUpdate), channel_format_t.cf_float32, _luminanceStreamID);
 
             XMLElement channels = streamInfo.desc().append_child("channels");
 
@@ -252,17 +322,38 @@ namespace PathNav.ExperimentControl
             _luminanceSample[3] = _methodId;
         }
 
+        private void CreateExperimentStream()
+        {
+            StreamInfo streamInfo = new(_experimentStreamName, _experimentStreamType, 5, LSL.IRREGULAR_RATE, channel_format_t.cf_string, _experimentStreamID);
+            XMLElement channels = streamInfo.desc().append_child("channels");
+
+            channels.append_child("channel").append_child_value("label", "UserID");
+            channels.append_child("channel").append_child_value("label", "BlockID");
+            channels.append_child("channel").append_child_value("label", "ModelID");
+            channels.append_child("channel").append_child_value("label", "MethodID");
+            channels.append_child("channel").append_child_value("label", "SceneEvent");
+            channels.append_child("channel").append_child_value("label", "EventType");
+            
+            _experimentSample = new string[5];
+            _experimentOutlet = new StreamOutlet(streamInfo);
+            
+            _experimentSample[0] = _userId.ToString(CultureInfo.InvariantCulture);
+            _experimentSample[1] = _blockId.ToString(CultureInfo.InvariantCulture);
+            _experimentSample[2] = _modelId.ToString(CultureInfo.InvariantCulture);
+            _experimentSample[3] = _methodId.ToString(CultureInfo.InvariantCulture);
+        }
+
         public void SetTransformData(Transform head, Transform left, Transform right)
         {
             _playerTransform = head;
-            _leftHand        = left;
-            _rightHand       = right;
+            _leftHand = left;
+            _rightHand = right;
         }
 
         public void SetPoseDriverData(TrackedPoseDriver head, TrackedPoseDriver left, TrackedPoseDriver right)
         {
-            _headPoseDriver      = head;
-            _leftHandPoseDriver  = left;
+            _headPoseDriver = head;
+            _leftHandPoseDriver = left;
             _rightHandPoseDriver = right;
         }
 
@@ -282,6 +373,19 @@ namespace PathNav.ExperimentControl
             _navigationOutlet.push_sample(_navigationSample, TimeSync.Instance.LateUpdateTimeStamp);
         }
 
+        public void RecordCreationData(string eventName, string eventType, string duration)
+        {
+            if (!_enabled)
+            {
+                return;
+            }
+            
+            _creationSample[4] = eventName;
+            _creationSample[5] = eventType;
+            _creationSample[6] = duration;
+            _creationOutlet.push_sample(_creationSample);
+        }
+
         public void RecordPoseData()
         {
             if (!_enabled)
@@ -289,22 +393,22 @@ namespace PathNav.ExperimentControl
                 return;
             }
 
-            if (_playerTransform is null    ||
-                _leftHand is null           ||
-                _rightHand is null          ||
-                _headPoseDriver is null     ||
+            if (_playerTransform is null ||
+                _leftHand is null ||
+                _rightHand is null ||
+                _headPoseDriver is null ||
                 _leftHandPoseDriver is null ||
                 _rightHandPoseDriver is null)
             {
                 return;
             }
 
-            _poseSample[4]  = HeadPosition.x;
-            _poseSample[5]  = HeadPosition.y;
-            _poseSample[6]  = HeadPosition.z;
-            _poseSample[7]  = HeadRotation.w;
-            _poseSample[8]  = HeadRotation.x;
-            _poseSample[9]  = HeadRotation.y;
+            _poseSample[4] = HeadPosition.x;
+            _poseSample[5] = HeadPosition.y;
+            _poseSample[6] = HeadPosition.z;
+            _poseSample[7] = HeadRotation.w;
+            _poseSample[8] = HeadRotation.x;
+            _poseSample[9] = HeadRotation.y;
             _poseSample[10] = HeadRotation.z;
 
             _poseSample[11] = LeftHandPosition.x;
@@ -349,19 +453,33 @@ namespace PathNav.ExperimentControl
 
             _poseOutlet.push_sample(_poseSample, TimeSync.Instance.LateUpdateTimeStamp);
         }
-
-        public void RecordLuminanceAndGazeData(float luminance)
+        
+        public void RecordSurveyData(string surveyType, string value)
         {
-            _luminanceSample[4] = luminance;
-
             if (!_enabled)
             {
-                _luminanceOutlet.push_sample(_luminanceSample, TimeSync.Instance.LateUpdateTimeStamp);
+                return;
+            }
+            
+            _surveySample[4] = surveyType;
+            _surveySample[5] = value;
+            _surveyOutlet.push_sample(_surveySample);
+        }
+
+        public void RecordLuminanceData(float luminance)
+        {
+            _luminanceSample[4] = luminance;
+            _luminanceOutlet.push_sample(_luminanceSample, TimeSync.Instance.LateUpdateTimeStamp);
+        }
+
+        public void RecordGazeData()
+        {
+            if (!_enabled)
+            {
                 return;
             }
 
             _eyeData = TobiiXR.GetEyeTrackingData(TobiiXR_TrackingSpace.World);
-            double timestamp = LSL.local_clock();
             SRanipal_Eye.GetVerboseData(out _pupilData);
             CurrentCombinedGazeDirection = _eyeData.GazeRay.Direction;
 
@@ -372,7 +490,7 @@ namespace PathNav.ExperimentControl
             _gazeSample[7] = _eyeData.GazeRay.Origin.y;
             _gazeSample[8] = _eyeData.GazeRay.Origin.z;
 
-            _gazeSample[9]  = _eyeData.GazeRay.Direction.x;
+            _gazeSample[9] = _eyeData.GazeRay.Direction.x;
             _gazeSample[10] = _eyeData.GazeRay.Direction.y;
             _gazeSample[11] = _eyeData.GazeRay.Direction.z;
 
@@ -384,7 +502,13 @@ namespace PathNav.ExperimentControl
             _gazeSample[16] = _pupilData.right.pupil_diameter_mm;
 
             _gazeOutlet.push_sample(_gazeSample, TimeSync.Instance.LateUpdateTimeStamp);
-            _luminanceOutlet.push_sample(_luminanceSample, TimeSync.Instance.LateUpdateTimeStamp);
+        }
+        
+        public void RecordExperimentEvent(string eventName, string eventType)
+        {
+            _experimentSample[4] = eventName;
+            _experimentSample[5] = eventType;
+            _experimentOutlet.push_sample(_experimentSample);
         }
     }
 }
