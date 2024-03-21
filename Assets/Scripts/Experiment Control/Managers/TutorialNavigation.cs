@@ -10,6 +10,7 @@ namespace PathNav.ExperimentControl
     using System.Threading.Tasks;
     using UnityEngine;
     using UnityEngine.Animations;
+    using UnityEngine.XR.OpenXR.Samples.ControllerSample;
 
     public class TutorialNavigation : MonoBehaviour
     {
@@ -37,6 +38,8 @@ namespace PathNav.ExperimentControl
         
         [SerializeField] private NavigationEndPoint endPoint;
         [SerializeField] private Transform footVisualMarker;
+        
+        [SerializeField] private GameObject discomfortScore;
 
         private List<string> _audioMap;
         private List<string> _fourDofAudio = new() { "navigation_4dof", "finish_navigation", };
@@ -48,7 +51,7 @@ namespace PathNav.ExperimentControl
         internal void Enable()
         {
             audioManager.LoadAudio(new List<string> { "Audio_Tutorial_Navigation", });
-
+            discomfortScore.SetActive(false);
             StartTutorial();
         }
 
@@ -57,6 +60,23 @@ namespace PathNav.ExperimentControl
         {
             if (_stage                                               != TutorialStage.Finish) return;
             if (ExperimentDataManager.Instance.GetNavigationMethod() != LocomotionDof.FourDoF) return;
+
+            NavigationComplete();
+        }
+
+        private void NavigationComplete()
+        {
+            ActionAssetEnabler actionController = FindObjectOfType<ActionAssetEnabler>();
+            actionController.EnableUiInput();
+            discomfortScore.SetActive(true);
+            pointerLeft.Enable();
+            pointerRight.Enable();
+            EventManager.Subscribe<SceneControlEventArgs>(EventId.DiscomfortScoreComplete, DiscomfortComplete);
+        }
+        
+        private void DiscomfortComplete(object sender, SceneControlEventArgs args)
+        {
+            discomfortScore.SetActive(false);
             EndTutorial();
         }
 
@@ -64,14 +84,14 @@ namespace PathNav.ExperimentControl
         {
             if (_stage != TutorialStage.Finish) return;
             if (ExperimentDataManager.Instance.GetNavigationMethod() != LocomotionDof.SixDof) return;
-            EndTutorial();
+            NavigationComplete();
         }
 
         private async void InitialPracticeEnded(object sender, LocomotionEvaluatorEventArgs args)
         {
             EventManager.Unsubscribe<LocomotionEvaluatorEventArgs>(EventId.LocomotionStarted, InitialPracticeEnded);
             
-            await Task.Delay(4000);
+            await Task.Delay(3400);
             _stage = TutorialStage.Finish;
 
             _audioIndex++;
@@ -80,7 +100,6 @@ namespace PathNav.ExperimentControl
 
         public void StopImmediately()
         {
-            Debug.Log("STOP IMMEDIATE");
             overlay.FadeToBlackImmediate();
 
             ExperimentDataManager.Instance.EndExperimentImmediately();

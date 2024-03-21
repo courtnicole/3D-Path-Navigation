@@ -68,12 +68,11 @@ crashlytics-build.properties
 /[Aa]ssets/[Aa]ddressable[Aa]ssets[Dd]ata/*/*.bin*
 
 # Temporary auto-generated Android Assets
-/MidAirPathPlanning/*
-/MidAirPathPlanning
 /[Aa]ssets/[Ss]treamingAssets/aa.meta
 /[Aa]ssets/[Ss]treamingAssets/aa/*
 
 
+#Project Specific
 /[Aa]ssets/Scenes/*/LightingData.asset
 /[Aa]ssets/Scenes/*/LightingData.asset.meta
 /[Aa]ssets/Scenes_Development/*/LightingData.asset
@@ -88,3 +87,5 @@ crashlytics-build.properties
 /[Aa]ssets/Data/*.meta
 
 Assets/Models/guri e amir/guri_e_amir_90.fbx
+/Build_321/*
+/MidAirPathPlanning

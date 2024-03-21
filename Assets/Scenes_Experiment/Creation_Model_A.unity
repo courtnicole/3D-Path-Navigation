@@ -140,7 +140,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4588045768990545790, guid: 3ace0d1676ed36e46909ad35b3a04fc8, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6851140512374261833, guid: 3ace0d1676ed36e46909ad35b3a04fc8, type: 3}
       propertyPath: m_RootOrder
@@ -1970,6 +1970,14 @@ PrefabInstance:
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 2100000, guid: 7e9f8165064a09f44ba68915701c987b, type: 2}
+    - target: {fileID: 4839835952131513683, guid: 720e06e9f085b3b47ab48f7cc7808836, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4839835952131513683, guid: 720e06e9f085b3b47ab48f7cc7808836, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 6.2
+      objectReference: {fileID: 0}
     - target: {fileID: 8394638742064074915, guid: 720e06e9f085b3b47ab48f7cc7808836, type: 3}
       propertyPath: m_LocalPosition.x
       value: -0.102
@@ -3024,6 +3032,11 @@ PrefabInstance:
     - target: {fileID: 4020430242837848650, guid: bbae48afe2793594b9057d7bf83dcd5d, type: 3}
       propertyPath: m_Name
       value: Instructions
+      objectReference: {fileID: 0}
+    - target: {fileID: 4020430244088673712, guid: bbae48afe2793594b9057d7bf83dcd5d, type: 3}
+      propertyPath: m_text
+      value: Begin at the green start point. Create a travel path through the highlighted
+        regions.
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: bbae48afe2793594b9057d7bf83dcd5d, type: 3}

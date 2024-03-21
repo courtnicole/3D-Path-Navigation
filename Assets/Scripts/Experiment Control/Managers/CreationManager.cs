@@ -24,7 +24,9 @@ namespace PathNav.ExperimentControl
         private bool _enableTeleportation;
         internal void Enable()
         {
-            _enableTeleportation            =  CheckTeleportation();
+            overlay              ??= FindObjectOfType<Overlay>();
+            seq.SetActive(false);
+            _enableTeleportation =   CheckTeleportation();
             StartCreation();
         }
         

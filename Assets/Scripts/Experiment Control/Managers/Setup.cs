@@ -12,10 +12,12 @@ namespace  PathNav.ExperimentControl
         [SerializeField] private GameObject idButtons;
         [SerializeField] private GameObject beginButton;    
         [SerializeField] private GameObject handednessButtons;   
-        [SerializeField] private string fileName = "user_id_list.json";
         [SerializeField] private Transform headPose;
+
+        private const string _fileName = "user_id_list.json";
         private string _filePath = Application.streamingAssetsPath + "/";
-        private string File => _filePath + fileName;
+        private string File => _filePath + _fileName;
+        
         
         public async void GetRecentId()
         {
@@ -27,11 +29,8 @@ namespace  PathNav.ExperimentControl
         
         public async void GetNewId()
         {
-#if UNITY_EDITOR
-            int id = await FileParser.GetMostRecentUserIdAsync(File);
-#else
+
             int id = await FileParser.GetNewUserIdAsync(File);
-#endif            
             ExperimentDataManager.Instance.RecordUserId(id, headPose.position.y);
             userIdText.text = "User ID: " + id;
             ToggleHandedness();

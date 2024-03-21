@@ -39,12 +39,12 @@ namespace PathNav.ExperimentControl
 
         private TutorialStage _stage;
 
-        private const string _drawPath = "Use the trigger button to draw a path.";
-        private const string _placePoint = "Use the plane and the controller to view points. Press the trigger button to create the point.";
-        private const string _deletePoint = "Hover over a point and press the yellow button to delete it.";
-        private const string _movePoint = "Hover over a point, then press and hold the trigger button to move it to a new location.";
-        private const string _erasePath = "Press and hold the yellow button to view the eraser. Use it to remove part of your path.";
-        private const string _finishPath = "When you are finished, press the green button to complete your path.";
+        private const string _drawPath = "Use the trigger button and your controller to draw a travel path.";
+        private const string _placePoint = "Hover over the plane with your controller to see a temporary point. Press the trigger button to create it.";
+        private const string _deletePoint = "Hover over a point with your free hand, and press the yellow button to delete it.";
+        private const string _movePoint = "Hover over a point with your free hand, then press and hold the trigger button to move it.";
+        private const string _erasePath = "Press and hold the yellow button to view the eraser. It will erase your path starting at the end.";
+        private const string _finishPath = "Create a travel path through the highlighted points. When you are finished, press the green button.";
 
         internal void Enable()
         {

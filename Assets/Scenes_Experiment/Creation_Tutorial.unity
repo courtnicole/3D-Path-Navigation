@@ -1113,7 +1113,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4020430244088673712, guid: bbae48afe2793594b9057d7bf83dcd5d, type: 3}
       propertyPath: m_text
-      value: 'Press and hold the trigger button to place the start point. '
+      value: 
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: bbae48afe2793594b9057d7bf83dcd5d, type: 3}
