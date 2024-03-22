@@ -1,14 +1,6 @@
 {
-  "most_recent_user_id": 107,
-  "used_user_ids": [
-    106,
-    107
-  ],
+  "most_recent_user_id": 103,
   "available_user_ids": [
-    100,
-    101,
-    102,
-    103,
     104,
     105,
     108,
@@ -54,5 +46,13 @@
     148,
     149,
     150
+  ],
+  "used_user_ids": [
+    103,
+    102,
+    101,
+    100,
+    106,
+    107
   ]
 }

@@ -191,9 +191,24 @@ namespace PathNav.ExperimentControl
             await CsvLogger.LogSpline(_logDirectorySpline, _logFilePathSpline, splinePoints);
         }
 
+        [Flags]
+        public enum ModelSource
+        {
+            None = 0,
+            A    = 1,
+            B    = 2,
+            C    = 4,
+            D    = 8,
+            Drawing = 16,
+            Interpolating = 32,
+        }
+
+        private ModelSource _modelSource;
+        public ModelSource GetModelSource() => _modelSource;
         public SplinePoint[] GetSavedSpline()
         {
             _savedModel = _conditionBlock.GetCurrentModel(_currentTrialStageIndex, _modelIndex);
+            _modelSource = ModelSource.None;
 
             if (_useSplineFile)
             {
@@ -218,14 +233,32 @@ namespace PathNav.ExperimentControl
             }
             else
             {
-                _savedSpline = _savedModel.Id switch
-                               {
-                                   "Model_A" => _currentTrialCount % 2 == 0 ? _drawingModelASpline : _interpolationModelASpline,
-                                   "Model_B" => _currentTrialCount % 2 == 0 ? _drawingModelBSpline : _interpolationModelBSpline,
-                                   "Model_C" => _currentTrialCount % 2 == 0 ? _drawingModelCSpline : _interpolationModelCSpline,
-                                   "Model_D" => _currentTrialCount % 2 == 0 ? _drawingModelDSpline : _interpolationModelDSpline,
-                                   _         => throw new ArgumentOutOfRangeException(),
-                               };
+                switch (_savedModel.Id)
+                {
+                    case "Model_A":
+                        _modelSource =  ModelSource.A;
+                        _savedSpline =  _currentTrialStageIndex % 2 == 0 ? _drawingModelASpline : _interpolationModelASpline;
+                        _modelSource |= _currentTrialStageIndex % 2 == 0 ? ModelSource.Drawing : ModelSource.Interpolating;
+                        break;
+                    case "Model_B":
+                        _modelSource =  ModelSource.B;
+                        _savedSpline =  _currentTrialStageIndex % 2 == 0 ? _drawingModelBSpline : _interpolationModelBSpline;
+                        _modelSource |= _currentTrialStageIndex % 2 == 0 ? ModelSource.Drawing : ModelSource.Interpolating;
+                        
+                        break;
+                    case "Model_C":
+                        _modelSource =  ModelSource.C;
+                        _savedSpline =  _currentTrialStageIndex % 2 == 0 ? _drawingModelCSpline : _interpolationModelCSpline;
+                        _modelSource |= _currentTrialStageIndex % 2 == 0 ? ModelSource.Drawing : ModelSource.Interpolating;
+                        break;
+                    case "Model_D":
+                        _modelSource =  ModelSource.D;
+                        _savedSpline =  _currentTrialStageIndex % 2 == 0 ? _drawingModelDSpline : _interpolationModelDSpline;
+                        _modelSource |= _currentTrialStageIndex % 2 == 0 ? ModelSource.Drawing : ModelSource.Interpolating;
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
             }
 
             return _savedSpline;

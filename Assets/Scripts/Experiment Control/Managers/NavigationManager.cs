@@ -43,6 +43,8 @@ namespace PathNav.ExperimentControl
 
         private int _userId, _blockId;
         private string _modelId, _methodId;
+        
+        private ExperimentDataManager.ModelSource _modelSource;
         #endregion
 
         #region Enable/Disable/Update
@@ -64,7 +66,8 @@ namespace PathNav.ExperimentControl
             if (!_recordData) return;
             ExperimentDataLogger.Instance.RecordNavigationData(follower.followSpeed,
                                                                _locomotionDof == LocomotionDof.FourDoF ? follower.result.percent : projector.result.percent,
-                                                               _locomotionDof == LocomotionDof.FourDoF ? follower.result.position : projector.result.position);
+                                                               _locomotionDof == LocomotionDof.FourDoF ? follower.result.position : projector.result.position, 
+                                                               (int)_modelSource);
         }
         #endregion
 
@@ -174,6 +177,8 @@ namespace PathNav.ExperimentControl
                 _spline           = ExperimentDataManager.Instance.GetSavedSpline();
                 _deltaTranslation = ExperimentDataManager.Instance.GetSplineModel().Translation;
                 _deltaScale       = ExperimentDataManager.Instance.GetSplineModel().Scale;
+                
+                _modelSource = ExperimentDataManager.Instance.GetModelSource();
 
                 SetupSpline();
             }

@@ -566,7 +566,23 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!43 &1061934550
+--- !u!114 &1126537632 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5363206173960247044, guid: bcc8ce5cae3773849a94b3b50a070054, type: 3}
+  m_PrefabInstance: {fileID: 5363206175086120612}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ac99caaab74d4b54687504b45f97428f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!1 &1146886581 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4358945194993997603, guid: 3f86ae8f0b81ecd419bdf8648a386999, type: 3}
+  m_PrefabInstance: {fileID: 7404495595173301522}
+  m_PrefabAsset: {fileID: 0}
+--- !u!43 &1179960562
 Mesh:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -730,23 +746,7 @@ Mesh:
     offset: 0
     size: 0
     path: 
---- !u!114 &1126537632 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 5363206173960247044, guid: bcc8ce5cae3773849a94b3b50a070054, type: 3}
-  m_PrefabInstance: {fileID: 5363206175086120612}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ac99caaab74d4b54687504b45f97428f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!1 &1146886581 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 4358945194993997603, guid: 3f86ae8f0b81ecd419bdf8648a386999, type: 3}
-  m_PrefabInstance: {fileID: 7404495595173301522}
-  m_PrefabAsset: {fileID: 0}
---- !u!43 &1179960562
+--- !u!43 &1342162276
 Mesh:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1300,6 +1300,14 @@ PrefabInstance:
     - target: {fileID: 5540904520286887855, guid: 3f86ae8f0b81ecd419bdf8648a386999, type: 3}
       propertyPath: m_Name
       value: Rig Navigation
+      objectReference: {fileID: 0}
+    - target: {fileID: 7427512194722321640, guid: 3f86ae8f0b81ecd419bdf8648a386999, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7427512195626853932, guid: 3f86ae8f0b81ecd419bdf8648a386999, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8518793611252415268, guid: 3f86ae8f0b81ecd419bdf8648a386999, type: 3}
       propertyPath: m_Sources.Array.data[0].sourceTransform

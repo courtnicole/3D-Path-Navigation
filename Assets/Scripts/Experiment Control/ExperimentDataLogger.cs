@@ -161,6 +161,11 @@ namespace PathNav.ExperimentControl
 
             channels.append_child("channel").append_child_value("label", "LeftPupilDiameter").append_child_value("eye", "Left").append_child_value("type", "Diameter");
             channels.append_child("channel").append_child_value("label", "RightPupilDiameter").append_child_value("eye", "Right").append_child_value("type", "Diameter");
+            
+            XMLElement subject = streamInfo.desc().append_child("subject");
+            subject.append_child_value("id", _userId.ToString(CultureInfo.InvariantCulture));
+            subject.append_child_value("block", _blockId.ToString(CultureInfo.InvariantCulture));
+            
 
             _gazeSample = new float[17];
             _gazeOutlet = new StreamOutlet(streamInfo);
@@ -203,6 +208,10 @@ namespace PathNav.ExperimentControl
             channels.append_child("channel").append_child_value("label", "RightHand_RotX");
             channels.append_child("channel").append_child_value("label", "RightHand_RotY");
             channels.append_child("channel").append_child_value("label", "RightHand_RotZ");
+            
+            XMLElement subject = streamInfo.desc().append_child("subject");
+            subject.append_child_value("id",    _userId.ToString(CultureInfo.InvariantCulture));
+            subject.append_child_value("block", _blockId.ToString(CultureInfo.InvariantCulture));
 
             _poseSample = new float[25];
             _poseOutlet = new StreamOutlet(streamInfo);
@@ -213,7 +222,7 @@ namespace PathNav.ExperimentControl
 
         private void CreateNavigationStream()
         {
-            StreamInfo streamInfo = new(_navigationStreamName, _navigationStreamType, 9, LSLCommon.GetSamplingRateFor(MomentForSampling.LateUpdate), channel_format_t.cf_float32, _navigationStreamID);
+            StreamInfo streamInfo = new(_navigationStreamName, _navigationStreamType, 10, LSLCommon.GetSamplingRateFor(MomentForSampling.LateUpdate), channel_format_t.cf_float32, _navigationStreamID);
 
             XMLElement channels = streamInfo.desc().append_child("channels");
 
@@ -227,8 +236,14 @@ namespace PathNav.ExperimentControl
             channels.append_child("channel").append_child_value("label", "spline_position_x");
             channels.append_child("channel").append_child_value("label", "spline_position_y");
             channels.append_child("channel").append_child_value("label", "spline_position_z");
+            
+            channels.append_child("channel").append_child_value("label", "model_source");
+            
+            XMLElement subject = streamInfo.desc().append_child("subject");
+            subject.append_child_value("id",    _userId.ToString(CultureInfo.InvariantCulture));
+            subject.append_child_value("block", _blockId.ToString(CultureInfo.InvariantCulture));
 
-            _navigationSample = new float[9];
+            _navigationSample = new float[10];
             _navigationOutlet = new StreamOutlet(streamInfo);
 
             _navigationSample[0] = _userId;
@@ -249,6 +264,10 @@ namespace PathNav.ExperimentControl
 
             channels.append_child("channel").append_child_value("label", "SurveyType");
             channels.append_child("channel").append_child_value("label", "Value");
+            
+            XMLElement subject = streamInfo.desc().append_child("subject");
+            subject.append_child_value("id",    _userId.ToString(CultureInfo.InvariantCulture));
+            subject.append_child_value("block", _blockId.ToString(CultureInfo.InvariantCulture));
 
             _surveySample = new string[6];
             _surveyOutlet = new StreamOutlet(streamInfo);
@@ -271,6 +290,10 @@ namespace PathNav.ExperimentControl
             channels.append_child("channel").append_child_value("label", "EventName");
             channels.append_child("channel").append_child_value("label", "EventType");
             channels.append_child("channel").append_child_value("label", "Duration");
+            
+            XMLElement subject = streamInfo.desc().append_child("subject");
+            subject.append_child_value("id",    _userId.ToString(CultureInfo.InvariantCulture));
+            subject.append_child_value("block", _blockId.ToString(CultureInfo.InvariantCulture));
 
             _creationSample = new string[7];
             _creationOutlet = new StreamOutlet(streamInfo);
@@ -290,6 +313,10 @@ namespace PathNav.ExperimentControl
             channels.append_child("channel").append_child_value("label", "ModelID");
             channels.append_child("channel").append_child_value("label", "MethodID");
             channels.append_child("channel").append_child_value("label", "Luminance");
+            
+            XMLElement subject = streamInfo.desc().append_child("subject");
+            subject.append_child_value("id",    _userId.ToString(CultureInfo.InvariantCulture));
+            subject.append_child_value("block", _blockId.ToString(CultureInfo.InvariantCulture));
 
             _luminanceSample = new float[5];
             _luminanceOutlet = new StreamOutlet(streamInfo);
@@ -309,6 +336,10 @@ namespace PathNav.ExperimentControl
             channels.append_child("channel").append_child_value("label", "MethodID");
             channels.append_child("channel").append_child_value("label", "SceneEvent");
             channels.append_child("channel").append_child_value("label", "EventType");
+            
+            XMLElement subject = streamInfo.desc().append_child("subject");
+            subject.append_child_value("id",    _userId.ToString(CultureInfo.InvariantCulture));
+            subject.append_child_value("block", _blockId.ToString(CultureInfo.InvariantCulture));
             
             _experimentSample = new string[6];
             _experimentOutlet = new StreamOutlet(streamInfo);
@@ -351,6 +382,10 @@ namespace PathNav.ExperimentControl
             channels.append_child("channel").append_child_value("label", "Tracked_RightHand_RotX");
             channels.append_child("channel").append_child_value("label", "Tracked_RightHand_RotY");
             channels.append_child("channel").append_child_value("label", "Tracked_RightHand_RotZ");
+            
+            XMLElement subject = streamInfo.desc().append_child("subject");
+            subject.append_child_value("id",    _userId.ToString(CultureInfo.InvariantCulture));
+            subject.append_child_value("block", _blockId.ToString(CultureInfo.InvariantCulture));
 
             _trackedPoseSample = new float[25];
             _trackedPoseOutlet = new StreamOutlet(streamInfo);
@@ -373,7 +408,7 @@ namespace PathNav.ExperimentControl
             _rightHandPoseDriver = right;
         }
 
-        public void RecordNavigationData(float speed, double splinePercent, Vector3 splinePosition)
+        public void RecordNavigationData(float speed, double splinePercent, Vector3 splinePosition, int modelSource)
         {
             if (!_enabled)
             {
@@ -387,6 +422,7 @@ namespace PathNav.ExperimentControl
             _navigationSample[6] = splinePosition.x;
             _navigationSample[7] = splinePosition.y;
             _navigationSample[8] = splinePosition.z;
+            _navigationSample[9] = modelSource;
 
             _navigationOutlet.push_sample(_navigationSample, TimeSyncLocal.Instance.LateUpdateTimeStamp);
         }

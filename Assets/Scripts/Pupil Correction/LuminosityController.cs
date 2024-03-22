@@ -121,7 +121,6 @@ namespace PathNav.ExperimentControl
                                                         {
                                                             return;
                                                         }
-
                                                         _outputBuffer = new NativeArray<float>(1, Allocator.Temp, NativeArrayOptions.UninitializedMemory);
                                                         _outputBuffer = readback.GetData<float>();
                                                         _dataToLog    = _outputBuffer[0];

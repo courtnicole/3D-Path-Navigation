@@ -11,6 +11,7 @@ namespace  PathNav.ExperimentControl
         [SerializeField] private TMP_Text userIdText;
         [SerializeField] private GameObject idButtons;
         [SerializeField] private GameObject beginButton;    
+        [SerializeField] private GameObject dataButton;    
         [SerializeField] private GameObject handednessButtons;   
         [SerializeField] private Transform headPose;
 
@@ -24,22 +25,32 @@ namespace  PathNav.ExperimentControl
             int id = await FileParser.GetMostRecentUserIdAsync(File);
             ExperimentDataManager.Instance.RecordUserId(id, headPose.position.y);
             userIdText.text = "User ID: " + id;
-            ToggleHandedness();
+            ToggleDataLogging();
         }
         
         public async void GetNewId()
         {
-
             int id = await FileParser.GetNewUserIdAsync(File);
             ExperimentDataManager.Instance.RecordUserId(id, headPose.position.y);
             userIdText.text = "User ID: " + id;
+            ToggleDataLogging();
+        }
+
+        private void ToggleDataLogging()
+        {
+            userIdText.gameObject.SetActive(true);
+            idButtons.SetActive(false);
+            dataButton.SetActive(true);
+        }
+        
+        public void SetDataLogging()
+        {
             ToggleHandedness();
         }
 
         private void ToggleHandedness()
         {
-            userIdText.gameObject.SetActive(true);
-            idButtons.SetActive(false);
+            dataButton.SetActive(false);
             handednessButtons.SetActive(true);
         }
         
