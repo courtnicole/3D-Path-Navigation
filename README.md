@@ -1,4 +1,6 @@
-Research study exploring the cognitive effects of different spatial interaction techniques on 3D path planning, and examining the influence of degrees of freedom in locomotion on cognitive workload and motion sickness. Run as a 2x2 within-subjects study, counterbalanced, with 36 participants on an HTC Vive Pro Eye. 
+Research study exploring the cognitive effects of different spatial interaction techniques on 3D path planning, and examining the influence of degrees of freedom in locomotion on cognitive workload and motion sickness. Run as a 2x2 within-subjects study, counterbalanced, with 36 participants on an HTC Vive Pro Eye. OpenXR is the backend for communication. 
+
+Data was logged via Lab Streaming Layer for Unity (LSL) and is available on a separate repo. 
 
 Path creation is presented first. The user creates a midair path around a miniature model of real-world historical sites (4 unique sites, each downsampled to ~120k tris for better rendering via Maya and Blender). 
 Each path creation technique is introduced by a follow-along tutorial. After completion, the user creates a path for each of the four sites, providing ratings (SEQ) at the end of each test. 
